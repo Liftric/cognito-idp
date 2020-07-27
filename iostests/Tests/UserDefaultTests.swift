@@ -27,6 +27,18 @@ class UserDefaultTests: XCTestCase {
         XCTAssertEqual(sut.double(forKey: "DOUBLE"), 1337)
     }
     
+    private func testUpdateString() {
+        sut.set(key: "STRING", value_: "1337")
+        sut.set(key: "STRING", value_: "42")
+        XCTAssertEqual(sut.string(forKey: "STRING"), "42")
+    }
+    
+    private func testUpdateDouble() {
+        sut.set(key: "DOUBLE", value: 1337)
+        sut.set(key: "DOUBLE", value: 42)
+        XCTAssertEqual(sut.double(forKey: "DOUBLE"), 42)
+    }
+    
     private func testDeleteObject() {
         sut.set(key: "DOUBLE", value: 1337)
         sut.set(key: "DOUBLE2", value: 7331)

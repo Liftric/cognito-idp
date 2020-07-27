@@ -13,7 +13,8 @@ object Versions {
     const val serialization = "0.20.0"
     const val ktor = "1.3.2"
     const val KVault = "1.1.0"
-    const val junit = "4.12"
+    const val RoboElectric = "4.3.1"
+    const val TestCore = "1.2.0"
 }
 
 object Libs {
@@ -45,5 +46,6 @@ object Libs {
 }
 
 object TestLibs {
-    const val junit = "junit:junit:${Versions.junit}"
+    const val RoboElectric = "org.robolectric:robolectric:${Versions.RoboElectric}"
+    const val TestCore = "androidx.test:core:${Versions.TestCore}"
 }

@@ -53,7 +53,14 @@ kotlin {
             }
         }
         val androidTest by getting {
-            dependencies { }
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+                implementation(TestLibs.RoboElectric) {
+                    exclude("com.google.auto.service", "auto-service")
+                }
+                implementation(TestLibs.TestCore)
+            }
         }
         val iosMain by getting {
             dependencies {
@@ -78,6 +85,7 @@ android {
         targetSdkVersion(Apps.targetSdk)
         versionCode = Apps.versionCode
         versionName = Apps.versionName
+        testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
     }
 
     compileOptions {
