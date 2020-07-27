@@ -135,7 +135,7 @@ signOut() { error, value ->
 
 Returns the users attributes and metadata.
 
-More info about this in the ![official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
+More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
 ```kotlin
 getUser() { error, value ->
