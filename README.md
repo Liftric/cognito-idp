@@ -175,4 +175,4 @@ deleteUser() { error, value ->
 
 ## License
 
-KVault is available under the MIT license. See the LICENSE file for more info.
+Auth is available under the MIT license. See the LICENSE file for more info.
