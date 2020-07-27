@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D0C596224CF209800617E6C /* auth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D0C596124CF209800617E6C /* auth.framework */; };
+		3D0C596324CF209800617E6C /* auth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3D0C596124CF209800617E6C /* auth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		522F5D7024C0A04B00F0974A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F5D6F24C0A04B00F0974A /* AppDelegate.swift */; };
 		522F5D7224C0A04B00F0974A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F5D7124C0A04B00F0974A /* SceneDelegate.swift */; };
 		522F5D7424C0A04B00F0974A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F5D7324C0A04B00F0974A /* ContentView.swift */; };
@@ -14,7 +16,7 @@
 		522F5D7924C0A04D00F0974A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 522F5D7824C0A04D00F0974A /* Preview Assets.xcassets */; };
 		522F5D7C24C0A04D00F0974A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 522F5D7A24C0A04D00F0974A /* LaunchScreen.storyboard */; };
 		522F5D8724C0A04D00F0974A /* UserDefaultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F5D8624C0A04D00F0974A /* UserDefaultTests.swift */; };
-		522F5D9D24C0ABBD00F0974A /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F5D9C24C0ABBD00F0974A /* Auth.swift */; };
+		522F5D9D24C0ABBD00F0974A /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F5D9C24C0ABBD00F0974A /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,7 +29,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		3D0C596424CF209800617E6C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3D0C596324CF209800617E6C /* auth.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		3D0C596124CF209800617E6C /* auth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = auth.framework; path = ../auth/build/bin/ios/debugFramework/auth.framework; sourceTree = "<group>"; };
 		522F5D6C24C0A04B00F0974A /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		522F5D6F24C0A04B00F0974A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		522F5D7124C0A04B00F0974A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -39,7 +56,7 @@
 		522F5D8224C0A04D00F0974A /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		522F5D8624C0A04D00F0974A /* UserDefaultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultTests.swift; sourceTree = "<group>"; };
 		522F5D8824C0A04D00F0974A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		522F5D9C24C0ABBD00F0974A /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
+		522F5D9C24C0ABBD00F0974A /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D0C596224CF209800617E6C /* auth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,7 +107,7 @@
 				522F5D7A24C0A04D00F0974A /* LaunchScreen.storyboard */,
 				522F5D7D24C0A04D00F0974A /* Info.plist */,
 				522F5D7724C0A04D00F0974A /* Preview Content */,
-				522F5D9C24C0ABBD00F0974A /* Auth.swift */,
+				522F5D9C24C0ABBD00F0974A /* Settings.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -114,6 +132,7 @@
 		522F5D9124C0A59700F0974A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3D0C596124CF209800617E6C /* auth.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -128,6 +147,7 @@
 				522F5D6824C0A04B00F0974A /* Sources */,
 				522F5D6924C0A04B00F0974A /* Frameworks */,
 				522F5D6A24C0A04B00F0974A /* Resources */,
+				3D0C596424CF209800617E6C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -219,7 +239,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				522F5D9D24C0ABBD00F0974A /* Auth.swift in Sources */,
+				522F5D9D24C0ABBD00F0974A /* Settings.swift in Sources */,
 				522F5D7024C0A04B00F0974A /* AppDelegate.swift in Sources */,
 				522F5D7224C0A04B00F0974A /* SceneDelegate.swift in Sources */,
 				522F5D7424C0A04B00F0974A /* ContentView.swift in Sources */,
@@ -292,6 +312,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../**";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -306,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -352,6 +373,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../**";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -360,7 +382,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -386,7 +408,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.liftric.HostApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liftric.TestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -409,7 +431,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.liftric.HostApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liftric.TestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

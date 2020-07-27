@@ -13,4 +13,32 @@ class UserDefaultTests: XCTestCase {
     
     // MARK: - UserDefaultTests
     
+    private let sut = Settings.store
+    
+    private func testSetGetString() {
+        sut.set(key: "STRING", value_: "1337")
+        XCTAssertNotNil(sut.string(forKey: "STRING"))
+        XCTAssertEqual(sut.string(forKey: "DOUBLE"), "1337")
+    }
+    
+    private func testSetGetDouble() {
+        sut.set(key: "DOUBLE", value: 1337)
+        XCTAssertNotNil(sut.double(forKey: "DOUBLE"))
+        XCTAssertEqual(sut.double(forKey: "DOUBLE"), 1337)
+    }
+    
+    private func testDeleteObject() {
+        sut.set(key: "DOUBLE", value: 1337)
+        sut.set(key: "DOUBLE2", value: 7331)
+        sut.deleteObject(forKey: "DOUBLE")
+        XCTAssertNil(sut.double(forKey: "DOUBLE"))
+        XCTAssertNotNil(sut.double(forKey: "DOUBLE2"))
+    }
+    
+    override func tearDown() {
+        if let bundleID = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+        }
+        tearDown()
+    }
 }
