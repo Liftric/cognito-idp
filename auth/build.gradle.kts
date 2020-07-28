@@ -1,5 +1,7 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.util.Date
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
@@ -23,7 +25,6 @@ kotlin {
 
     android {
         publishLibraryVariants("release")
-
     }
 
     sourceSets {
@@ -40,7 +41,9 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
+                implementation(Libs.coroutinesCore)
                 implementation(kotlin("test-annotations-common"))
+                implementation(TestLibs.KtorClientMock)
             }
         }
         val androidMain by getting {
@@ -54,12 +57,15 @@ kotlin {
         }
         val androidTest by getting {
             dependencies {
+                implementation(Libs.coroutinesAndroid)
+
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(TestLibs.RoboElectric) {
                     exclude("com.google.auto.service", "auto-service")
                 }
                 implementation(TestLibs.TestCore)
+                implementation(TestLibs.KtorClientMockAndroid)
             }
         }
         val iosMain by getting {
@@ -72,7 +78,10 @@ kotlin {
             }
         }
         val iosTest by getting {
-            dependencies { }
+            dependencies {
+                implementation(TestLibs.KtorClientMockNative)
+                implementation(Libs.coroutinesNative)
+            }
         }
     }
 }

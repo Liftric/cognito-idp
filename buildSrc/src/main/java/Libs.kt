@@ -48,4 +48,7 @@ object Libs {
 object TestLibs {
     const val RoboElectric = "org.robolectric:robolectric:${Versions.RoboElectric}"
     const val TestCore = "androidx.test:core:${Versions.TestCore}"
+    const val KtorClientMock = "io.ktor:ktor-client-mock:${Versions.ktor}"
+    const val KtorClientMockAndroid = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
+    const val KtorClientMockNative = "io.ktor:ktor-client-mock-native:${Versions.ktor}"
 }

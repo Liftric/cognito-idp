@@ -37,7 +37,9 @@ actual class SettingsStore(context: Context) {
     }
 
     actual fun deleteObject(forKey: String) {
-        sharedPrefs.edit().remove(forKey).apply()
+        if(existsObject(forKey)) {
+            sharedPrefs.edit().remove(forKey).apply()
+        }
     }
 
     private fun existsObject(forKey: String): Boolean {
