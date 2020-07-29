@@ -14,11 +14,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 
 internal expect val ApplicationDispatcher: CoroutineDispatcher
 
-open class AuthHandler(
-    private val configuration: Configuration,
-    private val settingsStore: SettingsStore,
-    private val secretStore: SecretStore
-): Auth {
+open class AuthHandler(private val configuration: Configuration): Auth {
     enum class RequestType {
         signIn, signUp, confirmSignUp, signOut, getUser, changePassword,
         deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword
@@ -53,59 +49,48 @@ open class AuthHandler(
     }
 
     override fun deleteUser(
+        accessToken: String,
         response: (error: Error?, value: String?) -> Unit
     ) = dispatch {
-        deleteUserRequest(response)
+        deleteUserRequest(accessToken, response)
     }
 
     override fun getUser(
+        accessToken: String,
         response: (error: Error?, value: String?) -> Unit
-    ) {
-        val username = secretStore.vault.string(Key.Username)
-        val password = secretStore.vault.string(Key.Password)
-
-        if (username == null || password == null) {
-            response(Error(ErrorMessage.notSignedIn), null)
-        } else {
-            dispatch {
-                if (accessTokenIsOutdated()) {
-                    signInRequest(username, password) { _,_ ->
-                        dispatch {
-                            getUserRequest(response)
-                        }
-                    }
-                } else {
-                    getUserRequest(response)
-                }
-            }
-        }
+    ) = dispatch {
+        getUserRequest(accessToken, response)
     }
 
     override fun signOut(
+        accessToken: String,
         response: (error: Error?, value: String?) -> Unit
     ) = dispatch {
-        signOutRequest(response)
+        signOutRequest(accessToken, response)
     }
 
     override fun updateUserAttributes(
+        accessToken: String,
         attributes: List<UserAttribute>,
         response: (error: Error?, value: String?) -> Unit
     ) = dispatch {
-        updateUserAttributesRequest(attributes, response)
+        updateUserAttributesRequest(accessToken, attributes, response)
     }
 
     override fun changePassword(
-        toNewPassword: String,
+        accessToken: String,
+        currentPassword: String,
+        newPassword: String,
         response: (error: Error?, value: String?) -> Unit
     ) = dispatch {
-        changePasswordRequest(toNewPassword, response)
+        changePasswordRequest(accessToken, currentPassword, newPassword, response)
     }
 
     //----------
     // REQUESTS
     //----------
 
-    private suspend fun signUpRequest(
+    internal suspend fun signUpRequest(
         username: String,
         password: String,
         attributes: List<UserAttribute>?,
@@ -138,125 +123,77 @@ open class AuthHandler(
 
         request(
             RequestType.signIn,
-            serialize(Authentication.serializer(), payload)
-        ) { error, value ->
-            secureCredentials(username, password)
-
-            value?.let {
-                val obj = parse(AuthResponse.serializer(), value)
-                val date = accessTokenValidUntil(obj.AuthenticationResult.ExpiresIn.toDouble())
-                saveAccessToken(obj.AuthenticationResult.AccessToken, date)
-            }
-
-            response(error, value)
-        }
+            serialize(Authentication.serializer(), payload),
+            response
+        )
     }
 
     private suspend fun deleteUserRequest(
+        accessToken: String,
         response: (error: Error?, value: String?) -> Unit
     ) {
-        val accessToken = settingsStore.string(Key.AccessToken)
+        val payload = AccessToken(accessToken)
 
-        if (accessToken == null) {
-            response(Error(ErrorMessage.notSignedIn), null)
-        } else {
-            val payload = AccessToken(accessToken)
-
-            request(
-                RequestType.deleteUser,
-                serialize(AccessToken.serializer(), payload)
-            ) { error, value ->
-                value?.let {
-                    deleteCredentials()
-                    deleteAccessToken()
-                }
-
-                response(error, value)
-            }
-        }
+        request(
+            RequestType.deleteUser,
+            serialize(AccessToken.serializer(), payload),
+            response
+        )
     }
 
     private suspend fun signOutRequest(
+        accessToken: String,
         response: (error: Error?, value: String?) -> Unit
     ) {
-        val accessToken = settingsStore.string(Key.AccessToken)
+        val payload = AccessToken(accessToken)
 
-        if (accessToken == null) {
-            response(Error(ErrorMessage.notSignedIn), null)
-        } else {
-            val payload = AccessToken(accessToken)
-
-            request(
-                RequestType.signOut,
-                serialize(AccessToken.serializer(), payload)
-            ) { error, value ->
-                value?.let {
-                    deleteCredentials()
-                    deleteAccessToken()
-                }
-
-                response(error, value)
-            }
-        }
+        request(
+            RequestType.signOut,
+            serialize(AccessToken.serializer(), payload),
+            response
+        )
     }
 
     private suspend fun updateUserAttributesRequest(
+        accessToken: String,
         attributes: List<UserAttribute>,
         response: (error: Error?, value: String?) -> Unit
     ) {
-        val accessToken = settingsStore.string(Key.AccessToken)
+        val payload = UpdateUserAttributes(accessToken, attributes)
 
-        if (accessToken == null) {
-            response(Error(ErrorMessage.notSignedIn), null)
-        } else {
-            val payload = UpdateUserAttributes(accessToken, attributes)
-
-            request(
-                RequestType.updateUserAttributes,
-                serialize(UpdateUserAttributes.serializer(), payload),
-                response
-            )
-        }
+        request(
+            RequestType.updateUserAttributes,
+            serialize(UpdateUserAttributes.serializer(), payload),
+            response
+        )
     }
 
     private suspend fun changePasswordRequest(
-        toNewPassword: String,
+        accessToken: String,
+        currentPassword: String,
+        newPassword: String,
         response: (error: Error?, value: String?) -> Unit
     ) {
-        val accessToken = settingsStore.string(Key.AccessToken)
-        val password = settingsStore.string(Key.Password)
+        val payload = ChangePassword(accessToken, currentPassword, newPassword)
 
-        if (accessToken == null || password == null) {
-            response(Error(ErrorMessage.notSignedIn), null)
-        } else {
-            val payload = ChangePassword(accessToken, password, toNewPassword)
-
-            request(
-                RequestType.changePassword,
-                serialize(ChangePassword.serializer(), payload)
-            ) { error, value ->
-                value?.let { secretStore.vault.set(Key.Password, toNewPassword) }
-                response(error, value)
-            }
-        }
+        request(
+            RequestType.changePassword,
+            serialize(ChangePassword.serializer(), payload),
+            response
+        )
     }
 
     private suspend fun getUserRequest(
+        accessToken: String,
         response: (error: Error?, value: String?) -> Unit
     ) {
-        val accessToken = settingsStore.string(Key.AccessToken)
+        val payload = AccessToken(accessToken)
 
-        if (accessToken == null) {
-            response(Error(ErrorMessage.notSignedIn), null)
-        } else {
-            val payload = AccessToken(accessToken)
-
-            request(
-                RequestType.getUser,
-                serialize(AccessToken.serializer(), payload),
-                response
-            )
-        }
+        request(
+            RequestType.getUser,
+            serialize(AccessToken.serializer(), payload),
+            response
+        )
     }
 
     //----------------
@@ -301,36 +238,5 @@ open class AuthHandler(
             val error = parse(RequestError.serializer(), String(response.readBytes()))
             completion(Error(error.message), null)
         }
-    }
-
-    private fun accessTokenIsOutdated(): Boolean {
-        settingsStore.double(Key.AccessTokenValidUntil)?.let {
-            return Timestamp.now() > it
-        }
-        return false
-    }
-
-    private fun accessTokenValidUntil(offset: Double): Double {
-        return Timestamp.now() + offset
-    }
-
-    private fun saveAccessToken(accessToken: String, validUntil: Double) {
-        settingsStore.set(Key.AccessToken, accessToken)
-        settingsStore.set(Key.AccessTokenValidUntil, validUntil)
-    }
-
-    private fun secureCredentials(username: String, password: String) {
-        secretStore.vault.set(Key.Username, username)
-        secretStore.vault.set(Key.Password, password)
-    }
-
-    private fun deleteCredentials() {
-        secretStore.vault.deleteObject(Key.Username)
-        secretStore.vault.deleteObject(Key.Password)
-    }
-
-    private fun deleteAccessToken() {
-        settingsStore.deleteObject(Key.AccessToken)
-        settingsStore.deleteObject(Key.AccessTokenValidUntil)
     }
 }

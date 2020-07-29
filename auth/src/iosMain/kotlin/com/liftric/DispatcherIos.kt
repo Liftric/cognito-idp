@@ -2,6 +2,7 @@ package com.liftric
 
 import kotlin.coroutines.*
 import kotlinx.coroutines.*
+import platform.Foundation.NSRunLoop
 import platform.darwin.*
 
 internal actual val ApplicationDispatcher: CoroutineDispatcher =

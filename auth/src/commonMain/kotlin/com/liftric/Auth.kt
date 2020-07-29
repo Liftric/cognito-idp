@@ -20,30 +20,30 @@ interface Auth {
      * Signs the user out globally
      * @param response Callback with error and request response
      */
-    fun signOut(response: (error: Error?, value: String?) -> Unit)
+    fun signOut(accessToken: String, response: (error: Error?, value: String?) -> Unit)
 
     /**
      * Fetches the user object
      * @param response Callback with error and request response
      */
-    fun getUser(response: (error: Error?, value: String?) -> Unit)
+    fun getUser(accessToken: String, response: (error: Error?, value: String?) -> Unit)
 
     /**
      * Updates the users attributes
      * e.g. email, phone number
      * @param response Callback with error and request response
      */
-    fun updateUserAttributes(attributes: List<UserAttribute>, response: (error: Error?, value: String?) -> Unit)
+    fun updateUserAttributes(accessToken: String, attributes: List<UserAttribute>, response: (error: Error?, value: String?) -> Unit)
 
     /**
      * Changes the password of the current user
      * @param response Callback with error and request response
      */
-    fun changePassword(toNewPassword: String, response: (error: Error?, value: String?) -> Unit)
+    fun changePassword(accessToken: String, currentPassword: String, newPassword: String, response: (error: Error?, value: String?) -> Unit)
 
     /**
      * Deletes the users account
      * @param response Callback with error and request response
      */
-    fun deleteUser(response: (error: Error?, value: String?) -> Unit)
+    fun deleteUser(accessToken: String, response: (error: Error?, value: String?) -> Unit)
 }
