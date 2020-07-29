@@ -14,11 +14,21 @@ import kotlin.test.*
 
 expect fun runTest(block: suspend () -> Unit)
 
+class TestAuthHandler(configuration: Configuration, settingsStore: SettingsStore,
+                      secretStore: SecretStore): AuthHandler(configuration, settingsStore, secretStore
+) {
+    /**
+     * Override dispatch method, and launch request methods runBlocking.
+     * Otherwise it wouln't be testable.
+     */
+    override fun dispatch(block: suspend () -> Unit) = runTest { block() }
+}
+
 expect class AuthHandlerTest: AbstractAuthHandlerTest
 
 abstract class AbstractAuthHandlerTest(
-    private val settingsStore: SettingsStore,
-    private val secretStore: SecretStore
+    settingsStore: SettingsStore,
+    secretStore: SecretStore
 ) {
     private val configuration = Configuration(
         Environment.variable("origin")?: "",
@@ -26,124 +36,27 @@ abstract class AbstractAuthHandlerTest(
         Environment.variable("clientid")?: ""
     )
 
-    private val username = "multiplatform-auth-lib"
-    private val password = "multiplatform-auth-lib"
+    // Randomize temp user account name to not exceed aws boundaries
+    private val random = (0..999).random()
+    private val username = "auth-lib-test-user-$random"
+    private val password = "auth-lib-test-user-$random"
 
-    private lateinit var authHandler: AuthHandler
-
-    @BeforeTest
-    fun setUp() {
-        authHandler = AuthHandler(configuration, settingsStore, secretStore)
-    }
+    private var authHandler = TestAuthHandler(configuration, settingsStore, secretStore)
 
     //-------------------
     // INTEGRATION TESTS
     //-------------------
 
     @Test
-    fun `Test sign up, sign in, delete user`() = runTest {
-        signUp(
-            username,
-            password
-        ) { error, value ->
+    fun signUp()  {
+        authHandler.signUp(
+            username, password,
+            attributes = listOf(
+                UserAttribute(Name = "email", Value = "test@test.test"),
+                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+            )) { error, value ->
             assertNull(error)
             assertNotNull(value)
-
-            runTest {
-                signIn(
-                    username,
-                    password
-                ) { error, value ->
-                    assertNull(error)
-                    assertNotNull(value)
-
-                    runTest {
-                        deleteUser { error, value ->
-                            assertNull(error)
-                            assertNotNull(value)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `Sign in will fail because the credentals are wrong`() = runTest {
-        signIn(
-            username= "WRONG_ACCOUNT",
-            password = "WRONG_PASSWORD"
-        ) { error, value ->
-            assertNull(value)
-            assertNotNull(error)
-            assertEquals("Incorrect username or password.", error.message)
-        }
-    }
-
-    @Test
-    fun `Sign up will fail because the password is too short`() = runTest {
-        signUp(
-            username= "SOMEUSER",
-            password = "SHORT"
-        ) { error, value ->
-            assertNull(value)
-            assertNotNull(error)
-            assertEquals("1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length greater than or equal to 6", error.message)
-        }
-    }
-
-    @Test
-    fun `Sign up will fail because the password is too long`() = runTest {
-        signUp(
-            username = "SOMEUSER",
-            password = buildString { (1..260).forEach { _ -> append("A") } }
-        ) { error, value ->
-            assertNull(value)
-            assertNotNull(error)
-            assertEquals("1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length less than or equal to 256", error.message)
-        }
-    }
-
-    @Test
-    fun `Sign up will fail because the username is too long`() = runTest {
-        signUp(
-            username = buildString { (1..130).forEach { _ -> append("A") } },
-            password = "SOMEPASSWORD"
-        ) { error, value ->
-            assertNull(value)
-            assertNotNull(error)
-            assertEquals("1 validation error detected: Value at 'username' failed to satisfy constraint: Member must have length less than or equal to 128", error.message)
-        }
-    }
-
-    // Helper methods
-
-    private suspend fun signUp(username: String, password: String, response: ((error: Error?, value: String?) -> Unit)? = null) {
-        authHandler.signUpRequest(
-            username = username,
-            password = password,
-            attributes = listOf(UserAttribute("custom:target_group", "ROLE_PATIENT"))
-        ) { error, value ->
-            if (response != null) {
-                response(error, value)
-            }
-        }
-    }
-
-    private suspend fun signIn(username: String, password: String, response: ((error: Error?, value: String?) -> Unit)? = null) {
-        authHandler.signInRequest(
-            username,
-            password
-        ) { error, value ->
-            if (response != null) {
-                response(error, value)
-            }
-        }
-    }
-
-    private suspend fun deleteUser(response: (error: Error?, value: String?) -> Unit) {
-        authHandler.deleteUserRequest() { error, value ->
-            response(error, value)
         }
     }
 

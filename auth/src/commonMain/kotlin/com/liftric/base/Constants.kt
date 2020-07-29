@@ -67,3 +67,7 @@ enum class Region(val code: String) {
     meSouth1("me-south-1"),
     saEast1("sa-east-1")
 }
+
+object ErrorMessage {
+    const val notSignedIn = "The user is not signed in."
+}
