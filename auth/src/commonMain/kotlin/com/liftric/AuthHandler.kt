@@ -24,9 +24,6 @@ open class AuthHandler(
         deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword
     }
 
-    private val accessToken = settingsStore.string(Key.AccessToken)
-    private val password = secretStore.vault.string(Key.Password)
-
     private var client = HttpClient() {
         defaultRequest {
             configuration.setupDefaultRequest(headers)
@@ -158,6 +155,8 @@ open class AuthHandler(
     private suspend fun deleteUserRequest(
         response: (error: Error?, value: String?) -> Unit
     ) {
+        val accessToken = settingsStore.string(Key.AccessToken)
+
         if (accessToken == null) {
             response(Error(ErrorMessage.notSignedIn), null)
         } else {
@@ -180,6 +179,8 @@ open class AuthHandler(
     private suspend fun signOutRequest(
         response: (error: Error?, value: String?) -> Unit
     ) {
+        val accessToken = settingsStore.string(Key.AccessToken)
+
         if (accessToken == null) {
             response(Error(ErrorMessage.notSignedIn), null)
         } else {
@@ -203,6 +204,8 @@ open class AuthHandler(
         attributes: List<UserAttribute>,
         response: (error: Error?, value: String?) -> Unit
     ) {
+        val accessToken = settingsStore.string(Key.AccessToken)
+
         if (accessToken == null) {
             response(Error(ErrorMessage.notSignedIn), null)
         } else {
@@ -220,6 +223,9 @@ open class AuthHandler(
         toNewPassword: String,
         response: (error: Error?, value: String?) -> Unit
     ) {
+        val accessToken = settingsStore.string(Key.AccessToken)
+        val password = settingsStore.string(Key.Password)
+
         if (accessToken == null || password == null) {
             response(Error(ErrorMessage.notSignedIn), null)
         } else {
@@ -238,6 +244,8 @@ open class AuthHandler(
     private suspend fun getUserRequest(
         response: (error: Error?, value: String?) -> Unit
     ) {
+        val accessToken = settingsStore.string(Key.AccessToken)
+
         if (accessToken == null) {
             response(Error(ErrorMessage.notSignedIn), null)
         } else {
