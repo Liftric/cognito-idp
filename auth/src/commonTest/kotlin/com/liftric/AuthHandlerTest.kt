@@ -14,13 +14,6 @@ import kotlinx.coroutines.withTimeout
 import kotlin.test.*
 
 class TestAuthHandler(configuration: Configuration): AuthHandler(configuration) {
-    /**
-     * Override dispatch method, and launch request methods runBlocking.
-     * Otherwise it wouln't be testable.
-     */
-    override fun dispatch(block: suspend () -> Unit) = runTest {
-        block()
-    }
 }
 
 expect fun runTest(block: suspend () -> Unit)
@@ -43,15 +36,13 @@ class AuthHandlerTest() {
     // INTEGRATION TESTS
     //-------------------
     @Test
-    fun testSomething() {
-        authHandler.signUp(
-                username, password,
-                attributes = listOf(
-                        UserAttribute(Name = "email", Value = "test@test.test"),
-                        UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
-                )) { error, value ->
-            assertNull(error)
-            assertNotNull(value)
-        }
+    fun testSomething() = runTest {
+        val result = authHandler.signUpRequest(username, "Short", attributes = listOf(
+                    UserAttribute(Name = "email", Value = "test@test.test"),
+                    UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+        )).await()
+
+        assertNotNull(result.first)
+        assertNull(result.second)
     }
 }

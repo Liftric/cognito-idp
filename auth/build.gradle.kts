@@ -37,6 +37,7 @@ kotlin {
                 implementation(Libs.serializationCore)
                 implementation(Libs.ktorSerializationCore)
                 implementation(Libs.kVault)
+                implementation("com.autodesk:coroutineworker:0.5.1")
             }
         }
         val commonTest by getting {
