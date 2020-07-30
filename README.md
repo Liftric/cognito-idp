@@ -1,8 +1,8 @@
-![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![Published](https://github.com/Liftric/auth/workflows/Publish%20to%20Bintray/badge.svg) ![Version](https://img.shields.io/github/v/release/liftric/auth?label=version)
+![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![Published](https://github.com/Liftric/auth/workflows/Publish%20to%20Bintray/badge.svg) ![Release](https://img.shields.io/github/v/release/liftric/auth?label=release)
 
 # Auth
 
-Auth is a simple AWS Cognito authentication client. 
+Auth is a lightweight AWS Cognito client for Kotlin Multiplatform projects
 
 > In its current state it provides only the bare minimum that was needed for our project. Feel free to contribute if there is something missing for you.
 
@@ -53,51 +53,32 @@ val configuration = Configuration(origin: "ORIGIN_URL",
                                   clientId: "CLIENT_ID") 
 ```
 
-Now you have to provide the settings- and secretstore (Needed to store the tokens and credentials).
-
-#### Android
+Now you have to pass the configuration object to the authentication handler via its constructor and you are good to go.
 
 ```kotlin
-val secretStore = SecretStore(context = Context)
-val settingsStore = SettingsStore(context = Context)
-```
-
-#### iOS
-
-```kotlin
-val secretStore = SecretStore()
-val settingsStore = SettingsStore()
-```
-
-Since all dependencies are instantiated you can pass them to the authentication handler via its constructor and you are good to go.
-
-```kotlin
-val authHandler = AuthHandler(configuration, settingsStore, secretStore) 
+val authHandler = AuthHandler(configuration) 
 ```
 
 ### API
 
 General usage of the request methods.
 
-All methods will return an optional error and the response value (JSON string). In case of a failure you can access the errors message and the response value will be null.
+All methods will return an optional error and response value (JSON string). In case of a failure you can access the errors message and the response value will be null.
 
 ```kotlin
 signUp(username = "user", password = "password") { error, value ->
     error?.let {
         println(error.message)
-        return
+    }:? run {
+        val jsonString = value
+        ...
     }
-    
-    val jsonString = value
-    ...
 }
 ```
 
 #### Sign Up
 
 You can  sign up users by providing a username, password, and optional attributes. 
-
-The credentials will be secured in the iOS keychain or with encrypted SharedPreferences.
 
 ```kotlin
 val attribute = UserAttribute(Name: "email", Value: "email@my.tld")
@@ -111,8 +92,6 @@ signUp(username = "user", password = "password", attributes = listOf(attribute))
 
 At the moment you can only sign in with username and password.
 
-The response contains an access token and an expiration time which will be stored in the iOS UserDefaults or in the SharedPreferences.
-
 ```kotlin
 signIn(username = "user", password = "password") { error, value ->
     ...
@@ -123,10 +102,8 @@ signIn(username = "user", password = "password") { error, value ->
 
 Signs out the user.
 
-Removes the stored credentials and the token from the stores.
-
 ```kotlin
-signOut() { error, value ->
+signOut(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
     ...
 }
 ```
@@ -138,7 +115,7 @@ Returns the users attributes and metadata.
 More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
 ```kotlin
-getUser() { error, value ->
+getUser(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
     ...
 }
 ```
@@ -148,27 +125,27 @@ getUser() { error, value ->
 Updates the users attributes (e.g. email change).
 
 ```kotlin
-updateUserAttributes(attributes = listOf(...)) { error, value ->
+updateUserAttributes(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)) { error, value ->
     ...
 }
 ```
 
 #### Change Password
 
-Updates the users password and also updates the stored value in the secretstore. 
+Updates the users password. 
 
 ```kotlin
-changePassword(toNewPassword = "SomethingSecure42") { error, value ->
+changePassword(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW") { error, value ->
     ...
 }
 ```
 
 #### Delete User
 
-Deletes the user from the user pool and clears all data from the settings- and secretstore. 
+Deletes the user from the user pool. 
 
 ```kotlin
-deleteUser() { error, value ->
+deleteUser(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
     ...
 }
 ```

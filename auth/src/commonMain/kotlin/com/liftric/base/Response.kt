@@ -19,3 +19,18 @@ data class AuthenticationResult(
     val RefreshToken: String = "",
     val TokenType: String = ""
 )
+
+@Serializable
+data class GetUserResult(
+    val MFAOptions: MFAOptions = MFAOptions(),
+    val PreferredMfaSetting: String = "",
+    val UserAttributes : List<UserAttribute> = listOf(),
+    val UserMFASettingList: List<String> = listOf(),
+    val Username: String
+)
+
+@Serializable
+data class MFAOptions(
+    val AttributeName: String = "",
+    val DeliveryMedium: String = ""
+)

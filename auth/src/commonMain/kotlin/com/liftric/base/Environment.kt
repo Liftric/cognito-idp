@@ -1,4 +1,4 @@
-package com.liftric.resources
+package com.liftric.base
 
 expect class Environment() {
     companion object {

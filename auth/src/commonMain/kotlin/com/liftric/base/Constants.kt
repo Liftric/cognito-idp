@@ -16,13 +16,6 @@ object Header {
     const val AmzJson           = "application/x-amz-json-1.1"
 }
 
-object Key {
-    const val Username                  = "Username"
-    const val Password                  = "Password"
-    const val AccessToken               = "AccessToken"
-    const val AccessTokenValidUntil     = "AccessTokenValidUntil"
-}
-
 object IdentityProviderService {
     const val InitiateAuth              = "AWSCognitoIdentityProviderService.InitiateAuth"
     const val GlobalSignOut             = "AWSCognitoIdentityProviderService.GlobalSignOut"
@@ -66,8 +59,4 @@ enum class Region(val code: String) {
     euNorth1("eu-north-1"),
     meSouth1("me-south-1"),
     saEast1("sa-east-1")
-}
-
-object ErrorMessage {
-    const val notSignedIn = "The user is not signed in."
 }

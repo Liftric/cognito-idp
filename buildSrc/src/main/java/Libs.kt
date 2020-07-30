@@ -12,8 +12,6 @@ object Versions {
     const val coroutines = "1.3.8"
     const val serialization = "0.20.0"
     const val ktor = "1.3.2"
-    const val KVault = "1.1.0"
-    const val RoboElectric = "4.3.1"
     const val TestCore = "1.2.0"
 }
 
@@ -28,27 +26,20 @@ object Libs {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Versions.serialization}"
     const val ktorSerializationCore = "io.ktor:ktor-client-serialization:${Versions.ktor}"
-    const val kVault = "com.liftric:kvault-common:${Versions.KVault}"
 
     /* Android */
     const val ktorAndroid = "io.ktor:ktor-client-android:${Versions.ktor}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
     const val serializationAndroid = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.serialization}"
     const val ktorSerializationAndroid = "io.ktor:ktor-client-serialization-jvm:${Versions.ktor}"
-    const val kVaultAndroid = "com.liftric:kvault-android:${Versions.KVault}"
 
     /* iOS */
     const val ktorNative = "io.ktor:ktor-client-ios:${Versions.ktor}"
     const val coroutinesNative = "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${Versions.coroutines}"
     const val serializationNative = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:${Versions.serialization}"
     const val ktorSerializationNative = "io.ktor:ktor-client-serialization-native:${Versions.ktor}"
-    const val kVaultNative = "com.liftric:kvault-ios:${Versions.KVault}"
 }
 
 object TestLibs {
-    const val RoboElectric = "org.robolectric:robolectric:${Versions.RoboElectric}"
     const val TestCore = "androidx.test:core:${Versions.TestCore}"
-    const val KtorClientMock = "io.ktor:ktor-client-mock:${Versions.ktor}"
-    const val KtorClientMockAndroid = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
-    const val KtorClientMockNative = "io.ktor:ktor-client-mock-native:${Versions.ktor}"
 }

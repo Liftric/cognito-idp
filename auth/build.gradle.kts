@@ -1,8 +1,5 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.util.Date
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
@@ -36,16 +33,13 @@ kotlin {
                 implementation(Libs.coroutinesCore)
                 implementation(Libs.serializationCore)
                 implementation(Libs.ktorSerializationCore)
-                implementation(Libs.kVault)
-                implementation("com.autodesk:coroutineworker:0.5.1")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
-                implementation(Libs.coroutinesCore)
                 implementation(kotlin("test-annotations-common"))
-                implementation(TestLibs.KtorClientMock)
+                implementation(Libs.coroutinesCore)
             }
         }
         val androidMain by getting {
@@ -54,20 +48,14 @@ kotlin {
                 implementation(Libs.coroutinesAndroid)
                 implementation(Libs.serializationAndroid)
                 implementation(Libs.ktorSerializationAndroid)
-                implementation(Libs.kVaultAndroid)
             }
         }
         val androidTest by getting {
             dependencies {
-                implementation(Libs.coroutinesAndroid)
-
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation(TestLibs.RoboElectric) {
-                    exclude("com.google.auto.service", "auto-service")
-                }
+                implementation(Libs.coroutinesAndroid)
                 implementation(TestLibs.TestCore)
-                implementation(TestLibs.KtorClientMockAndroid)
             }
         }
         val iosMain by getting {
@@ -76,13 +64,6 @@ kotlin {
                 implementation(Libs.coroutinesNative)
                 implementation(Libs.serializationNative)
                 implementation(Libs.ktorSerializationNative)
-                implementation(Libs.kVaultNative)
-            }
-        }
-        val iosTest by getting {
-            dependencies {
-                implementation(TestLibs.KtorClientMockNative)
-                implementation(Libs.coroutinesNative)
             }
         }
     }
@@ -96,7 +77,6 @@ android {
         targetSdkVersion(Apps.targetSdk)
         versionCode = Apps.versionCode
         versionName = Apps.versionName
-        testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
     }
 
     compileOptions {
