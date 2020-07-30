@@ -119,6 +119,38 @@ class AuthHandlerIntegrationTests() {
     }
 
     @Test
+    fun `Should change password`() {
+        createUser { token, credential ->
+            authHandler.changePassword(token, credential, credential + "A") { error, value ->
+                assertNull(error)
+                assertNotNull(value)
+
+                authHandler.signOut(token) { signOutError, signOutValue ->
+                    assertNull(signOutError)
+                    assertNotNull(signOutValue)
+
+                    runBlocking {
+                        // AWS is not revoking Tokens automatically so give it some time
+                        delay(1000)
+                    }
+                    authHandler.signIn(credential, credential + "A") { signInError, signInValue ->
+                        assertNull(signInError)
+                        assertNotNull(signInValue)
+
+                        runBlocking {
+                            // AWS is not revoking Tokens automatically so give it some time
+                            delay(1000)
+                        }
+
+                        val obj = parse(AuthResponse.serializer(), signInValue)
+                        deleteUser(obj.AuthenticationResult.AccessToken)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     fun `Sign out and sign in should succeed`() {
         createUser { token, credential ->
             authHandler.signOut(token) { error, value ->
@@ -126,6 +158,7 @@ class AuthHandlerIntegrationTests() {
                 assertNotNull(value)
 
                 runBlocking {
+                    // AWS is not revoking Tokens automatically so give it some time
                     delay(1000)
                 }
                 authHandler.signIn(credential, credential) { signInError, signInValue ->
@@ -133,6 +166,7 @@ class AuthHandlerIntegrationTests() {
                     assertNotNull(signInValue)
 
                     runBlocking {
+                        // AWS is not revoking Tokens automatically so give it some time
                         delay(1000)
                     }
 
