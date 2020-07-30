@@ -109,7 +109,7 @@ bintray {
         name = artifactName
         userOrg = "liftric"
         vcsUrl = "https://github.com/Liftric/Auth"
-        description = "Lightweight AWS cognito authentication client"
+        description = "Lightweight AWS Cognito client for Kotlin Multiplatform projects"
         setLabels("kotlin-multiplatform", "liftric", "kotlin-native", "aws-cognito", "cognito", "aws")
         setLicenses("MIT")
         desc = description
