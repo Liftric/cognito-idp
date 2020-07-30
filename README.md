@@ -48,9 +48,9 @@ At first you have to instantiate the dependencies for the authentication handler
 The handler needs a configuration object consisting of the origin url, the region code, and the client ID.
 
 ```kotlin
-val configuration = Configuration(origin: "ORIGIN_URL",  
-                                  region: Region.euCentral1,
-                                  clientId: "CLIENT_ID") 
+val configuration = Configuration(origin = "ORIGIN_URL",  
+                                  region = Region.euCentral1,
+                                  clientId = "CLIENT_ID") 
 ```
 
 Now you have to pass the configuration object to the authentication handler via its constructor and you are good to go.
@@ -103,7 +103,7 @@ signIn(username = "user", password = "password") { error, value ->
 Signs out the user.
 
 ```kotlin
-signOut(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
+signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
     ...
 }
 ```
@@ -115,7 +115,7 @@ Returns the users attributes and metadata.
 More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
 ```kotlin
-getUser(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
+getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
     ...
 }
 ```
@@ -125,7 +125,7 @@ getUser(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
 Updates the users attributes (e.g. email change).
 
 ```kotlin
-updateUserAttributes(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)) { error, value ->
+updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)) { error, value ->
     ...
 }
 ```
@@ -135,7 +135,7 @@ updateUserAttributes(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = lis
 Updates the users password. 
 
 ```kotlin
-changePassword(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW") { error, value ->
+changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW") { error, value ->
     ...
 }
 ```
@@ -145,7 +145,7 @@ changePassword(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD
 Deletes the user from the user pool. 
 
 ```kotlin
-deleteUser(accesToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
+deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
     ...
 }
 ```
