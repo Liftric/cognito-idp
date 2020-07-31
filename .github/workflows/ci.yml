@@ -4,21 +4,18 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: master
       - name: set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build auth and test auth (Android)
-        run: ./gradlew build test -x iosTest
-      - name: Build testapp and test auth (iOS)
-        run: |
-          cd iostests
-          sudo xcode-select -switch /Applications/Xcode_11.5.app
-          xcodebuild clean test -project TestApp.xcodeproj -scheme TestApp -destination "platform=iOS Simulator,OS=13.5,name=iPhone 11 Pro" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
+      - name: Build and test (Android)
+        run: export origin=${{ secrets.origin }}; export clientid=${{ secrets.clientid }}; ./gradlew build test -x iosTest
       - name: Upload test result
         uses: actions/upload-artifact@v2
         with:

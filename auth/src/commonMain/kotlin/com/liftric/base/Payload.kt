@@ -28,12 +28,6 @@ data class ChangePassword(
 )
 
 @Serializable
-data class ForgotPassword(
-    val ClientId: String = "",
-    val Username: String
-)
-
-@Serializable
 data class SignUp(
     val ClientId: String,
     val Password: String,
@@ -51,19 +45,4 @@ data class UserAttribute(
 data class UpdateUserAttributes(
     val AccessToken: String,
     val UserAttributes: List<UserAttribute>
-)
-
-@Serializable
-data class ConfirmSignUp(
-    val ClientId: String,
-    val ConfirmationCode: String,
-    val Username: String
-)
-
-@Serializable
-data class ConfirmPassword(
-    val ClientId: String,
-    val ConfirmationCode: String,
-    val Username: String,
-    val Password: String
 )

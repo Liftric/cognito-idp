@@ -23,7 +23,6 @@ kotlin {
 
     android {
         publishLibraryVariants("release")
-
     }
 
     sourceSets {
@@ -34,13 +33,13 @@ kotlin {
                 implementation(Libs.coroutinesCore)
                 implementation(Libs.serializationCore)
                 implementation(Libs.ktorSerializationCore)
-                implementation(Libs.kVault)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation(Libs.coroutinesCore)
             }
         }
         val androidMain by getting {
@@ -49,11 +48,15 @@ kotlin {
                 implementation(Libs.coroutinesAndroid)
                 implementation(Libs.serializationAndroid)
                 implementation(Libs.ktorSerializationAndroid)
-                implementation(Libs.kVaultAndroid)
             }
         }
         val androidTest by getting {
-            dependencies { }
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+                implementation(Libs.coroutinesAndroid)
+                implementation(TestLibs.TestCore)
+            }
         }
         val iosMain by getting {
             dependencies {
@@ -61,11 +64,7 @@ kotlin {
                 implementation(Libs.coroutinesNative)
                 implementation(Libs.serializationNative)
                 implementation(Libs.ktorSerializationNative)
-                implementation(Libs.kVaultNative)
             }
-        }
-        val iosTest by getting {
-            dependencies { }
         }
     }
 }
@@ -110,7 +109,7 @@ bintray {
         name = artifactName
         userOrg = "liftric"
         vcsUrl = "https://github.com/Liftric/Auth"
-        description = "Lightweight AWS cognito authentication client"
+        description = "Lightweight AWS Cognito client for Kotlin Multiplatform projects"
         setLabels("kotlin-multiplatform", "liftric", "kotlin-native", "aws-cognito", "cognito", "aws")
         setLicenses("MIT")
         desc = description

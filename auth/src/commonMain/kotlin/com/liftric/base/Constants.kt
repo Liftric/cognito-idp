@@ -16,13 +16,6 @@ object Header {
     const val AmzJson           = "application/x-amz-json-1.1"
 }
 
-object Key {
-    const val Username                  = "Username"
-    const val Password                  = "Password"
-    const val AccessToken               = "AccessToken"
-    const val AccessTokenValidUntil     = "AccessTokenValidUntil"
-}
-
 object IdentityProviderService {
     const val InitiateAuth              = "AWSCognitoIdentityProviderService.InitiateAuth"
     const val GlobalSignOut             = "AWSCognitoIdentityProviderService.GlobalSignOut"
