@@ -11,12 +11,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.utils.io.core.String
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
 internal expect val ApplicationDispatcher: CoroutineDispatcher
-
 expect fun runBlocking(block: suspend () -> Unit)
 
+/**
+ * Authentifaction handler for AWS Cognito
+ * Provides common request methods
+ */
 open class AuthHandler(private val configuration: Configuration): Auth {
     enum class RequestType {
         signIn, signUp, confirmSignUp, signOut, getUser, changePassword,
@@ -30,11 +32,18 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
+    /**
+     * Runs suspended function in coroutine scope
+     */
     open fun dispatch(block: suspend () -> Unit) {
         MainScope().launch(ApplicationDispatcher) {
             block()
         }
     }
+
+    //----------
+    // INTERFACE
+    //----------
 
     override fun signUp(
         username: String,
@@ -211,7 +220,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         )
     }
 
-    suspend fun request(
+    private suspend fun request(
         type: RequestType,
         payload: String,
         completion: (error: Error?, value: String?) -> Unit

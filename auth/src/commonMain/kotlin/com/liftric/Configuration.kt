@@ -4,8 +4,12 @@ import com.liftric.base.Header
 import com.liftric.base.Region
 import io.ktor.http.HeadersBuilder
 
+/**
+ * Configuration object for the auth handler
+ * Holds all headers needed to make requests to AWS Cognito
+ */
 class Configuration(origin: String, region: Region, val clientId: String) {
-    val requestUrl = "https://cognito-idp.${region.code}.amazonaws.com"
+    internal val requestUrl = "https://cognito-idp.${region.code}.amazonaws.com"
 
     private val headers = mapOf(
         Header.Authority to requestUrl,
@@ -21,6 +25,9 @@ class Configuration(origin: String, region: Region, val clientId: String) {
         Header.Dnt to "1"
     )
 
+    /**
+     * Appends configuration headers to HeadersBuilder
+     */
     fun setupDefaultRequest(builder: HeadersBuilder) {
         headers.forEach {
             builder.append(it.key, it.value)
