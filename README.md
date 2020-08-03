@@ -8,12 +8,11 @@ Auth is a lightweight AWS Cognito client for Kotlin Multiplatform projects
 
 ## Import
 
-Auth is published on Bintray and mirrored to JCenter. Set at least one of the two repos.
+Auth is published on Bintray.
 
 ```kotlin
 repositories {
     maven { url = uri("https://dl.bintray.com/liftric/maven/") }
-    jcenter()
 }
 ```
 
@@ -69,7 +68,7 @@ All methods will return an optional error and response value (JSON string). In c
 signUp(username = "user", password = "password") { error, value ->
     error?.let {
         println(error.message)
-    }:? run {
+    }?: run {
         val jsonString = value
         ...
     }
@@ -81,7 +80,7 @@ signUp(username = "user", password = "password") { error, value ->
 You can  sign up users by providing a username, password, and optional attributes. 
 
 ```kotlin
-val attribute = UserAttribute(Name: "email", Value: "email@my.tld")
+val attribute = UserAttribute(Name = "email", Value = "email@my.tld")
 
 signUp(username = "user", password = "password", attributes = listOf(attribute)) { error, value ->
     ...
