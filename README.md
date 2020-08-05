@@ -62,7 +62,7 @@ val authHandler = AuthHandler(configuration)
 
 General usage of the request methods.
 
-All methods will return an optional error and response value (JSON string). In case of a failure you can access the errors message and the response value will be null.
+All methods will return an optional error. Some requests get a response from the server (JSON) - The string will be parsed to an object and returned via the callback.
 
 ```kotlin
 signUp(username = "user", password = "password") { error, value ->
