@@ -39,14 +39,13 @@ class AuthHandlerIntegrationTests() {
         authHandler.signUp(credential, credential, null) { _,_ ->
             authHandler.signIn(credential, credential) { _, value ->
                 assertNotNull(value)
-                val obj = parse(AuthResponse.serializer(), value)
-                block(obj.AuthenticationResult.AccessToken, credential)
+                block(value.AuthenticationResult.AccessToken, credential)
             }
         }
     }
 
     private fun deleteUser(token: String) {
-        authHandler.deleteUser(token) { error, _ ->
+        authHandler.deleteUser(token) { error ->
             assertNull(error)
         }
     }
@@ -67,11 +66,8 @@ class AuthHandlerIntegrationTests() {
                 assertNotNull(signInValue)
 
                 try {
-                    val obj = parse(AuthResponse.serializer(), signInValue).AuthenticationResult
-
-                    authHandler.deleteUser(obj.AccessToken) { deleteError, deleteValue ->
+                    authHandler.deleteUser(signInValue.AuthenticationResult.AccessToken) { deleteError ->
                         assertNull(deleteError)
-                        assertNotNull(deleteValue)
                     }
                 } catch(error: Error) {
                     fail(error.message)
@@ -105,8 +101,7 @@ class AuthHandlerIntegrationTests() {
                     assertNull(getUserError)
                     assertNotNull(getUserValue)
 
-                    val obj = parse(GetUserResult.serializer(), getUserValue)
-                    obj.UserAttributes.map { attribute ->
+                    getUserValue.UserAttributes.map { attribute ->
                         if(attribute.Name == "email") {
                             assertEquals("test2@test.test", attribute.Value)
                         }
@@ -121,13 +116,11 @@ class AuthHandlerIntegrationTests() {
     @Test
     fun `Should change password`() {
         createUser { token, credential ->
-            authHandler.changePassword(token, credential, credential + "A") { error, value ->
+            authHandler.changePassword(token, credential, credential + "A") { error ->
                 assertNull(error)
-                assertNotNull(value)
 
-                authHandler.signOut(token) { signOutError, signOutValue ->
+                authHandler.signOut(token) { signOutError ->
                     assertNull(signOutError)
-                    assertNotNull(signOutValue)
 
                     runBlocking {
                         // AWS is not revoking Tokens automatically so give it some time
@@ -142,8 +135,7 @@ class AuthHandlerIntegrationTests() {
                             delay(1000)
                         }
 
-                        val obj = parse(AuthResponse.serializer(), signInValue)
-                        deleteUser(obj.AuthenticationResult.AccessToken)
+                        deleteUser(signInValue.AuthenticationResult.AccessToken)
                     }
                 }
             }
@@ -153,9 +145,8 @@ class AuthHandlerIntegrationTests() {
     @Test
     fun `Sign out and sign in should succeed`() {
         createUser { token, credential ->
-            authHandler.signOut(token) { error, value ->
+            authHandler.signOut(token) { error ->
                 assertNull(error)
-                assertNotNull(value)
 
                 runBlocking {
                     // AWS is not revoking Tokens automatically so give it some time
@@ -170,8 +161,7 @@ class AuthHandlerIntegrationTests() {
                         delay(1000)
                     }
 
-                    val obj = parse(AuthResponse.serializer(), signInValue)
-                    deleteUser(obj.AuthenticationResult.AccessToken)
+                    deleteUser(signInValue.AuthenticationResult.AccessToken)
                 }
             }
         }
@@ -231,27 +221,24 @@ class AuthHandlerIntegrationTests() {
 
     @Test
     fun `Get user should fail since access token wrong`() {
-        authHandler.deleteUser("WRONG_TOKEN") { error, value ->
+        authHandler.deleteUser("WRONG_TOKEN") { error ->
             assertNotNull(error)
-            assertNull(value)
             assertEquals("Invalid Access Token", error.message)
         }
     }
 
     @Test
     fun `Delete user should fail since access token wrong`() {
-        authHandler.deleteUser("WRONG_TOKEN") { error, value ->
+        authHandler.deleteUser("WRONG_TOKEN") { error ->
             assertNotNull(error)
-            assertNull(value)
             assertEquals("Invalid Access Token", error.message)
         }
     }
 
     @Test
     fun `Sign out should fail since access token wrong`() {
-        authHandler.signOut("WRONG_TOKEN") { error, value ->
+        authHandler.signOut("WRONG_TOKEN") { error ->
             assertNotNull(error)
-            assertNull(value)
             assertEquals("Invalid Access Token", error.message)
         }
     }

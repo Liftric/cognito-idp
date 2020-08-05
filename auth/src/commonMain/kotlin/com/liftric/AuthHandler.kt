@@ -49,7 +49,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         username: String,
         password: String,
         attributes: List<UserAttribute>?,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: SignUpResponse?) -> Unit
     ) = dispatch {
         signUpRequest(username, password, attributes, response)
     }
@@ -57,28 +57,28 @@ open class AuthHandler(private val configuration: Configuration): Auth {
     override fun signIn(
         username: String,
         password: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: SignInResponse?) -> Unit
     ) = dispatch {
         signInRequest(username, password, response)
     }
 
     override fun deleteUser(
         accessToken: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?) -> Unit
     ) = dispatch {
         deleteUserRequest(accessToken, response)
     }
 
     override fun getUser(
         accessToken: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: GetUserResponse?) -> Unit
     ) = dispatch {
         getUserRequest(accessToken, response)
     }
 
     override fun signOut(
         accessToken: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?) -> Unit
     ) = dispatch {
         signOutRequest(accessToken, response)
     }
@@ -86,7 +86,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
     override fun updateUserAttributes(
         accessToken: String,
         attributes: List<UserAttribute>,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
     ) = dispatch {
         updateUserAttributesRequest(accessToken, attributes, response)
     }
@@ -95,7 +95,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         accessToken: String,
         currentPassword: String,
         newPassword: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?) -> Unit
     ) = dispatch {
         changePasswordRequest(accessToken, currentPassword, newPassword, response)
     }
@@ -108,7 +108,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         username: String,
         password: String,
         attributes: List<UserAttribute>?,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: SignUpResponse?) -> Unit
     ) {
         request(
             RequestType.signUp,
@@ -120,15 +120,16 @@ open class AuthHandler(private val configuration: Configuration): Auth {
                     Password = password,
                     UserAttributes = attributes?: listOf()
                 )
-            ),
-            response
-        )
+            )
+        ) { error, value ->
+            response(error, value?.let { parse(SignUpResponse.serializer(), it) })
+        }
     }
 
     private suspend fun signInRequest(
         username: String,
         password: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: SignInResponse?) -> Unit
     ) {
         request(
             RequestType.signIn,
@@ -139,59 +140,63 @@ open class AuthHandler(private val configuration: Configuration): Auth {
                     configuration.clientId,
                     AuthParameters(username, password)
                 )
-            ),
-            response
-        )
+            )
+        ) { error, value ->
+            response(error, value?.let { parse(SignInResponse.serializer(), it) })
+        }
     }
 
     private suspend fun deleteUserRequest(
         accessToken: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?) -> Unit
     ) {
         request(
             RequestType.deleteUser,
             serialize(
                 AccessToken.serializer(),
                 AccessToken(accessToken)
-            ),
-            response
-        )
+            )
+        ) { error, _ ->
+            response(error)
+        }
     }
 
     private suspend fun signOutRequest(
         accessToken: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?) -> Unit
     ) {
         request(
             RequestType.signOut,
             serialize(
                 AccessToken.serializer(),
                 AccessToken(accessToken)
-            ),
-            response
-        )
+            )
+        ) { error, _ ->
+            response(error)
+        }
     }
 
     private suspend fun updateUserAttributesRequest(
         accessToken: String,
         attributes: List<UserAttribute>,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
     ) {
         request(
             RequestType.updateUserAttributes,
             serialize(
                 UpdateUserAttributes.serializer(),
                 UpdateUserAttributes(accessToken, attributes)
-            ),
-            response
-        )
+            )
+        ) { error, value ->
+            response(error, value?.let { parse(UpdateUserAttributesResponse.serializer(), it) })
+        }
     }
 
     private suspend fun changePasswordRequest(
         accessToken: String,
         currentPassword: String,
         newPassword: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?) -> Unit
     ) {
         request(
             RequestType.changePassword,
@@ -201,23 +206,25 @@ open class AuthHandler(private val configuration: Configuration): Auth {
                     (accessToken,
                     currentPassword,
                     newPassword)
-            ),
-            response
-        )
+            )
+        ) { error, _ ->
+            response(error)
+        }
     }
 
     private suspend fun getUserRequest(
         accessToken: String,
-        response: (error: Error?, value: String?) -> Unit
+        response: (error: Error?, value: GetUserResponse?) -> Unit
     ) {
         request(
             RequestType.getUser,
             serialize(
                 AccessToken.serializer(),
                 AccessToken(accessToken)
-            ),
-            response
-        )
+            )
+        ) { error, value ->
+            response(error, value?.let { parse(GetUserResponse.serializer(), it) })
+        }
     }
 
     private suspend fun request(
