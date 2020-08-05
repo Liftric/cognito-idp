@@ -28,7 +28,7 @@ data class AuthenticationResult(
 @Serializable
 data class SignUpResponse(
         val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails(),
-        val UserConfirmed: String = "",
+        val UserConfirmed: Boolean = false,
         val UserSub: String = ""
 )
 
