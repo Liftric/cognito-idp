@@ -77,7 +77,9 @@ signUp(username = "user", password = "password") { error, value ->
 
 #### Sign Up
 
-You can  sign up users by providing a username, password, and optional attributes. 
+You can  sign up users by providing a username, password, and optional attributes.
+
+Returns a parsed object on success. 
 
 ```kotlin
 val attribute = UserAttribute(Name = "email", Value = "email@my.tld")
@@ -91,6 +93,8 @@ signUp(username = "user", password = "password", attributes = listOf(attribute))
 
 At the moment you can only sign in with username and password.
 
+Returns a parsed object on success.
+
 ```kotlin
 signIn(username = "user", password = "password") { error, value ->
     ...
@@ -99,17 +103,17 @@ signIn(username = "user", password = "password") { error, value ->
 
 #### Sign Out
 
-Signs out the user.
+Signs out the user and returns an error if something went wrong.
 
 ```kotlin
-signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
+signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error ->
     ...
 }
 ```
 
 #### Get User
 
-Returns the users attributes and metadata.
+Returns the users attributes and metadata on success.
 
 More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
@@ -123,6 +127,8 @@ getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
 
 Updates the users attributes (e.g. email change).
 
+Returns a parsed object on success.
+
 ```kotlin
 updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)) { error, value ->
     ...
@@ -131,20 +137,20 @@ updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = li
 
 #### Change Password
 
-Updates the users password. 
+Updates the users password and returns an error if something went wrong.
 
 ```kotlin
-changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW") { error, value ->
+changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW") { error ->
     ...
 }
 ```
 
 #### Delete User
 
-Deletes the user from the user pool. 
+Deletes the user from the user pool and returns an error if something went wrong.
 
 ```kotlin
-deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
+deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error ->
     ...
 }
 ```
