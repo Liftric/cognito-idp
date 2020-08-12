@@ -15,7 +15,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build and test (Android)
-        run: export origin=${{ secrets.origin }}; export clientid=${{ secrets.clientid }}; ./gradlew build test -x iosTest
+        run: export origin=${{ secrets.origin }}; export clientid=${{ secrets.clientid }}; ./gradlew build test -x iosX64Test
       - name: Upload test result
         uses: actions/upload-artifact@v2
         with:
