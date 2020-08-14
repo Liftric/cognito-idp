@@ -22,17 +22,22 @@ Then, simply add the dependencies to your sourceSets:
 sourceSets {
     val commonMain by getting {
         dependencies {
-            implementation("com.liftric:auth-common:<version>")   
+            implementation("com.liftric:auth-common:<version>")
         }
     }
     val androidMain by getting {
         dependencies {
-             implementation("com.liftric:auth-android:<version>")   
+             implementation("com.liftric:auth-android:<version>")
         }
     }
-    val iosMain by getting {
+    val iosX64Main by getting {
         dependencies {
-            implementation("com.liftric:auth-ios:<version>")   
+            implementation("com.liftric:auth-iosX64:<version>")
+        }
+    }
+    val iosArm64Main by getting {
+        dependencies {
+            implementation("com.liftric:auth-iosArm64:<version>")
         }
     }
 }
