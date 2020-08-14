@@ -21,10 +21,10 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                api(Libs.ktorCore)
-                api(Libs.coroutinesCore)
-                api(Libs.serializationCore)
-                api(Libs.ktorSerializationCore)
+                implementation(Libs.ktorCore)
+                implementation(Libs.coroutinesCore)
+                implementation(Libs.serializationCore)
+                implementation(Libs.ktorSerializationCore)
             }
         }
         val commonTest by getting {
@@ -36,10 +36,10 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api(Libs.ktorAndroid)
-                api(Libs.coroutinesAndroid)
-                api(Libs.serializationAndroid)
-                api(Libs.ktorSerializationAndroid)
+                implementation(Libs.ktorAndroid)
+                implementation(Libs.coroutinesAndroid)
+                implementation(Libs.serializationAndroid)
+                implementation(Libs.ktorSerializationAndroid)
             }
         }
         val androidTest by getting {
@@ -52,10 +52,10 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                api(Libs.ktorNative)
-                api(Libs.coroutinesNative)
-                api(Libs.serializationNative)
-                api(Libs.ktorSerializationNative)
+                implementation(Libs.ktorNative)
+                implementation(Libs.coroutinesNative)
+                implementation(Libs.serializationNative)
+                implementation(Libs.ktorSerializationNative)
             }
         }
     }
