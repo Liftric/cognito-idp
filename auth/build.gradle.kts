@@ -116,7 +116,7 @@ afterEvaluate {
 
 tasks.withType<BintrayUploadTask> {
     doFirst {
-        val pubs = project.publishing.publications.map { it.name }.filter { it != "kotlinMultiplatform" }
+        val pubs = project.publishing.publications.map { it.name }
         setPublications(*pubs.toTypedArray())
     }
 }
