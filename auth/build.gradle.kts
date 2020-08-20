@@ -14,7 +14,7 @@ kotlin {
     ios()
 
     android {
-        publishLibraryVariants("release")
+        publishLibraryVariants("debug", "release")
     }
 
     sourceSets {
