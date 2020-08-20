@@ -125,6 +125,8 @@ tasks.withType<BintrayUploadTask> {
                 })
             }
         }
+        val pubs = project.publishing.publications.map { it.name }
+        setPublications(*pubs.toTypedArray())
     }
 }
 
