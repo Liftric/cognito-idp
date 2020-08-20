@@ -37,25 +37,18 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(Libs.ktorAndroid)
-                implementation(Libs.coroutinesAndroid)
-                implementation(Libs.serializationAndroid)
-                implementation(Libs.ktorSerializationAndroid)
             }
         }
         val androidTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation(Libs.coroutinesAndroid)
                 implementation(TestLibs.TestCore)
             }
         }
         val iosMain by getting {
             dependencies {
-                implementation(Libs.ktorNative)
-                implementation(Libs.coroutinesNative)
-                implementation(Libs.serializationNative)
-                implementation(Libs.ktorSerializationNative)
+                implementation(Libs.ktorIOS)
             }
         }
     }

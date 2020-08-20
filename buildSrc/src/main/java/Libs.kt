@@ -7,16 +7,16 @@ object Apps {
 }
 
 object Versions {
-    const val gradle = "3.6.4"
-    const val kotlin = "1.3.72"
-    const val coroutines = "1.3.8"
-    const val serialization = "0.20.0"
-    const val ktor = "1.3.2"
+    const val gradle = "4.0.1"
+    const val kotlin = "1.4.0"
+    const val coroutines = "1.3.9"
+    const val serialization = "1.0.0-RC"
+    const val ktor = "1.4.0"
     const val TestCore = "1.2.0"
 }
 
 object Libs {
-    const val kotlnGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val serialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
     const val gradleAndroid = "com.android.tools.build:gradle:${Versions.gradle}"
     const val kotlinAndroid = "org.jetbrains.kotlin:kotlin-android-extensions:${Versions.kotlin}"
@@ -24,20 +24,14 @@ object Libs {
     /* Common */
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
-    const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Versions.serialization}"
+    const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.serialization}"
     const val ktorSerializationCore = "io.ktor:ktor-client-serialization:${Versions.ktor}"
 
     /* Android */
     const val ktorAndroid = "io.ktor:ktor-client-android:${Versions.ktor}"
-    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
-    const val serializationAndroid = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.serialization}"
-    const val ktorSerializationAndroid = "io.ktor:ktor-client-serialization-jvm:${Versions.ktor}"
 
     /* iOS */
-    const val ktorNative = "io.ktor:ktor-client-ios:${Versions.ktor}"
-    const val coroutinesNative = "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${Versions.coroutines}"
-    const val serializationNative = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:${Versions.serialization}"
-    const val ktorSerializationNative = "io.ktor:ktor-client-serialization-native:${Versions.ktor}"
+    const val ktorIOS = "io.ktor:ktor-client-ios:${Versions.ktor}"
 }
 
 object TestLibs {
