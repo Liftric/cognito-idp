@@ -21,7 +21,7 @@ class AuthHandlerIntegrationTests() {
     // Randomize temp user account name to not exceed aws try threshold
     private val random = (0..999).random()
     private val username = "auth-lib-test-user-$random"
-    private val password = "auth-lib-test-user-$random"
+    private val password = "auth-lib-test-user-${random}A1@"
 
     private var authHandler = TestAuthHandler(configuration)
 
