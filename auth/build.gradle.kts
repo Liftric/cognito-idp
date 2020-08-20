@@ -20,7 +20,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
                 implementation(Libs.ktorCore)
                 implementation(Libs.coroutinesCore)
                 implementation(Libs.serializationCore)
@@ -112,13 +111,6 @@ bintray {
 afterEvaluate {
     project.publishing.publications.withType(MavenPublication::class.java).forEach {
         it.groupId = artifactGroup
-        if (it.name.contains("metadata")) {
-            it.artifactId = "${artifactName.toLowerCase()}-common"
-        } else if (it.name.contains("android")) {
-            it.artifactId = "${artifactName.toLowerCase()}-android"
-        } else {
-            it.artifactId = "${artifactName.toLowerCase()}-${it.name}"
-        }
     }
 }
 
