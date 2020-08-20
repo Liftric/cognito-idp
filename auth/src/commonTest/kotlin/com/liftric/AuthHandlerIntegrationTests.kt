@@ -20,7 +20,7 @@ class AuthHandlerIntegrationTests() {
 
     // Randomize temp user account name to not exceed aws try threshold
     private val random = (0..999).random()
-    private val username = "auth-lib-test-user-$random"
+    private val username = "auth-lib-test-user-${random}"
     private val password = "auth-lib-test-user-${random}A1@"
 
     private var authHandler = TestAuthHandler(configuration)
@@ -29,15 +29,20 @@ class AuthHandlerIntegrationTests() {
     // INTEGRATION TESTS
     //-------------------
 
-    private fun randomUser(): String {
-        return "auth-lib-test-user-${(0..999).random()}"
+    data class Credential(val username: String, val password: String)
+    private fun randomUser(): Credential {
+        val random = (0..999).random()
+        return Credential(
+            username = "auth-lib-test-user-${random}",
+            password = "auth-lib-test-user-${random}A1@"
+        )
     }
 
-    private fun createUser(block: (accessToken: String, credential: String) -> Unit) {
+    private fun createUser(block: (accessToken: String, credential: Credential) -> Unit) {
         val credential = randomUser()
 
-        authHandler.signUp(credential, credential, null) { _,_ ->
-            authHandler.signIn(credential, credential) { _, value ->
+        authHandler.signUp(credential.username, credential.password, null) { _,_ ->
+            authHandler.signIn(credential.username, credential.password) { _, value ->
                 assertNotNull(value)
                 block(value.AuthenticationResult.AccessToken, credential)
             }
@@ -116,7 +121,7 @@ class AuthHandlerIntegrationTests() {
     @Test
     fun `Should change password`() {
         createUser { token, credential ->
-            authHandler.changePassword(token, credential, credential + "A") { error ->
+            authHandler.changePassword(token, credential.password, credential.password  + "B") { error ->
                 assertNull(error)
 
                 authHandler.signOut(token) { signOutError ->
@@ -126,7 +131,7 @@ class AuthHandlerIntegrationTests() {
                         // AWS is not revoking Tokens automatically so give it some time
                         delay(1000)
                     }
-                    authHandler.signIn(credential, credential + "A") { signInError, signInValue ->
+                    authHandler.signIn(credential.username, credential.password + "B") { signInError, signInValue ->
                         assertNull(signInError)
                         assertNotNull(signInValue)
 
@@ -152,7 +157,7 @@ class AuthHandlerIntegrationTests() {
                     // AWS is not revoking Tokens automatically so give it some time
                     delay(1000)
                 }
-                authHandler.signIn(credential, credential) { signInError, signInValue ->
+                authHandler.signIn(credential.username, credential.password) { signInError, signInValue ->
                     assertNull(signInError)
                     assertNotNull(signInValue)
 
@@ -212,7 +217,7 @@ class AuthHandlerIntegrationTests() {
     @Test
     fun `Sign in should fail because wrong credentials`() {
         authHandler.signIn(
-            randomUser(), "WRONG_PASSWORD") { error, value ->
+            randomUser().username, "WRONG_PASSWORD") { error, value ->
             assertNotNull(error)
             assertNull(value)
             assertEquals("Incorrect username or password.", error.message)
