@@ -7,7 +7,7 @@ buildscript {
         maven { url = uri("https://dl.bintray.com/jetbrains/kotlin-native-dependencies") }
     }
     dependencies {
-        classpath(Libs.kotlnGradle)
+        classpath(Libs.kotlinGradle)
         classpath(Libs.serialization)
         classpath(Libs.gradleAndroid)
         classpath(Libs.kotlinAndroid)

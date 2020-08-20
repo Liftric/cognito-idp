@@ -12,32 +12,20 @@ import io.ktor.http.contentType
 import io.ktor.utils.io.core.String
 import kotlinx.coroutines.*
 
-internal expect val ApplicationDispatcher: CoroutineDispatcher
-expect fun runBlocking(block: suspend () -> Unit)
-
 /**
  * Authentifaction handler for AWS Cognito
  * Provides common request methods
  */
-open class AuthHandler(private val configuration: Configuration): Auth {
+open class AuthHandler(private val configuration: Configuration) : Auth {
     enum class RequestType {
         signIn, signUp, confirmSignUp, signOut, getUser, changePassword,
         deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword
     }
 
-    private var client = HttpClient() {
+    private val client = HttpClient() {
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))
-        }
-    }
-
-    /**
-     * Runs suspended function in coroutine scope
-     */
-    open fun dispatch(block: suspend () -> Unit) {
-        MainScope().launch(ApplicationDispatcher) {
-            block()
         }
     }
 
@@ -45,66 +33,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
     // INTERFACE
     //----------
 
-    override fun signUp(
-        username: String,
-        password: String,
-        attributes: List<UserAttribute>?,
-        response: (error: Error?, value: SignUpResponse?) -> Unit
-    ) = dispatch {
-        signUpRequest(username, password, attributes, response)
-    }
-
-    override fun signIn(
-        username: String,
-        password: String,
-        response: (error: Error?, value: SignInResponse?) -> Unit
-    ) = dispatch {
-        signInRequest(username, password, response)
-    }
-
-    override fun deleteUser(
-        accessToken: String,
-        response: (error: Error?) -> Unit
-    ) = dispatch {
-        deleteUserRequest(accessToken, response)
-    }
-
-    override fun getUser(
-        accessToken: String,
-        response: (error: Error?, value: GetUserResponse?) -> Unit
-    ) = dispatch {
-        getUserRequest(accessToken, response)
-    }
-
-    override fun signOut(
-        accessToken: String,
-        response: (error: Error?) -> Unit
-    ) = dispatch {
-        signOutRequest(accessToken, response)
-    }
-
-    override fun updateUserAttributes(
-        accessToken: String,
-        attributes: List<UserAttribute>,
-        response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
-    ) = dispatch {
-        updateUserAttributesRequest(accessToken, attributes, response)
-    }
-
-    override fun changePassword(
-        accessToken: String,
-        currentPassword: String,
-        newPassword: String,
-        response: (error: Error?) -> Unit
-    ) = dispatch {
-        changePasswordRequest(accessToken, currentPassword, newPassword, response)
-    }
-
-    //----------
-    // REQUESTS
-    //----------
-
-    private suspend fun signUpRequest(
+    override suspend fun signUp(
         username: String,
         password: String,
         attributes: List<UserAttribute>?,
@@ -118,7 +47,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
                     ClientId = configuration.clientId,
                     Username = username,
                     Password = password,
-                    UserAttributes = attributes?: listOf()
+                    UserAttributes = attributes ?: listOf()
                 )
             )
         ) { error, value ->
@@ -126,7 +55,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
-    private suspend fun signInRequest(
+    override suspend fun signIn(
         username: String,
         password: String,
         response: (error: Error?, value: SignInResponse?) -> Unit
@@ -146,7 +75,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
-    private suspend fun deleteUserRequest(
+    override suspend fun deleteUser(
         accessToken: String,
         response: (error: Error?) -> Unit
     ) {
@@ -161,7 +90,22 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
-    private suspend fun signOutRequest(
+    override suspend fun getUser(
+        accessToken: String,
+        response: (error: Error?, value: GetUserResponse?) -> Unit
+    ) {
+        request(
+            RequestType.getUser,
+            serialize(
+                AccessToken.serializer(),
+                AccessToken(accessToken)
+            )
+        ) { error, value ->
+            response(error, value?.let { parse(GetUserResponse.serializer(), it) })
+        }
+    }
+
+    override suspend fun signOut(
         accessToken: String,
         response: (error: Error?) -> Unit
     ) {
@@ -176,7 +120,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
-    private suspend fun updateUserAttributesRequest(
+    override suspend fun updateUserAttributes(
         accessToken: String,
         attributes: List<UserAttribute>,
         response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
@@ -192,7 +136,7 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
-    private suspend fun changePasswordRequest(
+    override suspend fun changePassword(
         accessToken: String,
         currentPassword: String,
         newPassword: String,
@@ -203,29 +147,20 @@ open class AuthHandler(private val configuration: Configuration): Auth {
             serialize(
                 ChangePassword.serializer(),
                 ChangePassword
-                    (accessToken,
+                    (
+                    accessToken,
                     currentPassword,
-                    newPassword)
+                    newPassword
+                )
             )
         ) { error, _ ->
             response(error)
         }
     }
 
-    private suspend fun getUserRequest(
-        accessToken: String,
-        response: (error: Error?, value: GetUserResponse?) -> Unit
-    ) {
-        request(
-            RequestType.getUser,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
-        ) { error, value ->
-            response(error, value?.let { parse(GetUserResponse.serializer(), it) })
-        }
-    }
+    //----------
+    // REQUEST
+    //----------
 
     private suspend fun request(
         type: RequestType,
@@ -234,19 +169,19 @@ open class AuthHandler(private val configuration: Configuration): Auth {
     ) {
         val response = client.post<HttpResponse>(configuration.requestUrl) {
             header(
-                    Header.AmzTarget,
-                    when(type) {
-                        RequestType.signUp -> IdentityProviderService.SignUp
-                        RequestType.confirmSignUp -> IdentityProviderService.ConfirmSignUp
-                        RequestType.signIn -> IdentityProviderService.InitiateAuth
-                        RequestType.signOut -> IdentityProviderService.GlobalSignOut
-                        RequestType.getUser -> IdentityProviderService.GetUser
-                        RequestType.changePassword -> IdentityProviderService.ChangePassword
-                        RequestType.forgotPassword -> IdentityProviderService.ForgotPassword
-                        RequestType.confirmForgotPassword -> IdentityProviderService.ConfirmForgotPassword
-                        RequestType.deleteUser -> IdentityProviderService.DeleteUser
-                        RequestType.updateUserAttributes -> IdentityProviderService.UpdateUserAttributes
-                    }
+                Header.AmzTarget,
+                when (type) {
+                    RequestType.signUp -> IdentityProviderService.SignUp
+                    RequestType.confirmSignUp -> IdentityProviderService.ConfirmSignUp
+                    RequestType.signIn -> IdentityProviderService.InitiateAuth
+                    RequestType.signOut -> IdentityProviderService.GlobalSignOut
+                    RequestType.getUser -> IdentityProviderService.GetUser
+                    RequestType.changePassword -> IdentityProviderService.ChangePassword
+                    RequestType.forgotPassword -> IdentityProviderService.ForgotPassword
+                    RequestType.confirmForgotPassword -> IdentityProviderService.ConfirmForgotPassword
+                    RequestType.deleteUser -> IdentityProviderService.DeleteUser
+                    RequestType.updateUserAttributes -> IdentityProviderService.UpdateUserAttributes
+                }
             )
             body = payload
         }
