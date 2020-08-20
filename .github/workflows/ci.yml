@@ -17,6 +17,7 @@ jobs:
       - name: Build and test (Android)
         run: export origin=${{ secrets.origin }}; export clientid=${{ secrets.clientid }}; ./gradlew build test -x iosX64Test
       - name: Upload test result
+        if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: reports
