@@ -38,51 +38,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         password: String,
         attributes: List<UserAttribute>?,
         response: (error: Error?, value: SignUpResponse?) -> Unit
-    ) = signUpRequest(username, password, attributes, response)
-
-    override suspend fun signIn(
-        username: String,
-        password: String,
-        response: (error: Error?, value: SignInResponse?) -> Unit
-    ) = signInRequest(username, password, response)
-
-    override suspend fun deleteUser(
-        accessToken: String,
-        response: (error: Error?) -> Unit
-    ) = deleteUserRequest(accessToken, response)
-
-    override suspend fun getUser(
-        accessToken: String,
-        response: (error: Error?, value: GetUserResponse?) -> Unit
-    ) = getUserRequest(accessToken, response)
-
-    override suspend fun signOut(
-        accessToken: String,
-        response: (error: Error?) -> Unit
-    ) = signOutRequest(accessToken, response)
-
-    override suspend fun updateUserAttributes(
-        accessToken: String,
-        attributes: List<UserAttribute>,
-        response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
-    ) = updateUserAttributesRequest(accessToken, attributes, response)
-
-    override suspend fun changePassword(
-        accessToken: String,
-        currentPassword: String,
-        newPassword: String,
-        response: (error: Error?) -> Unit
-    ) = changePasswordRequest(accessToken, currentPassword, newPassword, response)
-
-    //----------
-    // REQUESTS
-    //----------
-
-    private suspend fun signUpRequest(
-        username: String,
-        password: String,
-        attributes: List<UserAttribute>?,
-        response: (error: Error?, value: SignUpResponse?) -> Unit
     ) {
         request(
             RequestType.signUp,
@@ -100,7 +55,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    private suspend fun signInRequest(
+    override suspend fun signIn(
         username: String,
         password: String,
         response: (error: Error?, value: SignInResponse?) -> Unit
@@ -120,7 +75,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    private suspend fun deleteUserRequest(
+    override suspend fun deleteUser(
         accessToken: String,
         response: (error: Error?) -> Unit
     ) {
@@ -135,7 +90,22 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    private suspend fun signOutRequest(
+    override suspend fun getUser(
+        accessToken: String,
+        response: (error: Error?, value: GetUserResponse?) -> Unit
+    ) {
+        request(
+            RequestType.getUser,
+            serialize(
+                AccessToken.serializer(),
+                AccessToken(accessToken)
+            )
+        ) { error, value ->
+            response(error, value?.let { parse(GetUserResponse.serializer(), it) })
+        }
+    }
+
+    override suspend fun signOut(
         accessToken: String,
         response: (error: Error?) -> Unit
     ) {
@@ -150,7 +120,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    private suspend fun updateUserAttributesRequest(
+    override suspend fun updateUserAttributes(
         accessToken: String,
         attributes: List<UserAttribute>,
         response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
@@ -166,7 +136,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    private suspend fun changePasswordRequest(
+    override suspend fun changePassword(
         accessToken: String,
         currentPassword: String,
         newPassword: String,
@@ -188,20 +158,9 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    private suspend fun getUserRequest(
-        accessToken: String,
-        response: (error: Error?, value: GetUserResponse?) -> Unit
-    ) {
-        request(
-            RequestType.getUser,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
-        ) { error, value ->
-            response(error, value?.let { parse(GetUserResponse.serializer(), it) })
-        }
-    }
+    //----------
+    // REQUEST
+    //----------
 
     private suspend fun request(
         type: RequestType,
