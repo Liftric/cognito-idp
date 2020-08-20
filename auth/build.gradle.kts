@@ -116,8 +116,15 @@ afterEvaluate {
 
 tasks.withType<BintrayUploadTask> {
     doFirst {
-        val pubs = project.publishing.publications.map { it.name }
-        setPublications(*pubs.toTypedArray())
+        // https://github.com/bintray/gradle-bintray-plugin/issues/229
+        project.publishing.publications.withType(MavenPublication::class.java).forEach {
+            val moduleFile = buildDir.resolve("publications/${it.name}/module.json")
+            if (moduleFile.exists()) {
+                it.artifact(object : org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
+                    override fun getDefaultExtension() = "module"
+                })
+            }
+        }
     }
 }
 
