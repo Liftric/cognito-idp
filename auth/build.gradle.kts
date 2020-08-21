@@ -2,8 +2,8 @@ import java.util.Date
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 
 plugins {
-    kotlin("multiplatform")
     id("com.android.library")
+    kotlin("multiplatform")
     id("maven-publish")
     id("kotlinx-serialization")
     id("com.jfrog.bintray") version "1.8.5"
