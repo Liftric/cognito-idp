@@ -5,6 +5,7 @@ import com.liftric.base.Environment
 import kotlinx.coroutines.delay
 import kotlin.test.*
 import kotlinx.coroutines.*
+import kotlin.js.JsName
 
 class AuthHandlerIntegrationTests() {
     private val configuration = Configuration(
@@ -58,6 +59,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("SignUpSignInDeleteUserTest")
     @Test
     fun `Sign up, sign in, delete user should succeed`() = runBlocking {
         authHandler.signUp(
@@ -85,6 +87,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("GetUserTest")
     @Test
     fun `Should get user`() = runBlocking {
         var token: String = ""
@@ -98,6 +101,7 @@ class AuthHandlerIntegrationTests() {
         deleteUser(token)
     }
 
+    @JsName("ChangeEmailTest")
     @Test
     fun `Should change email`() = runBlocking {
         var token: String = ""
@@ -124,6 +128,7 @@ class AuthHandlerIntegrationTests() {
         deleteUser(token)
     }
 
+    @JsName("ChangePasswordTest")
     @Test
     fun `Should change password`() = runBlocking {
         var token: String = ""
@@ -149,6 +154,7 @@ class AuthHandlerIntegrationTests() {
         deleteUser(accessToken)
     }
 
+    @JsName("SignOutSignInTest")
     @Test
     fun `Sign out and sign in should succeed`() = runBlocking {
         var token: String = ""
@@ -171,6 +177,7 @@ class AuthHandlerIntegrationTests() {
         deleteUser(accessToken)
     }
 
+    @JsName("SignUpFailPasswordTooShortTest")
     @Test
     fun `Sign up should fail because password too short`() = runBlocking {
         authHandler.signUp(
@@ -189,6 +196,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("SignUpFailPasswordTooLongTest")
     @Test
     fun `Sign up should fail because password too long`() = runBlocking {
         authHandler.signUp(
@@ -207,6 +215,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("SignUpFailUsernameTooLongTest")
     @Test
     fun `Sign up should fail because username too long`() = runBlocking {
         authHandler.signUp(
@@ -225,6 +234,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("SignInTest")
     @Test
     fun `Sign in should fail because wrong credentials`() = runBlocking {
         authHandler.signIn(
@@ -236,6 +246,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("DeleteUserFailTest")
     @Test
     fun `Get user should fail since access token wrong`() = runBlocking {
         authHandler.deleteUser("WRONG_TOKEN") { error ->
@@ -244,6 +255,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("DeleteUserTest")
     @Test
     fun `Delete user should fail since access token wrong`() = runBlocking {
         authHandler.deleteUser("WRONG_TOKEN") { error ->
@@ -252,6 +264,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("SignOutTest")
     @Test
     fun `Sign out should fail since access token wrong`() = runBlocking {
         authHandler.signOut("WRONG_TOKEN") { error ->
@@ -260,6 +273,7 @@ class AuthHandlerIntegrationTests() {
         }
     }
 
+    @JsName("UpdateUserAttributesTest")
     @Test
     fun `Update attributes should fail since access token wrong`() = runBlocking {
         authHandler.updateUserAttributes(
