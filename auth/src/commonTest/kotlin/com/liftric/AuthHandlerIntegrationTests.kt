@@ -25,17 +25,17 @@ class AuthHandlerIntegrationTests() {
     // INTEGRATION TESTS
     //-------------------
 
-    data class Credential(val username: String, val password: String)
+    data class Credentials(val username: String, val password: String)
 
-    private fun randomUser(): Credential {
+    private fun randomUser(): Credentials {
         val random = (0..999).random()
-        return Credential(
+        return Credentials(
             username = "auth-lib-test-user-${random}",
             password = "auth-lib-test-user-${random}A1@"
         )
     }
 
-    private suspend fun createUser(block: (accessToken: String, credential: Credential) -> Unit) {
+    private suspend fun createUser(): Pair<String, Credentials> {
         val credential = randomUser()
         val userAttributes: List<UserAttribute> = listOf(
             UserAttribute(
@@ -43,86 +43,75 @@ class AuthHandlerIntegrationTests() {
                 Value = "ROLE_PATIENT"
             )
         )
-        authHandler.signUp(credential.username, credential.password, userAttributes) { error, value ->
-            assertNull(error)
-            assertNotNull(value)
-        }
-        authHandler.signIn(credential.username, credential.password) { _, value ->
-            assertNotNull(value)
-            block(value.AuthenticationResult.AccessToken, credential)
-        }
+        val signUpResponse = authHandler.signUp(credential.username, credential.password, userAttributes)
+
+        assertNull(signUpResponse.exceptionOrNull())
+        assertNotNull(signUpResponse.getOrNull())
+
+        val signInResponse = authHandler.signIn(credential.username, credential.password)
+        assertNotNull(signInResponse.getOrNull())
+
+        return Pair(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken, credential)
     }
 
     private suspend fun deleteUser(token: String) {
-        authHandler.deleteUser(token) { error ->
-            assertNull(error)
-        }
+        val deleteUserResponse = authHandler.deleteUser(token)
+        assertNull(deleteUserResponse.exceptionOrNull())
     }
 
     @JsName("SignUpSignInDeleteUserTest")
     @Test
     fun `Sign up, sign in, delete user should succeed`() = runBlocking {
-        authHandler.signUp(
+        val signUpResponse = authHandler.signUp(
             username, password,
             attributes = listOf(
                 UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
-        ) { error, value ->
-            assertNull(error)
-            assertNotNull(value)
-        }
-        var accessToken: String = ""
-        authHandler.signIn(username, password) { signInError, signInValue ->
-            assertNull(signInError)
-            assertNotNull(signInValue)
-            accessToken = signInValue.AuthenticationResult.AccessToken
-        }
-        try {
-            authHandler.deleteUser(accessToken) { deleteError ->
-                assertNull(deleteError)
-            }
-        } catch (error: Error) {
-            fail(error.message)
-        }
+        )
+
+        assertNull(signUpResponse.exceptionOrNull())
+        assertNotNull(signUpResponse.getOrNull())
+
+        val signInResponse = authHandler.signIn(username, password)
+        assertNull(signInResponse.exceptionOrNull())
+        assertNotNull(signInResponse.getOrNull())
+
+        val deleteUserResponse = authHandler.deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+        assertNull(deleteUserResponse.exceptionOrNull())
     }
 
     @JsName("GetUserTest")
     @Test
     fun `Should get user`() = runBlocking {
-        var token: String = ""
-        createUser { t, _ ->
-            token = t
-        }
-        authHandler.getUser(token) { error, value ->
-            assertNull(error)
-            assertNotNull(value)
-        }
+        val (token, _) = createUser()
+
+        val getUserAttribute = authHandler.getUser(token)
+        assertNull(getUserAttribute.exceptionOrNull())
+        assertNotNull(getUserAttribute.getOrNull())
+
         deleteUser(token)
     }
 
     @JsName("ChangeEmailTest")
     @Test
     fun `Should change email`() = runBlocking {
-        var token: String = ""
-        createUser { t, _ ->
-            token = t
-        }
-        authHandler.updateUserAttributes(
+        val (token, _) = createUser()
+
+        val updateUserAttributesResponse = authHandler.updateUserAttributes(
             token,
             listOf(UserAttribute(Name = "email", Value = "test2@test.test"))
-        ) { error, value ->
-            assertNull(error)
-            assertNotNull(value)
-        }
-        authHandler.getUser(token) { getUserError, getUserValue ->
-            assertNull(getUserError)
-            assertNotNull(getUserValue)
+        )
+        assertNull(updateUserAttributesResponse.exceptionOrNull())
+        assertNotNull(updateUserAttributesResponse.getOrNull())
 
-            getUserValue.UserAttributes.map { attribute ->
-                if (attribute.Name == "email") {
-                    assertEquals("test2@test.test", attribute.Value)
-                }
+        val getUserResponse = authHandler.getUser(token)
+        assertNull(getUserResponse.exceptionOrNull())
+        assertNotNull(getUserResponse.getOrNull())
+
+        getUserResponse.getOrNull()!!.UserAttributes.map { attribute ->
+            if (attribute.Name == "email") {
+                assertEquals("test2@test.test", attribute.Value)
             }
         }
         deleteUser(token)
@@ -131,160 +120,142 @@ class AuthHandlerIntegrationTests() {
     @JsName("ChangePasswordTest")
     @Test
     fun `Should change password`() = runBlocking {
-        var token: String = ""
-        var credential: Credential = Credential("", "")
-        createUser { t, c ->
-            token = t
-            credential = c
-        }
-        authHandler.changePassword(token, credential.password, credential.password + "B") { error ->
-            assertNull(error)
-        }
-        authHandler.signOut(token) { signOutError ->
-            assertNull(signOutError)
-        }
+        val (token, credentials) = createUser()
+
+        val changePasswordResponse = authHandler.changePassword(token, credentials.password, credentials.password + "B")
+        assertNull(changePasswordResponse.exceptionOrNull())
+
+        val signOutResponse = authHandler.signOut(token)
+        assertNull(signOutResponse.exceptionOrNull())
+
         // AWS is not revoking Tokens automatically so give it some time
         delay(1000)
-        var accessToken: String = ""
-        authHandler.signIn(credential.username, credential.password + "B") { signInError, signInValue ->
-            assertNull(signInError)
-            assertNotNull(signInValue)
-            accessToken = signInValue.AuthenticationResult.AccessToken
-        }
-        deleteUser(accessToken)
+
+        val signInResponse = authHandler.signIn(credentials.username, credentials.password + "B")
+        assertNull(signInResponse.exceptionOrNull())
+        assertNotNull(signInResponse.getOrNull())
+
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
     }
 
     @JsName("SignOutSignInTest")
     @Test
     fun `Sign out and sign in should succeed`() = runBlocking {
-        var token: String = ""
-        var credential: Credential = Credential("", "")
-        createUser { t, c ->
-            token = t
-            credential = c
-        }
-        authHandler.signOut(token) { error ->
-            assertNull(error)
-        }
+        val (token, credentials) = createUser()
+
+        val signOutResponse = authHandler.signOut(token)
+        assertNull(signOutResponse.exceptionOrNull())
+
         // AWS is not revoking Tokens automatically so give it some time
         delay(1000)
-        var accessToken: String = ""
-        authHandler.signIn(credential.username, credential.password) { signInError, signInValue ->
-            assertNull(signInError)
-            assertNotNull(signInValue)
-            accessToken = signInValue.AuthenticationResult.AccessToken
-        }
-        deleteUser(accessToken)
+
+        val signInResponse = authHandler.signIn(credentials.username, credentials.password)
+        assertNull(signInResponse.exceptionOrNull())
+        assertNotNull(signInResponse.getOrNull())
+
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
     }
 
     @JsName("SignUpFailPasswordTooShortTest")
     @Test
     fun `Sign up should fail because password too short`() = runBlocking {
-        authHandler.signUp(
+        val signUpResponse = authHandler.signUp(
             "Username", "Short",
             attributes = listOf(
                 UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
-        ) { error, value ->
-            assertNotNull(error)
-            assertNull(value)
-            assertEquals(
-                "1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length greater than or equal to 6",
-                error.message
-            )
-        }
+        )
+        assertNotNull(signUpResponse.exceptionOrNull())
+        assertNull(signUpResponse.getOrNull())
+        assertEquals(
+            "1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length greater than or equal to 6",
+            signUpResponse.exceptionOrNull()!!.message
+        )
     }
 
     @JsName("SignUpFailPasswordTooLongTest")
     @Test
     fun `Sign up should fail because password too long`() = runBlocking {
-        authHandler.signUp(
+        val signUpResponse = authHandler.signUp(
             "Username", buildString { (1..260).forEach { _ -> append("A") } },
             attributes = listOf(
                 UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
-        ) { error, value ->
-            assertNotNull(error)
-            assertNull(value)
-            assertEquals(
-                "1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length less than or equal to 256",
-                error.message
-            )
-        }
+        )
+        assertNotNull(signUpResponse.exceptionOrNull())
+        assertNull(signUpResponse.getOrNull())
+        assertEquals(
+            "1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length less than or equal to 256",
+            signUpResponse.exceptionOrNull()!!.message
+        )
     }
 
     @JsName("SignUpFailUsernameTooLongTest")
     @Test
     fun `Sign up should fail because username too long`() = runBlocking {
-        authHandler.signUp(
+        var signUpResponse = authHandler.signUp(
             buildString { (1..130).forEach { _ -> append("A") } }, "Password",
             attributes = listOf(
                 UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
-        ) { error, value ->
-            assertNotNull(error)
-            assertNull(value)
-            assertEquals(
-                "1 validation error detected: Value at 'username' failed to satisfy constraint: Member must have length less than or equal to 128",
-                error.message
-            )
-        }
+        )
+        assertNotNull(signUpResponse.exceptionOrNull())
+        assertNull(signUpResponse.getOrNull())
+        assertEquals(
+            "1 validation error detected: Value at 'username' failed to satisfy constraint: Member must have length less than or equal to 128",
+            signUpResponse.exceptionOrNull()!!.message
+        )
     }
 
     @JsName("SignInTest")
     @Test
     fun `Sign in should fail because wrong credentials`() = runBlocking {
-        authHandler.signIn(
+        val signInResponse = authHandler.signIn(
             randomUser().username, "WRONG_PASSWORD"
-        ) { error, value ->
-            assertNotNull(error)
-            assertNull(value)
-            assertEquals("Incorrect username or password.", error.message)
-        }
+        )
+        assertNotNull(signInResponse.exceptionOrNull())
+        assertNull(signInResponse.getOrNull())
+        assertEquals("Incorrect username or password.", signInResponse.exceptionOrNull()!!.message)
     }
 
     @JsName("DeleteUserFailTest")
     @Test
     fun `Get user should fail since access token wrong`() = runBlocking {
-        authHandler.deleteUser("WRONG_TOKEN") { error ->
-            assertNotNull(error)
-            assertEquals("Invalid Access Token", error.message)
-        }
+        val deleteUserResponse = authHandler.deleteUser("WRONG_TOKEN")
+        assertNotNull(deleteUserResponse.exceptionOrNull())
+        assertEquals("Invalid Access Token", deleteUserResponse.exceptionOrNull()!!.message)
     }
 
     @JsName("DeleteUserTest")
     @Test
     fun `Delete user should fail since access token wrong`() = runBlocking {
-        authHandler.deleteUser("WRONG_TOKEN") { error ->
-            assertNotNull(error)
-            assertEquals("Invalid Access Token", error.message)
-        }
+        val deleteUserResponse = authHandler.deleteUser("WRONG_TOKEN")
+        assertNotNull(deleteUserResponse.exceptionOrNull())
+        assertEquals("Invalid Access Token", deleteUserResponse.exceptionOrNull()!!.message)
     }
 
     @JsName("SignOutTest")
     @Test
     fun `Sign out should fail since access token wrong`() = runBlocking {
-        authHandler.signOut("WRONG_TOKEN") { error ->
-            assertNotNull(error)
-            assertEquals("Invalid Access Token", error.message)
-        }
+        val signOutResponse = authHandler.signOut("WRONG_TOKEN")
+        assertNotNull(signOutResponse.exceptionOrNull())
+        assertEquals("Invalid Access Token", signOutResponse.exceptionOrNull()!!.message)
     }
 
     @JsName("UpdateUserAttributesTest")
     @Test
     fun `Update attributes should fail since access token wrong`() = runBlocking {
-        authHandler.updateUserAttributes(
+        val updateUserAttributesResponse = authHandler.updateUserAttributes(
             "WRONG_TOKEN",
             attributes = listOf(
                 UserAttribute(Name = "email", Value = "test@test.test")
             )
-        ) { error, value ->
-            assertNotNull(error)
-            assertNull(value)
-            assertEquals("Invalid Access Token", error.message)
-        }
+        )
+        assertNotNull(updateUserAttributesResponse.exceptionOrNull())
+        assertNull(updateUserAttributesResponse.getOrNull())
+        assertEquals("Invalid Access Token", updateUserAttributesResponse.exceptionOrNull()!!.message)
     }
 }

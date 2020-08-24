@@ -23,6 +23,7 @@ data class AuthenticationResult(
         val RefreshToken: String = "",
         val TokenType: String = ""
 )
+
 // Sign up
 
 @Serializable

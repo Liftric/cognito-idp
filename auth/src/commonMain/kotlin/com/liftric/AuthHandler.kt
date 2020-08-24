@@ -1,16 +1,16 @@
 package com.liftric
 
 import com.liftric.base.*
-import io.ktor.client.HttpClient
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readBytes
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.utils.io.core.String
-import kotlinx.coroutines.*
+import io.ktor.client.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.utils.io.core.*
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.serializer
 
 /**
  * Authentifaction handler for AWS Cognito
@@ -36,10 +36,9 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     override suspend fun signUp(
         username: String,
         password: String,
-        attributes: List<UserAttribute>?,
-        response: (error: Error?, value: SignUpResponse?) -> Unit
-    ) {
-        request(
+        attributes: List<UserAttribute>?
+    ): Result<SignUpResponse> {
+        val response = request(
             RequestType.signUp,
             serialize(
                 SignUp.serializer(),
@@ -50,17 +49,23 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                     UserAttributes = attributes ?: listOf()
                 )
             )
-        ) { error, value ->
-            response(error, value?.let { parse(SignUpResponse.serializer(), it) })
+        )
+        return if (response.isSuccess) {
+            try {
+                Result.success(parse(SignUpResponse.serializer(), response.getOrNull()!!))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
     override suspend fun signIn(
         username: String,
-        password: String,
-        response: (error: Error?, value: SignInResponse?) -> Unit
-    ) {
-        request(
+        password: String
+    ): Result<SignInResponse> {
+        val response = request(
             RequestType.signIn,
             serialize(
                 Authentication.serializer(),
@@ -70,79 +75,80 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                     AuthParameters(username, password)
                 )
             )
-        ) { error, value ->
-            response(error, value?.let { parse(SignInResponse.serializer(), it) })
+        )
+        return if (response.isSuccess) {
+            try {
+                Result.success(parse(SignInResponse.serializer(), response.getOrNull()!!))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
-    override suspend fun deleteUser(
-        accessToken: String,
-        response: (error: Error?) -> Unit
-    ) {
-        request(
-            RequestType.deleteUser,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
-        ) { error, _ ->
-            response(error)
-        }
-    }
-
-    override suspend fun getUser(
-        accessToken: String,
-        response: (error: Error?, value: GetUserResponse?) -> Unit
-    ) {
-        request(
-            RequestType.getUser,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
-        ) { error, value ->
-            response(error, value?.let { parse(GetUserResponse.serializer(), it) })
-        }
-    }
-
-    override suspend fun signOut(
-        accessToken: String,
-        response: (error: Error?) -> Unit
-    ) {
-        request(
+    override suspend fun signOut(accessToken: String): Result<Unit> {
+        val response = request(
             RequestType.signOut,
             serialize(
                 AccessToken.serializer(),
                 AccessToken(accessToken)
             )
-        ) { error, _ ->
-            response(error)
+        )
+        return if (response.isSuccess) {
+            Result.success(Unit)
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
+        }
+    }
+
+    override suspend fun getUser(accessToken: String): Result<GetUserResponse> {
+        val response = request(
+            RequestType.getUser,
+            serialize(
+                AccessToken.serializer(),
+                AccessToken(accessToken)
+            )
+        )
+        return if (response.isSuccess) {
+            try {
+                Result.success(parse(GetUserResponse.serializer(), response.getOrNull()!!))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
     override suspend fun updateUserAttributes(
         accessToken: String,
-        attributes: List<UserAttribute>,
-        response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit
-    ) {
-        request(
+        attributes: List<UserAttribute>
+    ): Result<UpdateUserAttributesResponse> {
+        val response = request(
             RequestType.updateUserAttributes,
             serialize(
                 UpdateUserAttributes.serializer(),
                 UpdateUserAttributes(accessToken, attributes)
             )
-        ) { error, value ->
-            response(error, value?.let { parse(UpdateUserAttributesResponse.serializer(), it) })
+        )
+        return if (response.isSuccess) {
+            try {
+                Result.success(parse(UpdateUserAttributesResponse.serializer(), response.getOrNull()!!))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
     override suspend fun changePassword(
         accessToken: String,
         currentPassword: String,
-        newPassword: String,
-        response: (error: Error?) -> Unit
-    ) {
-        request(
+        newPassword: String
+    ): Result<Unit> {
+        val response = request(
             RequestType.changePassword,
             serialize(
                 ChangePassword.serializer(),
@@ -153,8 +159,26 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                     newPassword
                 )
             )
-        ) { error, _ ->
-            response(error)
+        )
+        return if (response.isSuccess) {
+            Result.success(Unit)
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
+        }
+    }
+
+    override suspend fun deleteUser(accessToken: String): Result<Unit> {
+        val response = request(
+            RequestType.deleteUser,
+            serialize(
+                AccessToken.serializer(),
+                AccessToken(accessToken)
+            )
+        )
+        return if (response.isSuccess) {
+            Result.success(Unit)
+        } else {
+            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
@@ -162,11 +186,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     // REQUEST
     //----------
 
-    private suspend fun request(
-        type: RequestType,
-        payload: String,
-        completion: (error: Error?, value: String?) -> Unit
-    ) {
+    private suspend fun request(type: RequestType, payload: String): Result<String> {
         val response = client.post<HttpResponse>(configuration.requestUrl) {
             header(
                 Header.AmzTarget,
@@ -185,12 +205,11 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
             body = payload
         }
-
         return if (response.status.value == 200) {
-            completion(null, String(response.readBytes()))
+            Result.success(String(response.readBytes()))
         } else {
             val error = parse(RequestError.serializer(), String(response.readBytes()))
-            completion(Error(error.message), null)
+            Result.failure(Error(error.message))
         }
     }
 }

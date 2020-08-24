@@ -3,32 +3,32 @@ package com.liftric.base
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Authentication(
+internal data class Authentication(
     val AuthFlow: String,
     val ClientId: String,
     val AuthParameters: AuthParameters
 )
 
 @Serializable
-data class AuthParameters(
+internal data class AuthParameters(
     val USERNAME: String,
     val PASSWORD: String
 )
 
 @Serializable
-data class AccessToken(
+internal data class AccessToken(
     val AccessToken: String
 )
 
 @Serializable
-data class ChangePassword(
+internal data class ChangePassword(
     val AccessToken: String,
     val PreviousPassword: String,
     val ProposedPassword: String
 )
 
 @Serializable
-data class SignUp(
+internal data class SignUp(
     val ClientId: String,
     val Password: String,
     val Username: String,
@@ -42,7 +42,7 @@ data class UserAttribute(
 )
 
 @Serializable
-data class UpdateUserAttributes(
+internal data class UpdateUserAttributes(
     val AccessToken: String,
     val UserAttributes: List<UserAttribute>
 )

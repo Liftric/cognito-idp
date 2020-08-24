@@ -1,5 +1,5 @@
-import java.util.Date
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import java.util.*
 
 plugins {
     id("com.android.library")

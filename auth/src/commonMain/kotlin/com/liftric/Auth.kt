@@ -10,7 +10,7 @@ interface Auth {
      * @param attributes
      * @param response Callback with error if something went wrong or an object on success
      */
-    suspend fun signUp(username: String, password: String, attributes: List<UserAttribute>? = null, response: (error: Error?, value: SignUpResponse?) -> Unit)
+    suspend fun signUp(username: String, password: String, attributes: List<UserAttribute>? = null): Result<SignUpResponse>
 
     /**
      * Signs in the user with the given parameters
@@ -18,21 +18,21 @@ interface Auth {
      * @param password The password
      * @param response Callback with error if something went wrong or an object on success
      */
-    suspend fun signIn(username: String, password: String, response: (error: Error?, value: SignInResponse?) -> Unit)
+    suspend fun signIn(username: String, password: String): Result<SignInResponse>
 
     /**
      * Signs out the user globally
      * @param accessToken The access token from the sign in request
      * @param response Callback with error if something went wrong
      */
-    suspend fun signOut(accessToken: String, response: (error: Error?) -> Unit)
+    suspend fun signOut(accessToken: String): Result<Unit>
 
     /**
      * Fetches the user object
      * @param accessToken The access token from the sign in request
      * @param response Callback with error if something went wrong or an object on success
      */
-    suspend fun getUser(accessToken: String, response: (error: Error?, value: GetUserResponse?) -> Unit)
+    suspend fun getUser(accessToken: String): Result<GetUserResponse>
 
     /**
      * Updates the users attributes
@@ -41,7 +41,7 @@ interface Auth {
      * @param attributes List of attributes that should be updated
      * @param response Callback with error if something went wrong or an object on success
      */
-    suspend fun updateUserAttributes(accessToken: String, attributes: List<UserAttribute>, response: (error: Error?, value: UpdateUserAttributesResponse?) -> Unit)
+    suspend fun updateUserAttributes(accessToken: String, attributes: List<UserAttribute>): Result<UpdateUserAttributesResponse>
 
     /**
      * Changes the password of the current user
@@ -50,12 +50,12 @@ interface Auth {
      * @param newPassword The new password
      * @param response Callback with request response error
      */
-    suspend fun changePassword(accessToken: String, currentPassword: String, newPassword: String, response: (error: Error?) -> Unit)
+    suspend fun changePassword(accessToken: String, currentPassword: String, newPassword: String): Result<Unit>
 
     /**
      * Deletes the users account
      * @param accessToken The access token from the sign in request
      * @param response Callback with error if something went wrong
      */
-    suspend fun deleteUser(accessToken: String, response: (error: Error?) -> Unit)
+    suspend fun deleteUser(accessToken: String): Result<Unit>
 }
