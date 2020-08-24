@@ -1,5 +1,4 @@
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 plugins {
@@ -12,9 +11,7 @@ plugins {
 }
 
 kotlin {
-    ios() {
-        binaries.framework()
-    }
+    ios()
 
     android {
         publishLibraryVariants("debug", "release")
@@ -51,14 +48,6 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 implementation(Libs.ktorIOS)
-            }
-        }
-    }
-
-    targets.all {
-        compilations.all {
-            kotlinOptions.apply {
-                freeCompilerArgs = listOf("-Xallow-result-return-type")
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.liftric.base
 
-expect class Environment() {
+expect internal class Environment() {
     companion object {
         /**
          * Accesses environment variable
