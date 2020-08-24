@@ -52,16 +52,15 @@ val authHandler = AuthHandler(configuration)
 
 General usage of the request methods.
 
-All methods will return an optional error. Some requests get a response from the server (JSON) - The string will be parsed to an object and returned via the callback.
+All methods are suspending and will return a `Result<T>` object which wraps the desired return object `T` and can contain an exception.
 
 ```kotlin
-signUp(username = "user", password = "password") { error, value ->
-    error?.let {
-        println(error.message)
-    }?: run {
-        val jsonString = value
-        ...
-    }
+val signUpResponse = signUp(username = "user", password = "password")
+if (signUpResponse.isSuccess) {
+    println(signUpResponse.getOrNull())
+    ...
+} else {
+    println(signUpResponse.exceptionOrNull())
 }
 ```
 
@@ -74,9 +73,8 @@ Returns a parsed object on success.
 ```kotlin
 val attribute = UserAttribute(Name = "email", Value = "email@my.tld")
 
-signUp(username = "user", password = "password", attributes = listOf(attribute)) { error, value ->
-    ...
-}
+suspend signUp(username = "user", password = "password", attributes = listOf(attribute)): Result<SignUpResponse>
+...
 ```
 
 #### Sign In
@@ -86,9 +84,7 @@ At the moment you can only sign in with username and password.
 Returns a parsed object on success.
 
 ```kotlin
-signIn(username = "user", password = "password") { error, value ->
-    ...
-}
+suspend signIn(username = "user", password = "password"): Result<SignInResponse>
 ```
 
 #### Sign Out
@@ -96,9 +92,7 @@ signIn(username = "user", password = "password") { error, value ->
 Signs out the user and returns an error if something went wrong.
 
 ```kotlin
-signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error ->
-    ...
-}
+suspend signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<SignOutResponse>
 ```
 
 #### Get User
@@ -108,9 +102,7 @@ Returns the users attributes and metadata on success.
 More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
 ```kotlin
-getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error, value ->
-    ...
-}
+suspend getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): GetUserResponse
 ```
 
 #### Update User Attributes
@@ -120,9 +112,7 @@ Updates the users attributes (e.g. email change).
 Returns a parsed object on success.
 
 ```kotlin
-updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)) { error, value ->
-    ...
-}
+suspend updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)): Result<UpdateUserAttributesResponse>
 ```
 
 #### Change Password
@@ -130,9 +120,7 @@ updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = li
 Updates the users password and returns an error if something went wrong.
 
 ```kotlin
-changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW") { error ->
-    ...
-}
+suspend changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW"): Result<Unit>
 ```
 
 #### Delete User
@@ -140,9 +128,7 @@ changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OL
 Deletes the user from the user pool and returns an error if something went wrong.
 
 ```kotlin
-deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST") { error ->
-    ...
-}
+suspend deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<Unit>
 ```
 
 ## License
