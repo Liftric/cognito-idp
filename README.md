@@ -73,7 +73,9 @@ Returns a parsed object on success.
 ```kotlin
 val attribute = UserAttribute(Name = "email", Value = "email@my.tld")
 
-suspend signUp(username = "user", password = "password", attributes = listOf(attribute)): Result<SignUpResponse>
+suspend signUp(username = "user",
+               password = "password",
+               attributes = listOf(attribute)): Result<SignUpResponse>
 ...
 ```
 
@@ -112,7 +114,8 @@ Updates the users attributes (e.g. email change).
 Returns a parsed object on success.
 
 ```kotlin
-suspend updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributes = listOf(...)): Result<UpdateUserAttributesResponse>
+suspend updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
+                             attributes = listOf(...)): Result<UpdateUserAttributesResponse>
 ```
 
 #### Change Password
@@ -120,7 +123,9 @@ suspend updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attribu
 Updates the users password and returns an error if something went wrong.
 
 ```kotlin
-suspend changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", currentPassword = "OLD_PW", newPassword = "NEW_PW"): Result<Unit>
+suspend changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
+                       currentPassword = "OLD_PW",
+                       newPassword = "NEW_PW"): Result<Unit>
 ```
 
 #### Delete User
