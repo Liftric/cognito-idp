@@ -34,6 +34,13 @@ class Result<out T> constructor(val value: Any?) {
         }
 }
 
+inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> {
+    return when (value) {
+        is Result.Failure -> Result.failure(value.exception)
+        else -> action(value as T)
+    }
+}
+
 fun Result<*>.throwOnFailure() {
     if (value is Result.Failure) throw value.exception
 }
