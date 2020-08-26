@@ -26,4 +26,36 @@ class Result<out T> constructor(val value: Any?) {
             is Failure -> value.exception
             else -> null
         }
+
+    override fun toString(): String =
+        when (value) {
+            is Failure -> value.toString() // "Failure($exception)"
+            else -> "Success($value)"
+        }
+}
+
+inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> {
+    exceptionOrNull()?.let { action(it) }
+    return this
+}
+
+inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
+    if (isSuccess) action(value as T)
+    return this
+}
+
+inline fun <R> runCatching(block: () -> R): Result<R> {
+    return try {
+        Result.success(block())
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
+}
+
+inline fun <T, R> T.runCatching(block: T.() -> R): Result<R> {
+    return try {
+        Result.success(block())
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
 }
