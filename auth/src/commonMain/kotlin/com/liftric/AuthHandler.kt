@@ -187,29 +187,33 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     //----------
 
     private suspend fun request(type: RequestType, payload: String): Result<String> {
-        val response = client.post<HttpResponse>(configuration.requestUrl) {
-            header(
-                Header.AmzTarget,
-                when (type) {
-                    RequestType.signUp -> IdentityProviderService.SignUp
-                    RequestType.confirmSignUp -> IdentityProviderService.ConfirmSignUp
-                    RequestType.signIn -> IdentityProviderService.InitiateAuth
-                    RequestType.signOut -> IdentityProviderService.GlobalSignOut
-                    RequestType.getUser -> IdentityProviderService.GetUser
-                    RequestType.changePassword -> IdentityProviderService.ChangePassword
-                    RequestType.forgotPassword -> IdentityProviderService.ForgotPassword
-                    RequestType.confirmForgotPassword -> IdentityProviderService.ConfirmForgotPassword
-                    RequestType.deleteUser -> IdentityProviderService.DeleteUser
-                    RequestType.updateUserAttributes -> IdentityProviderService.UpdateUserAttributes
-                }
-            )
-            body = payload
-        }
-        return if (response.status.value == 200) {
-            Result.success(String(response.readBytes()))
-        } else {
-            val error = parse(RequestError.serializer(), String(response.readBytes()))
-            Result.failure(Error(error.message))
+        try {
+            val response = client.post<HttpResponse>(configuration.requestUrl) {
+                header(
+                    Header.AmzTarget,
+                    when (type) {
+                        RequestType.signUp -> IdentityProviderService.SignUp
+                        RequestType.confirmSignUp -> IdentityProviderService.ConfirmSignUp
+                        RequestType.signIn -> IdentityProviderService.InitiateAuth
+                        RequestType.signOut -> IdentityProviderService.GlobalSignOut
+                        RequestType.getUser -> IdentityProviderService.GetUser
+                        RequestType.changePassword -> IdentityProviderService.ChangePassword
+                        RequestType.forgotPassword -> IdentityProviderService.ForgotPassword
+                        RequestType.confirmForgotPassword -> IdentityProviderService.ConfirmForgotPassword
+                        RequestType.deleteUser -> IdentityProviderService.DeleteUser
+                        RequestType.updateUserAttributes -> IdentityProviderService.UpdateUserAttributes
+                    }
+                )
+                body = payload
+            }
+            return if (response.status.value == 200) {
+                Result.success(String(response.readBytes()))
+            } else {
+                val error = parse(RequestError.serializer(), String(response.readBytes()))
+                Result.failure(Error(error.message))
+            }
+        } catch (e: Exception) {
+            return Result.failure(e)
         }
     }
 }
