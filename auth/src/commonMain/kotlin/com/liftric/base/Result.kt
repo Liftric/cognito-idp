@@ -34,6 +34,15 @@ class Result<out T> constructor(val value: Any?) {
         }
 }
 
+fun Result<*>.throwOnFailure() {
+    if (value is Result.Failure) throw value.exception
+}
+
+inline fun <T> Result<T>.getOrThrow(): T {
+    throwOnFailure()
+    return value as T
+}
+
 inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> {
     exceptionOrNull()?.let { action(it) }
     return this
