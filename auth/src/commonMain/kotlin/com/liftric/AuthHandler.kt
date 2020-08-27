@@ -174,7 +174,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    override suspend fun confirmforgotPassword(
+    override suspend fun confirmForgotPassword(
         username: String,
         password: String,
         confirmationCode: String

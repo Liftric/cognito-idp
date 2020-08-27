@@ -131,7 +131,7 @@ Invokes password forgot and sends a confirmation code the the users' delivery me
 More info about the CodeDeliveryDetails in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CodeDeliveryDetailsType.html).
 
 ```kotlin
-changePassword(username = "USERNAME"): Result<CodeDeliveryDetails>
+forgotPassword(username = "USERNAME"): Result<CodeDeliveryDetails>
 ```
 
 #### Confirm Forgot Password
@@ -139,8 +139,8 @@ changePassword(username = "USERNAME"): Result<CodeDeliveryDetails>
 Confirms forgot password.
 
 ```kotlin
-changePassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM",
-               confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
+onfirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM",
+                     confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
 ```
 
 #### Sign Out

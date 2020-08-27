@@ -67,7 +67,7 @@ interface Auth {
      * @param confirmationCode The confirmation code that was sent to the users' delivery medium
      * @return Result object containing Unit on success or an error on failure
      */
-    suspend fun confirmforgotPassword(username: String, password: String, confirmationCode: String): Result<Unit>
+    suspend fun confirmForgotPassword(username: String, password: String, confirmationCode: String): Result<Unit>
 
     /**
      * Signs out the user globally
