@@ -36,6 +36,27 @@ internal data class SignUp(
 )
 
 @Serializable
+internal data class ConfirmSignUp(
+    val ClientId: String,
+    val ConfirmationCode: String,
+    val Username: String,
+)
+
+@Serializable
+internal data class ForgotPassword(
+    val ClientId: String,
+    val Username: String,
+)
+
+@Serializable
+internal data class ConfirmForgotPassword(
+    val ClientId: String,
+    val ConfirmationCode: String,
+    val Username: String,
+    val Password: String,
+)
+
+@Serializable
 data class UserAttribute(
     val Name: String = "",
     val Value: String = ""

@@ -17,27 +17,27 @@ data class SignInResponse(
 
 @Serializable
 data class AuthenticationResult(
-        val AccessToken: String = "",
-        val ExpiresIn: Int = 0,
-        val IdToken: String = "",
-        val RefreshToken: String = "",
-        val TokenType: String = ""
+    val AccessToken: String = "",
+    val ExpiresIn: Int = 0,
+    val IdToken: String = "",
+    val RefreshToken: String = "",
+    val TokenType: String = ""
 )
 
 // Sign up
 
 @Serializable
 data class SignUpResponse(
-        val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails(),
-        val UserConfirmed: Boolean = false,
-        val UserSub: String = ""
+    val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails(),
+    val UserConfirmed: Boolean = false,
+    val UserSub: String = ""
 )
 
 @Serializable
 data class CodeDeliveryDetails(
-        val AttributeName: String = "",
-        val DeliveryMedium: String = "",
-        val Destination: String = ""
+    val AttributeName: String = "",
+    val DeliveryMedium: String = "",
+    val Destination: String = ""
 )
 
 // Get user

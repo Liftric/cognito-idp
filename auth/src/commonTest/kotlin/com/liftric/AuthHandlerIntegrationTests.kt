@@ -146,7 +146,7 @@ class AuthHandlerIntegrationTests() {
         val signOutResponse = authHandler.signOut(token)
         assertNull(signOutResponse.exceptionOrNull())
 
-        // AWS is not revoking Tokens automatically so give it some time
+        // AWS is not revoking Tokens instantly so give it some time
         delay(1000)
 
         val signInResponse = authHandler.signIn(credentials.username, credentials.password)
