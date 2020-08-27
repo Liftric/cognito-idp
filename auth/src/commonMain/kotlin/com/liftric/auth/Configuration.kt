@@ -1,7 +1,7 @@
-package com.liftric
+package com.liftric.auth
 
-import com.liftric.base.Header
-import com.liftric.base.Region
+import com.liftric.auth.base.Header
+import com.liftric.auth.base.Region
 import io.ktor.http.HeadersBuilder
 
 /**

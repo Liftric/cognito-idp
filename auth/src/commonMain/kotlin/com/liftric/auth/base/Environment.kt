@@ -1,4 +1,4 @@
-package com.liftric.base
+package com.liftric.auth.base
 
 expect internal class Environment() {
     companion object {
