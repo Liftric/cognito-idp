@@ -65,7 +65,6 @@ class AuthHandlerIntegrationTests() {
         val signUpResponse = authHandler.signUp(
             username, password,
             attributes = listOf(
-                UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
         )
@@ -93,14 +92,14 @@ class AuthHandlerIntegrationTests() {
         deleteUser(token)
     }
 
-    @JsName("ChangeEmailTest")
+    @JsName("ChangeAttributeTest")
     @Test
-    fun `Should change email`() = runBlocking {
+    fun `Should change attribute`() = runBlocking {
         val (token, _) = createUser()
 
         val updateUserAttributesResponse = authHandler.updateUserAttributes(
             token,
-            listOf(UserAttribute(Name = "email", Value = "test2@test.test"))
+            listOf(UserAttribute(Name = "custom:target_group", Value = "ROLE_USER"))
         )
         assertNull(updateUserAttributesResponse.exceptionOrNull())
         assertNotNull(updateUserAttributesResponse.getOrNull())
@@ -111,7 +110,7 @@ class AuthHandlerIntegrationTests() {
 
         getUserResponse.getOrNull()!!.UserAttributes.map { attribute ->
             if (attribute.Name == "email") {
-                assertEquals("test2@test.test", attribute.Value)
+                assertEquals("ROLE_USER", attribute.Value)
             }
         }
         deleteUser(token)
@@ -162,7 +161,6 @@ class AuthHandlerIntegrationTests() {
         val signUpResponse = authHandler.signUp(
             "Username", "Short",
             attributes = listOf(
-                UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
         )
@@ -180,7 +178,6 @@ class AuthHandlerIntegrationTests() {
         val signUpResponse = authHandler.signUp(
             "Username", buildString { (1..260).forEach { _ -> append("A") } },
             attributes = listOf(
-                UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
         )
@@ -198,7 +195,6 @@ class AuthHandlerIntegrationTests() {
         var signUpResponse = authHandler.signUp(
             buildString { (1..130).forEach { _ -> append("A") } }, "Password",
             attributes = listOf(
-                UserAttribute(Name = "email", Value = "test@test.test"),
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
         )
