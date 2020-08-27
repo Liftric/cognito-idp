@@ -139,7 +139,7 @@ forgotPassword(username = "USERNAME"): Result<CodeDeliveryDetails>
 Confirms forgot password.
 
 ```kotlin
-onfirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM",
+confirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM",
                      confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
 ```
 
