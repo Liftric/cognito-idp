@@ -61,9 +61,9 @@ interface Auth {
     suspend fun forgotPassword(username: String): Result<CodeDeliveryDetails>
 
     /**
-     * Confirms sign up of a new user
+     * Confirms forgot password
      * @param username The username
-     * @param username The new password that was sent to the users' delivery medium
+     * @param password The new password that was sent to the users' delivery medium
      * @param confirmationCode The confirmation code that was sent to the users' delivery medium
      * @return Result object containing Unit on success or an error on failure
      */
