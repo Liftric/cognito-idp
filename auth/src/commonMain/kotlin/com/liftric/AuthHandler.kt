@@ -7,13 +7,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.serializer
 
 /**
- * Authentifaction handler for AWS Cognito
+ * AWS Cognito authentication client
  * Provides common request methods
  */
 open class AuthHandler(private val configuration: Configuration) : Auth {
@@ -38,7 +35,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         password: String,
         attributes: List<UserAttribute>?
     ): Result<SignUpResponse> {
-        val response = request(
+        return request(
             RequestType.signUp,
             serialize(
                 SignUp.serializer(),
@@ -49,15 +46,31 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                     UserAttributes = attributes ?: listOf()
                 )
             )
-        )
-        return if (response.isSuccess) {
+        ).onResult {
             try {
-                Result.success(parse(SignUpResponse.serializer(), response.getOrNull()!!))
+                Result.success(parse(SignUpResponse.serializer(), it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
+        }
+    }
+
+    override suspend fun confirmSignUp(
+        username: String,
+        confirmationCode: String
+    ): Result<Unit> {
+        return request(
+            RequestType.confirmSignUp,
+            serialize(
+                ConfirmSignUp.serializer(),
+                ConfirmSignUp(
+                    configuration.clientId,
+                    username,
+                    confirmationCode
+                )
+            )
+        ).onResult {
+            Result.success(Unit)
         }
     }
 
@@ -65,7 +78,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         username: String,
         password: String
     ): Result<SignInResponse> {
-        val response = request(
+        return request(
             RequestType.signIn,
             serialize(
                 Authentication.serializer(),
@@ -75,49 +88,28 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                     AuthParameters(username, password)
                 )
             )
-        )
-        return if (response.isSuccess) {
+        ).onResult {
             try {
-                Result.success(parse(SignInResponse.serializer(), response.getOrNull()!!))
+                Result.success(parse(SignInResponse.serializer(), it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
-        }
-    }
-
-    override suspend fun signOut(accessToken: String): Result<Unit> {
-        val response = request(
-            RequestType.signOut,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
-        )
-        return if (response.isSuccess) {
-            Result.success(Unit)
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
     override suspend fun getUser(accessToken: String): Result<GetUserResponse> {
-        val response = request(
+        return request(
             RequestType.getUser,
             serialize(
                 AccessToken.serializer(),
                 AccessToken(accessToken)
             )
-        )
-        return if (response.isSuccess) {
+        ).onResult {
             try {
-                Result.success(parse(GetUserResponse.serializer(), response.getOrNull()!!))
+                Result.success(parse(GetUserResponse.serializer(), it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
@@ -125,21 +117,18 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         accessToken: String,
         attributes: List<UserAttribute>
     ): Result<UpdateUserAttributesResponse> {
-        val response = request(
+        return request(
             RequestType.updateUserAttributes,
             serialize(
                 UpdateUserAttributes.serializer(),
                 UpdateUserAttributes(accessToken, attributes)
             )
-        )
-        return if (response.isSuccess) {
+        ).onResult {
             try {
-                Result.success(parse(UpdateUserAttributesResponse.serializer(), response.getOrNull()!!))
+                Result.success(parse(UpdateUserAttributesResponse.serializer(), it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
@@ -148,7 +137,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         currentPassword: String,
         newPassword: String
     ): Result<Unit> {
-        val response = request(
+        return request(
             RequestType.changePassword,
             serialize(
                 ChangePassword.serializer(),
@@ -159,26 +148,74 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                     newPassword
                 )
             )
-        )
-        return if (response.isSuccess) {
+        ).onResult {
             Result.success(Unit)
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
+        }
+    }
+
+    override suspend fun forgotPassword(
+        username: String
+    ): Result<CodeDeliveryDetails> {
+        return request(
+            RequestType.forgotPassword,
+            serialize(
+                ForgotPassword.serializer(),
+                ForgotPassword(
+                    configuration.clientId,
+                    username
+                )
+            )
+        ).onResult {
+            try {
+                Result.success(parse(CodeDeliveryDetails.serializer(), it))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun confirmForgotPassword(
+        username: String,
+        password: String,
+        confirmationCode: String
+    ): Result<Unit> {
+        return request(
+            RequestType.confirmForgotPassword,
+            serialize(
+                ConfirmForgotPassword.serializer(),
+                ConfirmForgotPassword(
+                    configuration.clientId,
+                    username,
+                    password,
+                    confirmationCode
+                )
+            )
+        ).onResult {
+            Result.success(Unit)
+        }
+    }
+
+    override suspend fun signOut(accessToken: String): Result<Unit> {
+        return request(
+            RequestType.signOut,
+            serialize(
+                AccessToken.serializer(),
+                AccessToken(accessToken)
+            )
+        ).onResult {
+            Result.success(Unit)
         }
     }
 
     override suspend fun deleteUser(accessToken: String): Result<Unit> {
-        val response = request(
+        return request(
             RequestType.deleteUser,
             serialize(
                 AccessToken.serializer(),
                 AccessToken(accessToken)
             )
-        )
-        return if (response.isSuccess) {
+        ).onResult {
             Result.success(Unit)
-        } else {
-            Result.failure(response.exceptionOrNull()!!)
         }
     }
 
@@ -206,7 +243,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 )
                 body = payload
             }
-            return if (response.status.value == 200) {
+            return if (response.status == HttpStatusCode.OK) {
                 Result.success(String(response.readBytes()))
             } else {
                 val error = parse(RequestError.serializer(), String(response.readBytes()))

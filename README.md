@@ -55,10 +55,9 @@ General usage of the request methods.
 All methods are suspending and will return a `Result<T>` object which wraps the desired return object `T` and can contain an exception.
 
 ```kotlin
-val signUpResponse = signUp(username = "user", password = "password")
-if (signUpResponse.isSuccess) {
+val response = signUp(username = "user", password = "password")
+if (response.isSuccess) {
     println(signUpResponse.getOrNull())
-    ...
 } else {
     println(signUpResponse.exceptionOrNull())
 }
@@ -66,35 +65,34 @@ if (signUpResponse.isSuccess) {
 
 #### Sign Up
 
-You can  sign up users by providing a username, password, and optional attributes.
+Signs up the user.
 
-Returns a parsed object on success. 
+Attributes are optional.
 
 ```kotlin
-val attribute = UserAttribute(Name = "email", Value = "email@my.tld")
+val attribute = UserAttribute(Name = "email", Value = "name@url.tld")
 
-suspend signUp(username = "user",
-               password = "password",
-               attributes = listOf(attribute)): Result<SignUpResponse>
+signUp(username = "USERNAME", password = "PASSWORD",
+       attributes = listOf(attribute)): Result<SignUpResponse>
 ...
+```
+
+#### Confirm Sign Up
+
+Confirms the sign up (also the delivery medium).
+
+```kotlin
+confirmSignUp(username = "USERNAME", confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
 ```
 
 #### Sign In
 
+Signs in the users.
+
 At the moment you can only sign in with username and password.
 
-Returns a parsed object on success.
-
 ```kotlin
-suspend signIn(username = "user", password = "password"): Result<SignInResponse>
-```
-
-#### Sign Out
-
-Signs out the user and returns an error if something went wrong.
-
-```kotlin
-suspend signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<SignOutResponse>
+signIn(username = "USERNAME", password = "PASSWORD"): Result<SignInResponse>
 ```
 
 #### Get User
@@ -104,36 +102,61 @@ Returns the users attributes and metadata on success.
 More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
 ```kotlin
-suspend getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): GetUserResponse
+getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): GetUserResponse
 ```
 
 #### Update User Attributes
 
-Updates the users attributes (e.g. email change).
-
-Returns a parsed object on success.
+Updates the users attributes (e.g. email, phone number, ...).
 
 ```kotlin
-suspend updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
-                             attributes = listOf(...)): Result<UpdateUserAttributesResponse>
+updateUserAttributes(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
+                     attributes = listOf(...)): Result<UpdateUserAttributesResponse>
 ```
 
 #### Change Password
 
-Updates the users password and returns an error if something went wrong.
+Updates the users password 
 
 ```kotlin
-suspend changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
-                       currentPassword = "OLD_PW",
-                       newPassword = "NEW_PW"): Result<Unit>
+changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
+               currentPassword = "OLD_PW",
+               newPassword = "NEW_PW"): Result<Unit>
+```
+
+#### Forgot Password
+
+Invokes password forgot and sends a confirmation code the the users' delivery medium.
+
+More info about the CodeDeliveryDetails in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CodeDeliveryDetailsType.html).
+
+```kotlin
+forgotPassword(username = "USERNAME"): Result<CodeDeliveryDetails>
+```
+
+#### Confirm Forgot Password
+
+Confirms forgot password.
+
+```kotlin
+confirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM",
+                     confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
+```
+
+#### Sign Out
+
+Signs out the user globally.
+
+```kotlin
+signOut(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<SignOutResponse>
 ```
 
 #### Delete User
 
-Deletes the user from the user pool and returns an error if something went wrong.
+Deletes the user from the user pool.
 
 ```kotlin
-suspend deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<Unit>
+deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<Unit>
 ```
 
 ## License
