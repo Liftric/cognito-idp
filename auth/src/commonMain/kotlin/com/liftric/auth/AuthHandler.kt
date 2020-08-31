@@ -1,6 +1,6 @@
-package com.liftric
+package com.liftric.auth
 
-import com.liftric.base.*
+import com.liftric.auth.base.*
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*

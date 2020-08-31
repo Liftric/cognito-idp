@@ -1,4 +1,4 @@
-package com.liftric.base
+package com.liftric.auth.base
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy

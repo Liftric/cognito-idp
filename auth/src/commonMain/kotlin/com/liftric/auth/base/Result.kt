@@ -1,4 +1,4 @@
-package com.liftric.base
+package com.liftric.auth.base
 
 class Result<out T> constructor(val value: Any?) {
     val isSuccess: Boolean get() = value !is Failure

@@ -1,7 +1,8 @@
-package com.liftric
+package com.liftric.auth
 
-import com.liftric.base.*
-import com.liftric.base.Environment
+import com.liftric.auth.base.*
+import com.liftric.auth.base.Environment
+import com.liftric.auth.base.Region
 import kotlinx.coroutines.delay
 import kotlin.test.*
 import kotlinx.coroutines.*

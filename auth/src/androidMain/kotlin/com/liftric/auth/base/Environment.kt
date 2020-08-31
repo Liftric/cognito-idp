@@ -1,4 +1,4 @@
-package com.liftric.base
+package com.liftric.auth.base
 
 actual internal class Environment {
     actual companion object {

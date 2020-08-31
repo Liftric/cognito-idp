@@ -1,4 +1,4 @@
-package com.liftric.base
+package com.liftric.auth.base
 
 object Header {
     const val Authority         = "authority"

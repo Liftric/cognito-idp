@@ -1,4 +1,4 @@
-package com.liftric.base
+package com.liftric.auth.base
 
 import kotlinx.serialization.Serializable
 
@@ -11,8 +11,8 @@ data class RequestError(val __type: String, val message: String)
 
 @Serializable
 data class SignInResponse(
-        val AuthenticationResult: AuthenticationResult,
-        val ChallengeParameters: Map<String, String> = mapOf()
+    val AuthenticationResult: AuthenticationResult,
+    val ChallengeParameters: Map<String, String> = mapOf()
 )
 
 @Serializable
