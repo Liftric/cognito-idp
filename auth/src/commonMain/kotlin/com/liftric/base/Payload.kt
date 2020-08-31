@@ -38,8 +38,8 @@ internal data class SignUp(
 @Serializable
 internal data class ConfirmSignUp(
     val ClientId: String,
-    val ConfirmationCode: String,
     val Username: String,
+    val ConfirmationCode: String
 )
 
 @Serializable
