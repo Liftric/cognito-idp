@@ -70,6 +70,24 @@ interface Auth {
     suspend fun confirmForgotPassword(username: String, password: String, confirmationCode: String): Result<Unit>
 
     /**
+     * Gets the user attribute verification code for the specified attribute name
+     * @param accessToken The access token from the sign in request
+     * @param attributeName The attribute name
+     * @param clientMetadata Optional key-value pairs as input for custom workflows
+     * @return Result object containing Unit on CodeDeliveryDetails or an error on failure
+     */
+    suspend fun getUserAttributeVerificationCode(accessToken: String, attributeName: String, clientMetadata: Map<String, String>? = null): Result<CodeDeliveryDetails>
+
+    /**
+     * Verifies the specified user attribute
+     * @param accessToken The access token from the sign in request
+     * @param attributeName The attribute name
+     * @param code The confirmation code
+     * @return Result object containing Unit on CodeDeliveryDetails or an error on failure
+     */
+    suspend fun verifyUserAttribute(accessToken: String, attributeName: String, code: String): Result<Unit>
+
+    /**
      * Signs out the user globally
      * @param accessToken The access token from the sign in request
      * @return Result object containing Unit on success or an error on failure

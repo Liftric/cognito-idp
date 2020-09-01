@@ -16,7 +16,8 @@ import kotlinx.serialization.SerializationException
 open class AuthHandler(private val configuration: Configuration) : Auth {
     enum class RequestType {
         signIn, signUp, confirmSignUp, signOut, getUser, changePassword,
-        deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword
+        deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword,
+        getUserAttributeVerificationCode, verifyUserAttribute
     }
 
     private val client = HttpClient() {
@@ -195,6 +196,46 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
+    override suspend fun getUserAttributeVerificationCode(
+        accessToken: String,
+        attributeName: String,
+        clientMetadata: Map<String, String>?
+    ): Result<CodeDeliveryDetails> {
+        return request(
+            RequestType.getUserAttributeVerificationCode,
+            serialize(
+                GetUserAttributeVerificationCode.serializer(),
+                GetUserAttributeVerificationCode(
+                    accessToken,
+                    attributeName,
+                    clientMetadata
+                )
+            )
+        ).onResult {
+            try {
+                Result.success(parse(CodeDeliveryDetails.serializer(), it))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun verifyUserAttribute(accessToken: String, attributeName: String, code: String): Result<Unit> {
+        return request(
+            RequestType.verifyUserAttribute,
+            serialize(
+                VerifyUserAttribute.serializer(),
+                VerifyUserAttribute(
+                    accessToken,
+                    attributeName,
+                    code
+                )
+            )
+        ).onResult {
+            Result.success(Unit)
+        }
+    }
+
     override suspend fun signOut(accessToken: String): Result<Unit> {
         return request(
             RequestType.signOut,
@@ -239,6 +280,8 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                         RequestType.confirmForgotPassword -> IdentityProviderService.ConfirmForgotPassword
                         RequestType.deleteUser -> IdentityProviderService.DeleteUser
                         RequestType.updateUserAttributes -> IdentityProviderService.UpdateUserAttributes
+                        RequestType.getUserAttributeVerificationCode -> IdentityProviderService.GetUserAttributeVerificationCode
+                        RequestType.verifyUserAttribute -> IdentityProviderService.VerifyUserAttribute
                     }
                 )
                 body = payload
