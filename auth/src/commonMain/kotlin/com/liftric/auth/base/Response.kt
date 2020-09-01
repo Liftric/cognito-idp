@@ -63,3 +63,8 @@ data class MFAOptions(
 data class UpdateUserAttributesResponse(
     val CodeDeliveryDetailsList: List<CodeDeliveryDetails> = listOf()
 )
+
+@Serializable
+data class GetAttributeVerificationCodeResponse(
+    val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails()
+)

@@ -200,7 +200,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         accessToken: String,
         attributeName: String,
         clientMetadata: Map<String, String>?
-    ): Result<UpdateUserAttributesResponse> {
+    ): Result<GetAttributeVerificationCodeResponse> {
         return request(
             RequestType.getUserAttributeVerificationCode,
             serialize(
@@ -213,7 +213,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             try {
-                Result.success(parse(UpdateUserAttributesResponse.serializer(), it))
+                Result.success(parse(GetAttributeVerificationCodeResponse.serializer(), it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
