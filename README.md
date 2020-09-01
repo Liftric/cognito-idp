@@ -143,6 +143,22 @@ confirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIV
                      confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
 ```
 
+#### Get user Attribute Verification Code
+
+Gets the user attribute verification code for the specified attribute name
+
+```kotlin
+getUserAttributeVerificationCode(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", clientMetadata = null): Result<CodeDeliveryDetails>
+```
+
+#### Verify User Attribute
+
+Verifies the specified user attribute
+
+```kotlin
+verifyUserAttribute(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", code = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
+```
+
 #### Sign Out
 
 Signs out the user globally.

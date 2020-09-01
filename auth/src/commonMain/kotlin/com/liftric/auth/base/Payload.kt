@@ -67,3 +67,17 @@ internal data class UpdateUserAttributes(
     val AccessToken: String,
     val UserAttributes: List<UserAttribute>
 )
+
+@Serializable
+internal data class GetUserAttributeVerificationCode(
+    val AccessToken: String = "",
+    val AttributeName: String = "",
+    val ClientMetadata: Map<String, String>? = mapOf()
+)
+
+@Serializable
+internal data class VerifyUserAttribute(
+    val AccessToken: String = "",
+    val AttributeName: String = "",
+    val Code: String = ""
+)

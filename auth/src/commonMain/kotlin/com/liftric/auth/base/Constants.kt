@@ -27,6 +27,8 @@ object IdentityProviderService {
     const val SignUp                    = "AWSCognitoIdentityProviderService.SignUp"
     const val ConfirmSignUp             = "AWSCognitoIdentityProviderService.ConfirmSignUp"
     const val UpdateUserAttributes      = "AWSCognitoIdentityProviderService.UpdateUserAttributes"
+    const val GetUserAttributeVerificationCode = "AWSCognitoIdentityProviderService.GetUserAttributeVerificationCode"
+    const val VerifyUserAttribute = "AWSCognitoIdentityProviderService.VerifyUserAttribute"
 }
 
 object AuthFlow {
