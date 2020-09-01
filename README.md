@@ -148,7 +148,7 @@ confirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIV
 Gets the user attribute verification code for the specified attribute name
 
 ```kotlin
-getUserAttributeVerificationCode(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", clientMetadata = null): Result<CodeDeliveryDetails>
+getUserAttributeVerificationCode(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", clientMetadata = null): Result<UpdateUserAttributesResponse>
 ```
 
 #### Verify User Attribute

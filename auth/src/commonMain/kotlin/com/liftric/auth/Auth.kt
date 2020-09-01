@@ -76,7 +76,7 @@ interface Auth {
      * @param clientMetadata Optional key-value pairs as input for custom workflows
      * @return Result object containing Unit on CodeDeliveryDetails or an error on failure
      */
-    suspend fun getUserAttributeVerificationCode(accessToken: String, attributeName: String, clientMetadata: Map<String, String>? = null): Result<CodeDeliveryDetails>
+    suspend fun getUserAttributeVerificationCode(accessToken: String, attributeName: String, clientMetadata: Map<String, String>? = null): Result<UpdateUserAttributesResponse>
 
     /**
      * Verifies the specified user attribute
