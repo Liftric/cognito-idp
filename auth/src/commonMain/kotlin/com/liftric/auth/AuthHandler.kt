@@ -156,7 +156,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
 
     override suspend fun forgotPassword(
         username: String
-    ): Result<CodeDeliveryDetails> {
+    ): Result<ForgotPasswordResponse> {
         return request(
             RequestType.forgotPassword,
             serialize(
@@ -168,7 +168,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             try {
-                Result.success(parse(CodeDeliveryDetails.serializer(), it))
+                Result.success(parse(ForgotPasswordResponse.serializer(), it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }

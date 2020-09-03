@@ -128,10 +128,10 @@ changePassword(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST",
 
 Invokes password forgot and sends a confirmation code the the users' delivery medium.
 
-More info about the CodeDeliveryDetails in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CodeDeliveryDetailsType.html).
+More info about the ForgotPasswordResponse in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CodeDeliveryDetailsType.html).
 
 ```kotlin
-forgotPassword(username = "USERNAME"): Result<CodeDeliveryDetails>
+forgotPassword(username = "USERNAME"): Result<ForgotPasswordResponse>
 ```
 
 #### Confirm Forgot Password

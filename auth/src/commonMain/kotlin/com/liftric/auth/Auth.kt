@@ -58,7 +58,7 @@ interface Auth {
      * @param username The username
      * @return Result object containing CodeDeliveryDetails on success or an error on failure
      */
-    suspend fun forgotPassword(username: String): Result<CodeDeliveryDetails>
+    suspend fun forgotPassword(username: String): Result<ForgotPasswordResponse>
 
     /**
      * Confirms forgot password

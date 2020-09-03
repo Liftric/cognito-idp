@@ -2,12 +2,8 @@ package com.liftric.auth.base
 
 import kotlinx.serialization.Serializable
 
-// Error
-
 @Serializable
 data class RequestError(val __type: String, val message: String)
-
-// Sign in
 
 @Serializable
 data class SignInResponse(
@@ -24,8 +20,6 @@ data class AuthenticationResult(
     val TokenType: String = ""
 )
 
-// Sign up
-
 @Serializable
 data class SignUpResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails(),
@@ -39,8 +33,6 @@ data class CodeDeliveryDetails(
     val DeliveryMedium: String = "",
     val Destination: String = ""
 )
-
-// Get user
 
 @Serializable
 data class GetUserResponse(
@@ -57,8 +49,6 @@ data class MFAOptions(
     val DeliveryMedium: String = ""
 )
 
-// Update attribute
-
 @Serializable
 data class UpdateUserAttributesResponse(
     val CodeDeliveryDetailsList: List<CodeDeliveryDetails> = listOf()
@@ -66,5 +56,10 @@ data class UpdateUserAttributesResponse(
 
 @Serializable
 data class GetAttributeVerificationCodeResponse(
+    val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails()
+)
+
+@Serializable
+data class ForgotPasswordResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails()
 )
