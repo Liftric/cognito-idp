@@ -45,7 +45,7 @@ internal data class ConfirmSignUp(
 @Serializable
 internal data class ForgotPassword(
     val ClientId: String,
-    val Username: String,
+    val Username: String
 )
 
 @Serializable
@@ -53,7 +53,7 @@ internal data class ConfirmForgotPassword(
     val ClientId: String,
     val ConfirmationCode: String,
     val Username: String,
-    val Password: String,
+    val Password: String
 )
 
 @Serializable

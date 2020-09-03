@@ -139,8 +139,8 @@ forgotPassword(username = "USERNAME"): Result<ForgotPasswordResponse>
 Confirms forgot password.
 
 ```kotlin
-confirmForgotPassword(username = "USERNAME", password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM",
-                     confirmationCode = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>
+confirmForgotPassword(confirmationCode = "CODE_FROM_DELIVERY_MEDIUM", username = "USERNAME", 
+                      password = "NEW_PASSWORD_FROM_DELIVERY_MEDIUM"): Result<Unit>
 ```
 
 #### Get user Attribute Verification Code

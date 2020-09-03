@@ -176,9 +176,9 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     }
 
     override suspend fun confirmForgotPassword(
+        confirmationCode: String,
         username: String,
-        password: String,
-        confirmationCode: String
+        password: String
     ): Result<Unit> {
         return request(
             RequestType.confirmForgotPassword,
@@ -186,9 +186,9 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 ConfirmForgotPassword.serializer(),
                 ConfirmForgotPassword(
                     configuration.clientId,
+                    confirmationCode,
                     username,
-                    password,
-                    confirmationCode
+                    password
                 )
             )
         ).onResult {
