@@ -102,7 +102,15 @@ Returns the users attributes and metadata on success.
 More info about this in the [official documentation](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetUser.html).
 
 ```kotlin
-getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): GetUserResponse
+getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<GetUserResponse>
+```
+
+#### Claims
+
+Parses the ID token to a Claims object (e.g. to access the sub id or email address). Not generic, refer to the Claims class to see which parameters are supported.
+
+```kotlin
+getClaims(fromIdToken = "ID_TOKEN_FROM_SIGN_IN_REQUEST"): Result<Claims>
 ```
 
 #### Update User Attributes
@@ -148,12 +156,12 @@ confirmForgotPassword(confirmationCode = "CODE_FROM_DELIVERY_MEDIUM", username =
 Gets the user attribute verification code for the specified attribute name
 
 ```kotlin
-getUserAttributeVerificationCode(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", clientMetadata = null): Result<UpdateUserAttributesResponse>
+getUserAttributeVerificationCode(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", clientMetadata = null): Result<GetAttributeVerificationCodeResponse>
 ```
 
 #### Verify User Attribute
 
-Verifies the specified user attribute
+Verifies the specified user attribute.
 
 ```kotlin
 verifyUserAttribute(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST", attributeName = "EMAIL", code = "CODE_FROM_DELIVERY_MEDIUM"): Result<Unit>

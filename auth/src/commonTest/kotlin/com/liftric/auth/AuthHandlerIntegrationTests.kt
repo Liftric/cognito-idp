@@ -260,7 +260,7 @@ class AuthHandlerIntegrationTests() {
     @Test
     fun `Test if get claims works without email address`() {
         val token = "eyJraWQiOiJwREgwTUpqeWdoRk4wT2J1cFpUNzl1QytLZkpZQ3BtNnZTamVXb3NpZUlFPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxZWEyMTg1Yi1iYTk5LTRlYjUtYmZkMS0yMDY0MjQ2Yzc0NWQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJldmVudF9pZCI6IjA3ODE5NGUzLTM5YzQtNDBhYS04MzkwLTkzMmI2MjY2MjE3YSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNTk5NTY1OTU4LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9DMUduN0hiWU4iLCJjb2duaXRvOnVzZXJuYW1lIjoiNDMzMGI4ZjctYmRjMy00MTI2LTllYWUtZWVkZTc0ZTI0MTEyIiwiZXhwIjoxNTk5NTY5NTU4LCJpYXQiOjE1OTk1NjU5NTh9.hLzDOItbHkUWYyI9hTFIKkoC50_UrRnPFoIcyrsiCzP5zQFlhTboe9TZ6BE0o21IEk8tcdBkFRHbuM8zPru-qopB9tC7pkhvY1FoPMlNlRSmqj8YZjJ8InnHForkdJ4n9keM8PcdwW6KWlAjLViwSmOl3k-ptQq1DnmnmGmcmfzssDzON0R__jsyEQs_EZWQ3c86qodbIU4peN9Dm26TMSQCzJhZwvCuGRmRgplsqOD4UfDVh5ya-bXUogJuirlE8KFUH1my13AJOxAJLBgyOjBZceFMnC4ZqZBbSND-iiMvQcpn4O6gd5p5Je367LO56w_ypo6eMffEs39fikIP4g"
-        authHandler.claims(token)
+        authHandler.getClaims(token)
             .onSuccess { claims ->
                 assertNotNull(claims)
                 assertEquals(claims.sub, "1ea2185b-ba99-4eb5-bfd1-2064246c745d")
@@ -276,7 +276,7 @@ class AuthHandlerIntegrationTests() {
     @Test
     fun `Test if get claims works with email address`() {
         val token = "eyJraWQiOiJwREgwTUpqeWdoRk4wT2J1cFpUNzl1QytLZkpZQ3BtNnZTamVXb3NpZUlFPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3NTUzZGRmOC1hMTAzLTRjYjItOWVkZi0yNDcwMTBmNGNjNGQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbVwvZXUtY2VudHJhbC0xX0MxR243SGJZTiIsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE1OTk1NzA1MjMsImlhdCI6MTU5OTU2NjkyMywiZW1haWwiOiJnYWViZWxAbGlmdHJpYy5jb20ifQ.ka1nCmT-ACwbvQ3uy3qsuZII6PQzdfJHA7UY3Wkt_7GU2fxBxcDdRjzdDdCmh4IE0e0uwfoddMXTXWaijo6yKvrv0VHtfsIkfFJb09TNtCNrxTy1PX-bJNeVT752N85pdNpkms6GefylP2iAZec520ISI1ZrHz0jlKfUq6iGpq3GKxIXJZ_dQGVPa2oTQDqG_CmOsr9sTRl8EoMoEIjxJdOAFeYltlPDcuhWZVUWsfwUq290UdOTBJhGruIre-cdfe03FEo9NG67mewldRYdsjNBgGQU_Jyp68hg1UQHrhKC-eUDmrWiyYGzKwbkUCCm1puwcy_wpu5HRQfjAjVW4A"
-        authHandler.claims(token)
+        authHandler.getClaims(token)
             .onSuccess { claims ->
                 assertNotNull(claims)
                 assertEquals(claims.sub, "7553ddf8-a103-4cb2-9edf-247010f4cc4d")

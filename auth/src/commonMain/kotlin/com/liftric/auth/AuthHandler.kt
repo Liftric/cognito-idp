@@ -261,9 +261,9 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    override fun claims(fromToken: String): Result<Claims> {
+    override fun getClaims(fromIdToken: String): Result<Claims> {
         return try {
-            val component = fromToken.split(".")[1]
+            val component = fromIdToken.split(".")[1]
             Base64.decode(component)?.let { decoded64 ->
                 val json = Json { encodeDefaults = true; isLenient = true }
                 json.decodeFromString(Claims.serializer(), decoded64)?.let { claims ->

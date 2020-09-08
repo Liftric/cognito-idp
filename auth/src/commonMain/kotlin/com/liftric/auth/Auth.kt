@@ -103,8 +103,8 @@ interface Auth {
 
     /**
      * Parses the id token and returns the claims (Not all claims implemented!)
-     * @param fromToken The id token from the sign in request
+     * @param fromIdToken The id token from the sign in request
      * @return Result object containing Claims on success or an error on failure
      */
-    fun claims(fromToken: String): Result<Claims>
+    fun getClaims(fromIdToken: String): Result<Claims>
 }
