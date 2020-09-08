@@ -8,7 +8,8 @@ import kotlin.test.*
 import kotlinx.coroutines.*
 import kotlin.js.JsName
 
-class AuthHandlerIntegrationTests() {
+expect class AuthHandlerIntegrationTests: AbstractAuthHandlerIntegrationTests
+abstract class AbstractAuthHandlerIntegrationTests() {
     private val configuration = Configuration(
         Environment.variable("origin") ?: "",
         Region.euCentral1,

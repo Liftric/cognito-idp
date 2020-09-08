@@ -6,6 +6,10 @@ object Apps {
     const val versionName = "1.0.0"
 }
 
+object Android {
+    const val TestRunner = "org.robolectric.RobolectricTestRunner"
+}
+
 object Versions {
     const val gradle = "4.0.1"
     const val kotlin = "1.4.0"
@@ -13,6 +17,7 @@ object Versions {
     const val serialization = "1.0.0-RC"
     const val ktor = "1.4.0"
     const val TestCore = "1.2.0"
+    const val RoboElectric = "4.3.1"
 }
 
 object Libs {
@@ -36,4 +41,10 @@ object Libs {
 
 object TestLibs {
     const val TestCore = "androidx.test:core:${Versions.TestCore}"
+    const val RoboElectrics = "org.robolectric:robolectric:${Versions.RoboElectric}"
+}
+
+object Exclude {
+    const val GoogleAutoService = "com.google.auto.service"
+    const val AutoService = "auto-service"
 }
