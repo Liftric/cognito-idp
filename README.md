@@ -105,9 +105,11 @@ More info about this in the [official documentation](https://docs.aws.amazon.com
 getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<GetUserResponse>
 ```
 
-#### Claims
+#### Get Claims
 
-Parses the ID token to a Claims object (e.g. to access the sub id or email address). Not generic, refer to the Claims class to see which parameters are supported.
+Parses the ID token to a Claims object (e.g. to access the sub id or email address). 
+
+> Not generic, refer to the Claims class to see which parameters are supported.
 
 ```kotlin
 getClaims(fromIdToken = "ID_TOKEN_FROM_SIGN_IN_REQUEST"): Result<Claims>
