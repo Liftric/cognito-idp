@@ -8,6 +8,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 
 /**
  * AWS Cognito authentication client
@@ -257,6 +258,22 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             Result.success(Unit)
+        }
+    }
+
+    override fun getClaims(fromIdToken: String): Result<Claims> {
+        return try {
+            val component = fromIdToken.split(".")[1]
+            Base64.decode(component)?.let { decoded64 ->
+                val json = Json { encodeDefaults = true; isLenient = true }
+                json.decodeFromString(Claims.serializer(), decoded64)?.let { claims ->
+                    Result.success(claims)
+                }
+            }?: run {
+                Result.failure(Error("Couldn't decode JWT token"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

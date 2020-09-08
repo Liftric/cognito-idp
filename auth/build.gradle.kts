@@ -40,6 +40,9 @@ kotlin {
         }
         val androidTest by getting {
             dependencies {
+                implementation(TestLibs.RoboElectrics) {
+                    exclude(Exclude.GoogleAutoService, Exclude.AutoService)
+                }
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(TestLibs.TestCore)
@@ -66,6 +69,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests.apply {
+            isReturnDefaultValues = true
+        }
     }
 }
 

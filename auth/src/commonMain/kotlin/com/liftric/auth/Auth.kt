@@ -100,4 +100,11 @@ interface Auth {
      * @return Result object containing Unit on success or an error on failure
      */
     suspend fun deleteUser(accessToken: String): Result<Unit>
+
+    /**
+     * Parses the id token and returns the claims (Not all claims implemented!)
+     * @param fromIdToken The id token from the sign in request
+     * @return Result object containing Claims on success or an error on failure
+     */
+    fun getClaims(fromIdToken: String): Result<Claims>
 }
