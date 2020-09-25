@@ -1,6 +1,9 @@
 package com.liftric.auth
 
 import com.liftric.auth.base.*
+import com.liftric.auth.jwt.Base64
+import com.liftric.auth.jwt.CognitoIdToken
+import com.liftric.auth.jwt.CognitoAccessToken
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
@@ -9,6 +12,7 @@ import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlin.reflect.KClass
 
 /**
  * AWS Cognito authentication client
@@ -261,16 +265,32 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    override fun getClaims(fromIdToken: String): Result<Claims> {
+    override fun idTokenPayload(fromIdToken: String): Result<CognitoIdToken> {
         return try {
             val component = fromIdToken.split(".")[1]
             Base64.decode(component)?.let { decoded64 ->
-                val json = Json { encodeDefaults = true; isLenient = true }
-                json.decodeFromString(Claims.serializer(), decoded64)?.let { claims ->
-                    Result.success(claims)
+                val json = Json {  isLenient = true }
+                json.decodeFromString(CognitoIdToken.serializer(), decoded64)?.let { token ->
+                    Result.success(token)
                 }
             }?: run {
-                Result.failure(Error("Couldn't decode JWT token"))
+                Result.failure(Error("Couldn't decode id token"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun accessTokenPayload(fromAccessToken: String): Result<CognitoAccessToken> {
+        return try {
+            val component = fromAccessToken.split(".")[1]
+            Base64.decode(component)?.let { decoded64 ->
+                val json = Json {  isLenient = true }
+                json.decodeFromString(CognitoAccessToken.serializer(), decoded64)?.let { token ->
+                    Result.success(token)
+                }
+            }?: run {
+                Result.failure(Error("Couldn't decode access token"))
             }
         } catch (e: Exception) {
             Result.failure(e)

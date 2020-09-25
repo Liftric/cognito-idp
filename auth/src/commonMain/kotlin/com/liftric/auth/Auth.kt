@@ -1,6 +1,10 @@
 package com.liftric.auth
 
 import com.liftric.auth.base.*
+import com.liftric.auth.jwt.Base64
+import com.liftric.auth.jwt.CognitoAccessToken
+import com.liftric.auth.jwt.CognitoIdToken
+import kotlinx.serialization.json.Json
 
 interface Auth {
     /**
@@ -102,9 +106,16 @@ interface Auth {
     suspend fun deleteUser(accessToken: String): Result<Unit>
 
     /**
-     * Parses the id token and returns the claims (Not all claims implemented!)
+     * Parses the id token string to an actual object. Custom attributes are accessible via the 'custom' map as String value.
      * @param fromIdToken The id token from the sign in request
-     * @return Result object containing Claims on success or an error on failure
+     * @return Result object containing CognitoIdToken on success or an error on failure
      */
-    fun getClaims(fromIdToken: String): Result<Claims>
+    fun idTokenPayload(fromIdToken: String): Result<CognitoIdToken>
+
+    /**
+     * Parses the access token string to an actual object
+     * @param fromAccessToken The id token from the sign in request
+     * @return Result object containing CognitoAccessToken on success or an error on failure
+     */
+    fun accessTokenPayload(fromAccessToken: String): Result<CognitoAccessToken>
 }

@@ -1,4 +1,4 @@
-package com.liftric.auth.base
+package com.liftric.auth.jwt
 
 import android.util.Base64
 
