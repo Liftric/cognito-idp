@@ -17,7 +17,7 @@ interface IdTokenExtenstion {
     val custom: Map<String, String>?
 }
 
-@Serializable
+@Serializable(with = CustomAttributesSerializer::class)
 data class CognitoIdToken(
     override val sub: String? = null,
     override val name: String? = null,
