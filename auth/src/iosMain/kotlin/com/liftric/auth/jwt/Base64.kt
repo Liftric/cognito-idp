@@ -1,4 +1,4 @@
-package com.liftric.auth.base
+package com.liftric.auth.jwt
 
 import platform.Foundation.NSData
 import platform.Foundation.NSString

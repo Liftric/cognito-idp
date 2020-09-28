@@ -64,25 +64,3 @@ data class GetAttributeVerificationCodeResponse(
 data class ForgotPasswordResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails()
 )
-
-@Serializable
-data class Claims(
-    val sub: String,
-    val aud: String,
-    @SerialName("cognito:groups")
-    val cognitoGroups: List<String>,
-    @SerialName("email_verified")
-    val emailVerified: Boolean? = null,
-    @SerialName("event_id")
-    val eventId: String,
-    @SerialName("token_use")
-    val tokenUse: String,
-    @SerialName("auth_time")
-    val authTime: String,
-    val iss: String,
-    @SerialName("cognito:username")
-    val cognitoUsername: String,
-    val exp: String,
-    val iat: String,
-    val email: String? = null
-)
