@@ -111,7 +111,7 @@ val sub = idToken.claims.sub
 Custom attributes of the IdToken get mapped into `customAttributes`
 
 ```kotlin
-val twitter = idToken.claims.customAttributes["twitter"]
+val twitter = idToken.claims.customAttributes["custom:twitter"]
 ```
 
 #### Get User
