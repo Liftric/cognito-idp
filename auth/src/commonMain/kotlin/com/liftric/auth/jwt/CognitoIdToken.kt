@@ -44,8 +44,7 @@ class CognitoIdToken(idTokenString: String): JWT<CognitoIdTokenClaims>(idTokenSt
     override val claims: CognitoIdTokenClaims
         get() {
             try {
-                val payload = getPayload()
-                return Json.decodeFromString(CognitoIdTokenClaims.serializer(), payload)
+                return Json.decodeFromString(CognitoIdTokenClaims.serializer(), getPayload())
             } catch (e: SerializationException) {
                 throw InvalidCognitoIdTokenException("This is not a valid cognito id token")
             }
