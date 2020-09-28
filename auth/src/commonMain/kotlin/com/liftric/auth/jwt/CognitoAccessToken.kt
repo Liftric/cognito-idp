@@ -8,12 +8,12 @@ class InvalidCognitoAccessTokenException(message:String): Exception(message)
 
 @Serializable
 data class CognitoAccessTokenClaims(
-    override val aud: String,
+    override val aud: String? = null,
     override val exp: Long,
     override val iat: Long,
     override val iss: String,
     override val jti: String,
-    override val nbf: Long,
+    override val nbf: Long? = null,
     override val sub: String,
     @SerialName("auth_time")
     override val authTime: Long,
@@ -22,17 +22,14 @@ data class CognitoAccessTokenClaims(
     @SerialName("cognito:groups")
     override val cognitoGroups: List<String>,
     @SerialName("device_key")
-    override val deviceKey: String,
-    override val email: String,
-    @SerialName("email_verified")
-    override val emailVerified: Boolean,
+    override val deviceKey: String? = null,
     @SerialName("event_id")
-    override val eventId: String,
-    override val scope: String,
+    override val eventId: String? = null,
+    override val scope: String? = null,
     @SerialName("token_use")
     override val tokenUse: String,
     override val username: String
-): AccessToken, AccessTokenExtenstion
+): AccessToken, AccessTokenExtension
 
 class CognitoAccessToken(accessTokenString: String): JWT<CognitoAccessTokenClaims>(accessTokenString) {
     override val claims: CognitoAccessTokenClaims

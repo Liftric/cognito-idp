@@ -141,15 +141,58 @@ data class Address (
 )
 
 interface IdTokenExtension {
+    /**
+     * Audience
+     */
     val aud: String
+
+    /**
+     * Time when the authentication occurred. JSON number that represents the number of seconds from 1970-01-01T0:0:0Z as measured in UTC format
+     */
     val authTime: Long
+
+    /**
+     * List of groups the user belongs to
+     */
     val cognitoGroups: List<String>
+
+    /**
+     * Username
+     */
     val cognitoUsername: String
+
+    /**
+     * Expiration time
+     */
     val exp: Long
+
+    /**
+     * Event id
+     */
     val eventId: String
+
+    /**
+     * Issuer
+     */
     val iss: String
+
+    /**
+     * Issued at
+     */
     val iat: Long
+
+    /**
+     * List of Oauth 2.0 scopes that define what access the token provides
+     */
     val scope: String?
+
+    /**
+     * Intended purpose of this token. Its value is always id
+     */
     val tokenUse: String
-    val custom: Map<String, String>?
+
+    /**
+     * Custom cognito attributes
+     */
+    val customAttributes: Map<String, String>?
 }

@@ -31,7 +31,7 @@ abstract class JWT<T>(private val tokenString: String) {
     private fun validateComponents(): List<String> {
         val components = tokenString.split(".")
         if (components.size != 3) {
-            throw MissingComponentsException("${components.size} out of 3 components of a valid JWT missing")
+            throw MissingComponentsException("Has ${components.size} components, should be 3 components")
         }
         return components
     }

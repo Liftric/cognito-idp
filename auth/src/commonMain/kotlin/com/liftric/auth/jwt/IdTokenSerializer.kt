@@ -133,7 +133,11 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
         val unknownFilters = filtersMap.filter { (key, _) -> key.contains("custom") }
         val customAttributes = mutableMapOf<String, String>()
         unknownFilters.forEach {
-            val value = json.decodeFromJsonElement(String.serializer(), it.value)
+            val value = if (it.value.jsonPrimitive.isString) {
+                json.decodeFromJsonElement(String.serializer(), it.value)
+            } else {
+                json.decodeFromJsonElement(Long.serializer(), it.value).toString()
+            }
             customAttributes[it.key] = value
         }
 
@@ -206,7 +210,7 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
         value.iat.let { map["iat"] = json.encodeToJsonElement(Long.serializer(), it) }
         value.scope?.let { map["scope"] = json.encodeToJsonElement(String.serializer(), it) }
         value.tokenUse.let { map["token_user"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.custom?.forEach {
+        value.customAttributes?.forEach {
             map[it.key] = json.encodeToJsonElement(String.serializer(), it.value)
         }
 

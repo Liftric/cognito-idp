@@ -37,7 +37,7 @@ data class CognitoIdTokenClaims(
     override val iat: Long,
     override val scope: String? = null,
     override val tokenUse: String,
-    override val custom: Map<String, String>? = null
+    override val customAttributes: Map<String, String>? = null
 ): IdToken, IdTokenExtension
 
 class CognitoIdToken(idTokenString: String): JWT<CognitoIdTokenClaims>(idTokenString) {

@@ -258,14 +258,24 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         assertEquals("Invalid Access Token", updateUserAttributesResponse.exceptionOrNull()!!.message)
     }
 
-    @JsName("GetClaimsWithoutEmailTest")
+    @JsName("TestGetIdTokenClaimsWithEmailNullValue")
     @Test
-    fun `Test if get claims works without email address`() {
+    fun `Test if get id token  claims works without email address`() {
         val token = "eyJraWQiOiJwREgwTUpqeWdoRk4wT2J1cFpUNzl1QytLZkpZQ3BtNnZTamVXb3NpZUlFPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxZWEyMTg1Yi1iYTk5LTRlYjUtYmZkMS0yMDY0MjQ2Yzc0NWQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJldmVudF9pZCI6IjA3ODE5NGUzLTM5YzQtNDBhYS04MzkwLTkzMmI2MjY2MjE3YSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNTk5NTY1OTU4LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9DMUduN0hiWU4iLCJjb2duaXRvOnVzZXJuYW1lIjoiNDMzMGI4ZjctYmRjMy00MTI2LTllYWUtZWVkZTc0ZTI0MTEyIiwiZXhwIjoxNTk5NTY5NTU4LCJpYXQiOjE1OTk1NjU5NTh9.hLzDOItbHkUWYyI9hTFIKkoC50_UrRnPFoIcyrsiCzP5zQFlhTboe9TZ6BE0o21IEk8tcdBkFRHbuM8zPru-qopB9tC7pkhvY1FoPMlNlRSmqj8YZjJ8InnHForkdJ4n9keM8PcdwW6KWlAjLViwSmOl3k-ptQq1DnmnmGmcmfzssDzON0R__jsyEQs_EZWQ3c86qodbIU4peN9Dm26TMSQCzJhZwvCuGRmRgplsqOD4UfDVh5ya-bXUogJuirlE8KFUH1my13AJOxAJLBgyOjBZceFMnC4ZqZBbSND-iiMvQcpn4O6gd5p5Je367LO56w_ypo6eMffEs39fikIP4g"
         val idToken = CognitoIdToken(token)
         assertEquals(idToken.claims.sub, "1ea2185b-ba99-4eb5-bfd1-2064246c745d")
         assertEquals(idToken.claims.email, null)
         assertEquals(idToken.claims.emailVerified, null)
+    }
+
+    @JsName("TestGetIdTokenClaimsWithEmail")
+    @Test
+    fun `Test if get id token claims works with email address`() {
+        val token = "eyJraWQiOiJwREgwTUpqeWdoRk4wT2J1cFpUNzl1QytLZkpZQ3BtNnZTamVXb3NpZUlFPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3NTUzZGRmOC1hMTAzLTRjYjItOWVkZi0yNDcwMTBmNGNjNGQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbVwvZXUtY2VudHJhbC0xX0MxR243SGJZTiIsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE1OTk1NzA1MjMsImlhdCI6MTU5OTU2NjkyMywiZW1haWwiOiJnYWViZWxAbGlmdHJpYy5jb20ifQ.ka1nCmT-ACwbvQ3uy3qsuZII6PQzdfJHA7UY3Wkt_7GU2fxBxcDdRjzdDdCmh4IE0e0uwfoddMXTXWaijo6yKvrv0VHtfsIkfFJb09TNtCNrxTy1PX-bJNeVT752N85pdNpkms6GefylP2iAZec520ISI1ZrHz0jlKfUq6iGpq3GKxIXJZ_dQGVPa2oTQDqG_CmOsr9sTRl8EoMoEIjxJdOAFeYltlPDcuhWZVUWsfwUq290UdOTBJhGruIre-cdfe03FEo9NG67mewldRYdsjNBgGQU_Jyp68hg1UQHrhKC-eUDmrWiyYGzKwbkUCCm1puwcy_wpu5HRQfjAjVW4A"
+        val idToken = CognitoIdToken(token)
+        assertEquals(idToken.claims.sub, "7553ddf8-a103-4cb2-9edf-247010f4cc4d")
+        assertNotEquals(idToken.claims.email, null)
+        assertEquals(idToken.claims.emailVerified, false)
     }
 
     @JsName("GetClaimsWithEmailTest")
@@ -276,7 +286,36 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         assertEquals(idToken.claims.sub, "7553ddf8-a103-4cb2-9edf-247010f4cc4d")
         assertNotEquals(idToken.claims.email, null)
         assertEquals(idToken.claims.emailVerified, false)
+    }
 
+    @JsName("GetCustomAttributes")
+    @Test
+    fun `Test if gets custom attributes`() {
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3NTUzZGRmOC1hMTAzLTRjYjItOWVkZi0yNDcwMTBmNGNjNGQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImlzcyI6Imh0dHBzOi8vY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb20vZXUtY2VudHJhbC0xX0MxR243SGJZTiIsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEzMDE1ODYsImlhdCI6MTU5OTU2NjkyMywiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiY3VzdG9tOnR3aXR0ZXIiOiJ0ZXN0IiwiY3VzdG9tOmFnZSI6MTgsImp0aSI6ImI0NjE2MzZmLWUxOGMtNDhjZi04Mjk5LTUzYjZmMWIxNWZmMyJ9.Mzh2RGW1VWd1oxE89xW05Ce_JRs1Y2HifL3brBkf7NE"
+        val idToken = CognitoIdToken(token)
+        assertNotNull(idToken.claims.customAttributes?.get("custom:age"))
+        assertNotNull(idToken.claims.customAttributes?.get("custom:twitter"))
+        assertEquals(idToken.claims.customAttributes?.get("custom:age")?.toLong(), 18)
+        assertEquals(idToken.claims.customAttributes?.get("custom:twitter"), "test")
+    }
+
+    @JsName("TestGetAccessTokenClaims")
+    @Test
+    fun `Test if get access token claims`() {
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYWFhYWFhYS1iYmJiLWNjY2MtZGRkZC1lZWVlZWVlZWVlZWUiLCJkZXZpY2Vfa2V5IjoiYWFhYWFhYWEtYmJiYi1jY2NjLWRkZGQtZWVlZWVlZWVlZWVlIiwiY29nbml0bzpncm91cHMiOlsiYWRtaW4iXSwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJhd3MuY29nbml0by5zaWduaW4udXNlci5hZG1pbiIsImF1dGhfdGltZSI6MTU2MjE5MDUyNCwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC51cy13ZXN0LTIuYW1hem9uYXdzLmNvbS91cy13ZXN0LTJfZXhhbXBsZSIsImV4cCI6MTYwMTI5ODY0MiwiaWF0IjoxNTYyMTkwNTI0LCJqdGkiOiJhYWFhYWFhYS1iYmJiLWNjY2MtZGRkZC1lZWVlZWVlZWVlZWUiLCJjbGllbnRfaWQiOiI1N2NiaXNoazRqMjRwYWJjMTIzNDU2Nzg5MCIsInVzZXJuYW1lIjoiamFuZWRvZUBleGFtcGxlLmNvbSJ9.AYrQOiqkjy6XyF33jAYje-hVfX5OnuiYUhh8pS1wxBk"
+        val accessToken = CognitoAccessToken(token)
+        assertEquals(accessToken.claims.sub, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+        assertEquals(accessToken.claims.deviceKey, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+        assertEquals(accessToken.claims.cognitoGroups[0], "admin")
+        assertEquals(accessToken.claims.tokenUse, "access")
+        assertEquals(accessToken.claims.scope, "aws.cognito.signin.user.admin")
+        assertEquals(accessToken.claims.authTime, 1562190524)
+        assertEquals(accessToken.claims.iss, "https://cognito-idp.us-west-2.amazonaws.com/us-west-2_example")
+        assertEquals(accessToken.claims.exp, 1601298642)
+        assertEquals(accessToken.claims.iat, 1562190524)
+        assertEquals(accessToken.claims.jti, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+        assertEquals(accessToken.claims.clientId, "57cbishk4j24pabc1234567890")
+        assertEquals(accessToken.claims.username, "janedoe@example.com")
     }
 
     @JsName("ShouldThrowMissingComponentsException")
