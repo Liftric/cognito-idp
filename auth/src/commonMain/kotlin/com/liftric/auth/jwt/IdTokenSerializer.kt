@@ -1,6 +1,7 @@
 package com.liftric.auth.jwt
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
@@ -11,12 +12,12 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 @Serializer(forClass = CognitoIdToken::class)
-internal object CustomAttributesSerializer : KSerializer<CognitoIdToken> {
+internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
     private val stringToJsonElementSerializer = MapSerializer(String.serializer(), JsonElement.serializer())
 
     override val descriptor: SerialDescriptor = stringToJsonElementSerializer.descriptor
 
-    override fun deserialize(decoder: Decoder): CognitoIdToken {
+    override fun deserialize(decoder: Decoder): CognitoIdTokenClaims {
         require(decoder is JsonDecoder)
         val json = decoder.json
         val filtersMap = decoder.decodeSerializableValue(stringToJsonElementSerializer)
@@ -74,37 +75,55 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdToken> {
         }
         val aud = filtersMap["aud"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field aud")
+        }
         val authTime = filtersMap["auth_time"]?.let {
             json.decodeFromJsonElement(Long.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field auth_time")
+        }
         val cognitoGroups = filtersMap["cognito:groups"]?.let {
             json.decodeFromJsonElement(ListSerializer(String.serializer()), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field cognito:groups")
+        }
         val cognitoUsername = filtersMap["cognito:username"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field cognito:username")
+        }
         val exp = filtersMap["exp"]?.let {
             json.decodeFromJsonElement(Long.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field exp")
+        }
         val eventId = filtersMap["event_id"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field event_id")
+        }
         val iss = filtersMap["iss"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field iss")
+        }
         val zoneinfo = filtersMap["zoneinfo"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
         }
         val iat = filtersMap["iat"]?.let {
             json.decodeFromJsonElement(Long.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field iat")
+        }
         val scope = filtersMap["scope"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
         }
         val tokenUse = filtersMap["token_use"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
-        }!!
+        }?: run {
+            throw SerializationException("Missing field token_use")
+        }
         val website = filtersMap["website"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
         }
@@ -118,7 +137,7 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdToken> {
             customAttributes[it.key] = value
         }
 
-        return CognitoIdToken(
+        return CognitoIdTokenClaims(
             sub,
             name,
             givenName,
@@ -152,7 +171,7 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdToken> {
             customAttributes
         )
     }
-    override fun serialize(encoder: Encoder, value: CognitoIdToken) {
+    override fun serialize(encoder: Encoder, value: CognitoIdTokenClaims) {
         require(encoder is JsonEncoder)
         val json = encoder.json
         val map: MutableMap<String, JsonElement> = mutableMapOf()
