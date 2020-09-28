@@ -3,22 +3,10 @@ package com.liftric.auth.jwt
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
-interface IdTokenExtenstion {
-    val aud: String
-    val authTime: Long
-    val cognitoGroups: List<String>
-    val cognitoUsername: String
-    val exp: Long
-    val eventId: String
-    val iss: String
-    val iat: Long
-    val scope: String?
-    val tokenUse: String
-    val custom: Map<String, String>?
-}
+class InvalidCognitoIdTokenException(message:String): Exception(message)
 
 @Serializable(with = CustomAttributesSerializer::class)
-data class CognitoIdToken(
+data class CognitoIdTokenClaims(
     override val sub: String? = null,
     override val name: String? = null,
     override val givenName: String? = null,
@@ -50,8 +38,16 @@ data class CognitoIdToken(
     override val scope: String? = null,
     override val tokenUse: String,
     override val custom: Map<String, String>? = null
-): IdToken, IdTokenExtenstion {
-    fun toJsonString(): String {
-        return Json.encodeToString(serializer(), this)
-    }
+): IdToken, IdTokenExtension
+
+class CognitoIdToken(idTokenString: String): JWT<CognitoIdTokenClaims>(idTokenString) {
+    override val claims: CognitoIdTokenClaims
+        get() {
+            try {
+                val payload = getPayload()
+                return Json.decodeFromString(CognitoIdTokenClaims.serializer(), payload)
+            } catch (e: SerializationException) {
+                throw InvalidCognitoIdTokenException("This is not a valid cognito id token")
+            }
+        }
 }

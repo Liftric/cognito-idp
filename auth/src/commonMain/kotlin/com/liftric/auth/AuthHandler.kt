@@ -265,38 +265,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    override fun idTokenPayload(fromIdToken: String): Result<CognitoIdToken> {
-        return try {
-            val component = fromIdToken.split(".")[1]
-            Base64.decode(component)?.let { decoded64 ->
-                val json = Json {  isLenient = true }
-                json.decodeFromString(CognitoIdToken.serializer(), decoded64)?.let { token ->
-                    Result.success(token)
-                }
-            }?: run {
-                Result.failure(Error("Couldn't decode id token"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override fun accessTokenPayload(fromAccessToken: String): Result<CognitoAccessToken> {
-        return try {
-            val component = fromAccessToken.split(".")[1]
-            Base64.decode(component)?.let { decoded64 ->
-                val json = Json {  isLenient = true }
-                json.decodeFromString(CognitoAccessToken.serializer(), decoded64)?.let { token ->
-                    Result.success(token)
-                }
-            }?: run {
-                Result.failure(Error("Couldn't decode access token"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     //----------
     // REQUEST
     //----------

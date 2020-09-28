@@ -1,12 +1,13 @@
 package com.liftric.auth
 
-import com.liftric.auth.base.*
 import com.liftric.auth.base.Environment
 import com.liftric.auth.base.Region
+import com.liftric.auth.base.UserAttribute
+import com.liftric.auth.jwt.*
 import kotlinx.coroutines.delay
-import kotlin.test.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 import kotlin.js.JsName
+import kotlin.test.*
 
 expect class AuthHandlerIntegrationTests: AbstractAuthHandlerIntegrationTests
 abstract class AbstractAuthHandlerIntegrationTests() {
@@ -261,31 +262,50 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @Test
     fun `Test if get claims works without email address`() {
         val token = "eyJraWQiOiJwREgwTUpqeWdoRk4wT2J1cFpUNzl1QytLZkpZQ3BtNnZTamVXb3NpZUlFPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxZWEyMTg1Yi1iYTk5LTRlYjUtYmZkMS0yMDY0MjQ2Yzc0NWQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJldmVudF9pZCI6IjA3ODE5NGUzLTM5YzQtNDBhYS04MzkwLTkzMmI2MjY2MjE3YSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNTk5NTY1OTU4LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9DMUduN0hiWU4iLCJjb2duaXRvOnVzZXJuYW1lIjoiNDMzMGI4ZjctYmRjMy00MTI2LTllYWUtZWVkZTc0ZTI0MTEyIiwiZXhwIjoxNTk5NTY5NTU4LCJpYXQiOjE1OTk1NjU5NTh9.hLzDOItbHkUWYyI9hTFIKkoC50_UrRnPFoIcyrsiCzP5zQFlhTboe9TZ6BE0o21IEk8tcdBkFRHbuM8zPru-qopB9tC7pkhvY1FoPMlNlRSmqj8YZjJ8InnHForkdJ4n9keM8PcdwW6KWlAjLViwSmOl3k-ptQq1DnmnmGmcmfzssDzON0R__jsyEQs_EZWQ3c86qodbIU4peN9Dm26TMSQCzJhZwvCuGRmRgplsqOD4UfDVh5ya-bXUogJuirlE8KFUH1my13AJOxAJLBgyOjBZceFMnC4ZqZBbSND-iiMvQcpn4O6gd5p5Je367LO56w_ypo6eMffEs39fikIP4g"
-        authHandler.idTokenPayload(token)
-            .onSuccess { claims ->
-                assertNotNull(claims)
-                assertEquals(claims.sub, "1ea2185b-ba99-4eb5-bfd1-2064246c745d")
-                assertEquals(claims.email, null)
-                assertEquals(claims.emailVerified, null)
-            }
-            .onFailure {
-                fail(it.message)
-            }
+        val idToken = CognitoIdToken(token)
+        assertEquals(idToken.claims.sub, "1ea2185b-ba99-4eb5-bfd1-2064246c745d")
+        assertEquals(idToken.claims.email, null)
+        assertEquals(idToken.claims.emailVerified, null)
     }
 
     @JsName("GetClaimsWithEmailTest")
     @Test
     fun `Test if get claims works with email address`() {
         val token = "eyJraWQiOiJwREgwTUpqeWdoRk4wT2J1cFpUNzl1QytLZkpZQ3BtNnZTamVXb3NpZUlFPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3NTUzZGRmOC1hMTAzLTRjYjItOWVkZi0yNDcwMTBmNGNjNGQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5ldS1jZW50cmFsLTEuYW1hem9uYXdzLmNvbVwvZXUtY2VudHJhbC0xX0MxR243SGJZTiIsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE1OTk1NzA1MjMsImlhdCI6MTU5OTU2NjkyMywiZW1haWwiOiJnYWViZWxAbGlmdHJpYy5jb20ifQ.ka1nCmT-ACwbvQ3uy3qsuZII6PQzdfJHA7UY3Wkt_7GU2fxBxcDdRjzdDdCmh4IE0e0uwfoddMXTXWaijo6yKvrv0VHtfsIkfFJb09TNtCNrxTy1PX-bJNeVT752N85pdNpkms6GefylP2iAZec520ISI1ZrHz0jlKfUq6iGpq3GKxIXJZ_dQGVPa2oTQDqG_CmOsr9sTRl8EoMoEIjxJdOAFeYltlPDcuhWZVUWsfwUq290UdOTBJhGruIre-cdfe03FEo9NG67mewldRYdsjNBgGQU_Jyp68hg1UQHrhKC-eUDmrWiyYGzKwbkUCCm1puwcy_wpu5HRQfjAjVW4A"
-        authHandler.idTokenPayload(token)
-            .onSuccess { claims ->
-                assertNotNull(claims)
-                assertEquals(claims.sub, "7553ddf8-a103-4cb2-9edf-247010f4cc4d")
-                assertNotEquals(claims.email, null)
-                assertEquals(claims.emailVerified, false)
-            }
-            .onFailure {
-                fail(it.message)
-            }
+        val idToken = CognitoIdToken(token)
+        assertEquals(idToken.claims.sub, "7553ddf8-a103-4cb2-9edf-247010f4cc4d")
+        assertNotEquals(idToken.claims.email, null)
+        assertEquals(idToken.claims.emailVerified, false)
+
+    }
+
+    @JsName("ShouldThrowMissingComponentsException")
+    @Test
+    fun `Test should throw MissingComponentsException since it has no components`() {
+        assertFailsWith(MissingComponentsException::class) {
+            val token = "missingcomponents"
+            val idToken = CognitoIdToken(token)
+            idToken.claims
+        }
+    }
+
+    @JsName("ShouldThrowInvalidBase64Exception")
+    @Test
+    fun `Test should throw InvalidBase64Exception since it is not a base 64 encoded string`() {
+        assertFailsWith(InvalidBase64Exception::class) {
+            val token = "This is a string.EOKF36syRBtB11VgyChkNjc1HxRrajT7XXaxZfnVzPkV57K3b9yqkS284Ovb9uWzXgGeY2bxA3IySGfdOHiPAQ==F/v6hcTiU1sd975XHfDsz8o0rboujM77n7KwRMidobOLbo5ghUT/IFcxElUc8CirdZxaCaS3zs/CfRKRsXwbFNYd.the amount that is needed for a JWT"
+            val idToken = CognitoIdToken(token)
+            idToken.getPayload()
+        }
+    }
+
+    @JsName("ShouldThrowInvalidCognitoIdTokenException")
+    @Test
+    fun `Test should throw InvalidCognitoIdTokenException since this is not a valid Cognito Id token`() {
+        assertFailsWith(InvalidCognitoIdTokenException::class) {
+            val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEyOTQ1NDQsImlhdCI6MTU5OTU2NjkyMywiZW1haWxfd2l0aF90eXBvIjoiZ2FlYmVsQGxpZnRyaWMuY29tIiwianRpIjoiYWNkNjg1MTUtZmExZi00ZTNmLWI3ZmUtODEwYzY2NmRhODYwIn0.zuqwEPXiLzbmxSdNQGjr3m4X5cXqdQf4aw_-7BUbvZk"
+            val idToken = CognitoIdToken(token)
+            idToken.claims
+        }
     }
 }

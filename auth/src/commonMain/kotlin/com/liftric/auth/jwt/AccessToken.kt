@@ -13,3 +13,16 @@ interface AccessToken {
     val nbf: Long
     val sub: String
 }
+
+interface AccessTokenExtenstion {
+    val authTime: Long
+    val clientId: String
+    val cognitoGroups: List<String>
+    val deviceKey: String
+    val email: String
+    val emailVerified: Boolean
+    val eventId: String
+    val scope: String
+    val tokenUse: String
+    val username: String
+}

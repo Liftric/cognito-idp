@@ -4,21 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-interface AccessTokenExtenstion {
-    val authTime: Long
-    val clientId: String
-    val cognitoGroups: List<String>
-    val deviceKey: String
-    val email: String
-    val emailVerified: Boolean
-    val eventId: String
-    val scope: String
-    val tokenUse: String
-    val username: String
-}
+class InvalidCognitoAccessTokenException(message:String): Exception(message)
 
 @Serializable
-data class CognitoAccessToken(
+data class CognitoAccessTokenClaims(
     override val aud: String,
     override val exp: Long,
     override val iat: Long,
@@ -43,8 +32,15 @@ data class CognitoAccessToken(
     @SerialName("token_use")
     override val tokenUse: String,
     override val username: String
-): AccessToken, AccessTokenExtenstion {
-    fun toJsonString(): String {
-        return Json.encodeToString(serializer(), this)
-    }
+): AccessToken, AccessTokenExtenstion
+
+class CognitoAccessToken(accessTokenString: String): JWT<CognitoAccessTokenClaims>(accessTokenString) {
+    override val claims: CognitoAccessTokenClaims
+        get() {
+            try {
+                return Json.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
+            } catch (e: Exception) {
+                throw InvalidCognitoAccessTokenException("This is not a valid access token")
+            }
+        }
 }

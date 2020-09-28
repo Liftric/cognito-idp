@@ -139,3 +139,17 @@ data class Address (
      */
     val country: String? = null
 )
+
+interface IdTokenExtension {
+    val aud: String
+    val authTime: Long
+    val cognitoGroups: List<String>
+    val cognitoUsername: String
+    val exp: Long
+    val eventId: String
+    val iss: String
+    val iat: Long
+    val scope: String?
+    val tokenUse: String
+    val custom: Map<String, String>?
+}
