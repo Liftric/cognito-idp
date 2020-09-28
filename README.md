@@ -95,6 +95,25 @@ At the moment you can only sign in with username and password.
 signIn(username = "USERNAME", password = "PASSWORD"): Result<SignInResponse>
 ```
 
+#### Get Claims
+
+You can retrieve the claims of both the IdTokens' and AccessTokens' payload by converting them to either a `CognitoIdToken` or `CognitoAccessToken`
+
+```kotlin
+val idToken = CognitoIdToken(idTokenString)
+// or
+val accessToken = CognitoAccessToken(accessTokenString)
+
+val phoneNumber = idToken.claims.phoneNumber
+val sub = idToken.claims.sub
+```
+
+Custom attributes of the IdToken get mapped into `customAttributes`
+
+```kotlin
+val twitter = idToken.claims.customAttributes["twitter"]
+```
+
 #### Get User
 
 Returns the users attributes and metadata on success.
@@ -103,16 +122,6 @@ More info about this in the [official documentation](https://docs.aws.amazon.com
 
 ```kotlin
 getUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<GetUserResponse>
-```
-
-#### Get Claims
-
-Parses the ID token to a Claims object (e.g. to access the sub id or email address). 
-
-> Not generic, refer to the Claims class to see which parameters are supported.
-
-```kotlin
-getClaims(fromIdToken = "ID_TOKEN_FROM_SIGN_IN_REQUEST"): Result<Claims>
 ```
 
 #### Update User Attributes
