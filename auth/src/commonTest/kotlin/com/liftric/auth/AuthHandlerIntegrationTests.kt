@@ -280,7 +280,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("GetCustomAttributes")
     @Test
-    fun `Test if gets custom attributes`() {
+    fun `Test if custom attributes get mapped correctly`() {
         val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3NTUzZGRmOC1hMTAzLTRjYjItOWVkZi0yNDcwMTBmNGNjNGQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImlzcyI6Imh0dHBzOi8vY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb20vZXUtY2VudHJhbC0xX0MxR243SGJZTiIsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEzMDE1ODYsImlhdCI6MTU5OTU2NjkyMywiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiY3VzdG9tOnR3aXR0ZXIiOiJ0ZXN0IiwiY3VzdG9tOmFnZSI6MTgsImp0aSI6ImI0NjE2MzZmLWUxOGMtNDhjZi04Mjk5LTUzYjZmMWIxNWZmMyJ9.Mzh2RGW1VWd1oxE89xW05Ce_JRs1Y2HifL3brBkf7NE"
         val idToken = CognitoIdToken(token)
         assertNotNull(idToken.claims.customAttributes?.get("custom:age"))
@@ -322,7 +322,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @Test
     fun `Test should throw InvalidBase64Exception since it is not a base 64 encoded string`() {
         assertFailsWith(InvalidBase64Exception::class) {
-            val token = "This is a string.EOKF36syRBtB11VgyChkNjc1HxRrajT7XXaxZfnVzPkV57K3b9yqkS284Ovb9uWzXgGeY2bxA3IySGfdOHiPAQ==F/v6hcTiU1sd975XHfDsz8o0rboujM77n7KwRMidobOLbo5ghUT/IFcxElUc8CirdZxaCaS3zs/CfRKRsXwbFNYd.the amount that is needed for a JWT"
+            val token = "component.EOKF36syRBtB11VgyChkNjc1HxRrajT7XXaxZfnVzPkV57K3b9yqkS284Ovb9uWzXgGeY2bxA3IySGfdOHiPAQ==F/v6hcTiU1sd975XHfDsz8o0rboujM77n7KwRMidobOLbo5ghUT/IFcxElUc8CirdZxaCaS3zs/CfRKRsXwbFNYd.component"
             val idToken = CognitoIdToken(token)
             idToken.getPayload()
         }
@@ -335,6 +335,16 @@ abstract class AbstractAuthHandlerIntegrationTests() {
             val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEyOTQ1NDQsImlhdCI6MTU5OTU2NjkyMywiZW1haWxfd2l0aF90eXBvIjoiZ2FlYmVsQGxpZnRyaWMuY29tIiwianRpIjoiYWNkNjg1MTUtZmExZi00ZTNmLWI3ZmUtODEwYzY2NmRhODYwIn0.zuqwEPXiLzbmxSdNQGjr3m4X5cXqdQf4aw_-7BUbvZk"
             val idToken = CognitoIdToken(token)
             idToken.claims
+        }
+    }
+
+    @JsName("ShouldThrowInvalidCognitoAccessTokenException")
+    @Test
+    fun `Test should throw InvalidCognitoAccessTokenException since this is not a valid Cognito Access token`() {
+        assertFailsWith(InvalidCognitoAccessTokenException::class) {
+            val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEyOTQ1NDQsImlhdCI6MTU5OTU2NjkyMywiZW1haWxfd2l0aF90eXBvIjoiZ2FlYmVsQGxpZnRyaWMuY29tIiwianRpIjoiYWNkNjg1MTUtZmExZi00ZTNmLWI3ZmUtODEwYzY2NmRhODYwIn0.zuqwEPXiLzbmxSdNQGjr3m4X5cXqdQf4aw_-7BUbvZk"
+            val accessToken = CognitoAccessToken(token)
+            accessToken.claims
         }
     }
 }
