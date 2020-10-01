@@ -1,9 +1,6 @@
 package com.liftric.auth
 
 import com.liftric.auth.base.*
-import com.liftric.auth.jwt.Base64
-import com.liftric.auth.jwt.CognitoIdToken
-import com.liftric.auth.jwt.CognitoAccessToken
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
@@ -11,8 +8,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import kotlin.reflect.KClass
+
+class UserNotFoundException(message:String): Exception(message)
+class NotAuthorizedException(message:String): Exception(message)
 
 /**
  * AWS Cognito authentication client
@@ -295,7 +293,11 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 Result.success(String(response.readBytes()))
             } else {
                 val error = parse(RequestError.serializer(), String(response.readBytes()))
-                Result.failure(Error(error.message))
+                when (error.type) {
+                    CognitoException.UserNotFound -> Result.failure(UserNotFoundException(error.message))
+                    CognitoException.NotAuthorized -> Result.failure(NotAuthorizedException(error.message))
+                    else -> Result.failure(Error(error.message))
+                }
             }
         } catch (e: Exception) {
             return Result.failure(e)
