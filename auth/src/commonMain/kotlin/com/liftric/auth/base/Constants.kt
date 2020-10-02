@@ -62,3 +62,8 @@ enum class Region(val code: String) {
     meSouth1("me-south-1"),
     saEast1("sa-east-1")
 }
+
+object CognitoException {
+    const val UserNotFound  = "UserNotFoundException"
+    const val NotAuthorized = "NotAuthorizedException"
+}

@@ -4,7 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RequestError(val __type: String, val message: String)
+data class RequestError(
+    @SerialName("__type")
+    val type: String,
+    val message: String
+)
 
 @Serializable
 data class SignInResponse(
