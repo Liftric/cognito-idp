@@ -9,8 +9,8 @@ import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerializationException
 
-class UserNotFoundException(message:String): Exception(message)
-class NotAuthorizedException(message:String): Exception(message)
+class UserNotFoundException(message: String) : Exception(message)
+class NotAuthorizedException(message: String) : Exception(message)
 
 /**
  * AWS Cognito authentication client
