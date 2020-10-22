@@ -23,7 +23,8 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         getUserAttributeVerificationCode, verifyUserAttribute
     }
 
-    private val client = HttpClient() {
+    private val client = HttpClient {
+        val configuration = configuration
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))
@@ -223,7 +224,11 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    override suspend fun verifyUserAttribute(accessToken: String, attributeName: String, code: String): Result<Unit> {
+    override suspend fun verifyUserAttribute(
+        accessToken: String,
+        attributeName: String,
+        code: String
+    ): Result<Unit> {
         return request(
             RequestType.verifyUserAttribute,
             serialize(

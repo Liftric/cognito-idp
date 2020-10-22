@@ -22,7 +22,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     private val username = "auth-lib-test-user-${random}"
     private val password = "auth-lib-test-user-${random}A1@"
 
-    private var authHandler = AuthHandler(configuration)
+    private val authHandler = AuthHandler(configuration)
 
     //-------------------
     // INTEGRATION TESTS
