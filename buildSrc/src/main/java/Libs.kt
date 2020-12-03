@@ -12,10 +12,10 @@ object Android {
 
 object Versions {
     const val gradle = "4.1.0"
-    const val kotlin = "1.4.10"
+    const val kotlin = "1.4.20"
     const val coroutines = "1.3.9-native-mt-2"
     const val serialization = "1.0.0-RC2"
-    const val ktor = "1.4.1"
+    const val ktor = "1.4.3"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.3.1"
 }
@@ -30,6 +30,7 @@ object Libs {
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.serialization}"
+    const val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}"
     const val ktorSerializationCore = "io.ktor:ktor-client-serialization:${Versions.ktor}"
 
     /* Android */

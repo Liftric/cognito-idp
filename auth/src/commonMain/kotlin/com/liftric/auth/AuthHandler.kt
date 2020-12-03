@@ -23,8 +23,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         getUserAttributeVerificationCode, verifyUserAttribute
     }
 
-    private val client = HttpClient {
-        val configuration = configuration
+    private val client = HttpClient() {
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))

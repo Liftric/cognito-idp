@@ -1,6 +1,5 @@
 package com.liftric.auth
 
-import androidx.test.core.app.ApplicationProvider
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
