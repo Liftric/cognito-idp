@@ -30,7 +30,6 @@ object Libs {
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.serialization}"
-    const val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}"
     const val ktorSerializationCore = "io.ktor:ktor-client-serialization:${Versions.ktor}"
 
     /* Android */

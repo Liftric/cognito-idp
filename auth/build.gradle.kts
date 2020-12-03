@@ -51,7 +51,6 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 implementation(Libs.ktorIOS)
-                implementation(TestLibs.TestCore)
             }
         }
     }
