@@ -295,14 +295,17 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 body = payload
             }
             return if (response.status == HttpStatusCode.OK) {
-                Result.success(String(response.readBytes()))
+                Result.success(String(response.readBytes()), response.status)
             } else {
                 val error = parse(RequestError.serializer(), String(response.readBytes()))
-                when (error.type) {
-                    CognitoException.UserNotFound -> Result.failure(UserNotFoundException(error.message))
-                    CognitoException.NotAuthorized -> Result.failure(NotAuthorizedException(error.message))
-                    else -> Result.failure(Error(error.message))
-                }
+                Result.failure(
+                    when (error.type) {
+                        CognitoException.UserNotFound -> UserNotFoundException(error.message)
+                        CognitoException.NotAuthorized -> NotAuthorizedException(error.message)
+                        else -> Error(error.message)
+                    },
+                    response.status
+                )
             }
         } catch (e: Exception) {
             return Result.failure(e)

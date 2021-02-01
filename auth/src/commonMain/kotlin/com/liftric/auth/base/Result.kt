@@ -1,12 +1,20 @@
 package com.liftric.auth.base
 
-class Result<out T> constructor(val value: Any?) {
+import com.liftric.auth.NotAuthorizedException
+import com.liftric.auth.UserNotFoundException
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.http.cio.*
+
+class Result<out T> constructor(val value: Any?, statusCode: HttpStatusCode? = null) {
     val isSuccess: Boolean get() = value !is Failure
     val isFailure: Boolean get() = value is Failure
+    var statusCode: HttpStatusCode? = statusCode
+        private set
 
     companion object {
-        fun <T> success(value: T): Result<T> = Result(value)
-        fun <T> failure(exception: Throwable): Result<T> = Result(Failure(exception))
+        fun <T> success(value: T, statusCode: HttpStatusCode? = null): Result<T> = Result(value, statusCode)
+        fun <T> failure(exception: Throwable, statusCode: HttpStatusCode? = null): Result<T> = Result(Failure(exception), statusCode)
     }
 
     class Failure(val exception: Throwable) {
@@ -36,8 +44,15 @@ class Result<out T> constructor(val value: Any?) {
 
 inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> {
     return when (value) {
-        is Result.Failure -> Result.failure(value.exception)
-        else -> action(value as T)
+        is Result.Failure -> Result.failure(value.exception, statusCode)
+        else -> {
+            val action = action(value as T)
+            val value = action.value
+            when(value) {
+                is Result.Failure -> Result.failure(value.exception, statusCode)
+                else -> Result.success(value as R, statusCode)
+            }
+        }
     }
 }
 
