@@ -65,6 +65,7 @@ android {
         targetSdkVersion(Apps.targetSdk)
         versionCode = Apps.versionCode
         versionName = Apps.versionName
+        testInstrumentationRunner = Android.TestRunner
     }
 
     compileOptions {

@@ -10,15 +10,16 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 
-class UserNotFoundException(message: String) : Exception(message)
-class NotAuthorizedException(message: String) : Exception(message)
+class UserNotFoundException(message: String): Exception(message)
+class NotAuthorizedException(message: String): Exception(message)
 
 /**
  * AWS Cognito authentication client
  * Provides common request methods
  */
-open class AuthHandler(private val configuration: Configuration) : Auth {
+open class AuthHandler(private val configuration: Configuration): Auth {
     enum class RequestType {
         signIn, signUp, confirmSignUp, signOut, getUser, changePassword,
         deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword,
@@ -275,21 +276,23 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 )
                 body = payload
             }
-            if (response.status == HttpStatusCode.OK) {
-                Result.success(response.readText(), response.status)
-            } else {
-                val error: RequestError = parse(response.readText())
+            Result.success(response.readText(), response.status)
+        } catch (e: ResponseException) {
+            try {
+                val error = parse<RequestError>(e.response.readText())
                 Result.failure(
                     when (error.type) {
                         CognitoException.UserNotFound -> UserNotFoundException(error.message)
                         CognitoException.NotAuthorized -> NotAuthorizedException(error.message)
                         else -> Error(error.message)
                     },
-                    response.status
+                    e.response.status
                 )
+            } catch (e: SerializationException) {
+                Result.failure(e)
             }
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (e: SerializationException) {
+             Result.failure(e)
         }
     }
 }
