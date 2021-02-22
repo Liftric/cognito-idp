@@ -6,9 +6,10 @@ import com.liftric.auth.base.UserAttribute
 import com.liftric.auth.jwt.*
 import io.ktor.http.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlin.js.JsName
 import kotlin.test.*
+
+expect fun runTest(block: suspend () -> Unit)
 
 expect class AuthHandlerIntegrationTests: AbstractAuthHandlerIntegrationTests
 abstract class AbstractAuthHandlerIntegrationTests() {
@@ -65,7 +66,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignUpSignInDeleteUserTest")
     @Test
-    fun `Sign up, sign in, delete user should succeed`() = runBlocking {
+    fun `Sign up, sign in, delete user should succeed`() = runTest {
         val signUpResponse = authHandler.signUp(
             username, password,
             attributes = listOf(
@@ -89,7 +90,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("GetUserTest")
     @Test
-    fun `Should get user`() = runBlocking {
+    fun `Should get user`() = runTest {
         val (token, _) = createUser()
 
         val getUserAttribute = authHandler.getUser(token)
@@ -102,7 +103,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("ChangeAttributeTest")
     @Test
-    fun `Should change attribute`() = runBlocking {
+    fun `Should change attribute`() = runTest {
         val (token, _) = createUser()
 
         val updateUserAttributesResponse = authHandler.updateUserAttributes(
@@ -129,7 +130,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("ChangePasswordTest")
     @Test
-    fun `Should change password`() = runBlocking {
+    fun `Should change password`() = runTest {
         val (token, credentials) = createUser()
 
         val changePasswordResponse = authHandler.changePassword(token, credentials.password, credentials.password + "B")
@@ -153,7 +154,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignOutSignInTest")
     @Test
-    fun `Sign out and sign in should succeed`() = runBlocking {
+    fun `Sign out and sign in should succeed`() = runTest {
         val (token, credentials) = createUser()
 
         val signOutResponse = authHandler.signOut(token)
@@ -173,7 +174,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignUpFailPasswordTooShortTest")
     @Test
-    fun `Sign up should fail because password too short`() = runBlocking {
+    fun `Sign up should fail because password too short`() = runTest {
         val signUpResponse = authHandler.signUp(
             "Username", "Short",
             attributes = listOf(
@@ -191,7 +192,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignUpFailPasswordTooLongTest")
     @Test
-    fun `Sign up should fail because password too long`() = runBlocking {
+    fun `Sign up should fail because password too long`() = runTest {
         val signUpResponse = authHandler.signUp(
             "Username", buildString { (1..260).forEach { _ -> append("A") } },
             attributes = listOf(
@@ -209,7 +210,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignUpFailUsernameTooLongTest")
     @Test
-    fun `Sign up should fail because username too long`() = runBlocking {
+    fun `Sign up should fail because username too long`() = runTest {
         var signUpResponse = authHandler.signUp(
             buildString { (1..130).forEach { _ -> append("A") } }, "Password",
             attributes = listOf(
@@ -227,7 +228,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignInTest")
     @Test
-    fun `Sign in should fail because wrong credentials`() = runBlocking {
+    fun `Sign in should fail because wrong credentials`() = runTest {
         val signInResponse = authHandler.signIn(
             randomUser().username, "WRONG_PASSWORD"
         )
@@ -239,7 +240,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("DeleteUserFailTest")
     @Test
-    fun `Get user should fail since access token wrong`() = runBlocking {
+    fun `Get user should fail since access token wrong`() = runTest {
         val deleteUserResponse = authHandler.deleteUser("WRONG_TOKEN")
         assertNotNull(deleteUserResponse.exceptionOrNull())
         assertEquals("Invalid Access Token", deleteUserResponse.exceptionOrNull()!!.message)
@@ -248,7 +249,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("DeleteUserTest")
     @Test
-    fun `Delete user should fail since access token wrong`() = runBlocking {
+    fun `Delete user should fail since access token wrong`() = runTest {
         val deleteUserResponse = authHandler.deleteUser("WRONG_TOKEN")
         assertNotNull(deleteUserResponse.exceptionOrNull())
         assertEquals("Invalid Access Token", deleteUserResponse.exceptionOrNull()!!.message)
@@ -257,7 +258,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("SignOutTest")
     @Test
-    fun `Sign out should fail since access token wrong`() = runBlocking {
+    fun `Sign out should fail since access token wrong`() = runTest {
         val signOutResponse = authHandler.signOut("WRONG_TOKEN")
         assertNotNull(signOutResponse.exceptionOrNull())
         assertEquals("Invalid Access Token", signOutResponse.exceptionOrNull()!!.message)
@@ -266,7 +267,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
 
     @JsName("UpdateUserAttributesTest")
     @Test
-    fun `Update attributes should fail since access token wrong`() = runBlocking {
+    fun `Update attributes should fail since access token wrong`() = runTest {
         val updateUserAttributesResponse = authHandler.updateUserAttributes(
             "WRONG_TOKEN",
             attributes = listOf(
