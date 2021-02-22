@@ -1,17 +1,17 @@
 package com.liftric.auth.base
 
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-internal fun <T> serialize(strategy: SerializationStrategy<T>, value: T): String {
+internal inline fun <reified T> serialize(value: T): String {
     return Json {
         allowStructuredMapKeys = true
-    }.encodeToString(strategy, value)
+    }.encodeToString(value)
 }
 
-internal fun <T> parse(strategy: DeserializationStrategy<T>, value: String): T {
+internal inline fun <reified T> parse(value: String): T {
     return Json {
         allowStructuredMapKeys = true
-    }.decodeFromString(strategy, value)
+    }.decodeFromString(value)
 }

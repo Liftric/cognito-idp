@@ -1,5 +1,6 @@
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import java.util.*
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 
 plugins {
     id("com.android.library")
@@ -64,6 +65,7 @@ android {
         targetSdkVersion(Apps.targetSdk)
         versionCode = Apps.versionCode
         versionName = Apps.versionName
+        testInstrumentationRunner = Android.TestRunner
     }
 
     compileOptions {
@@ -123,22 +125,24 @@ afterEvaluate {
     }
 }
 
-tasks.withType<BintrayUploadTask> {
-    doFirst {
-        // https://github.com/bintray/gradle-bintray-plugin/issues/229
-        project.publishing.publications.withType(MavenPublication::class.java).forEach {
-            val moduleFile = buildDir.resolve("publications/${it.name}/module.json")
-            if (moduleFile.exists()) {
-                it.artifact(object : org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
-                    override fun getDefaultExtension() = "module"
-                })
+tasks {
+    withType<BintrayUploadTask> {
+        dependsOn("publishToMavenLocal")
+        doFirst {
+            // https://github.com/bintray/gradle-bintray-plugin/issues/229
+            project.publishing.publications.withType(MavenPublication::class.java).forEach {
+                val moduleFile = buildDir.resolve("publications/${it.name}/module.json")
+                if (moduleFile.exists()) {
+                    it.artifact(object : org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
+                        override fun getDefaultExtension() = "module"
+                    })
+                }
             }
+            val pubs = project.publishing.publications.map { it.name }
+            setPublications(*pubs.toTypedArray())
         }
-        val pubs = project.publishing.publications.map { it.name }
-        setPublications(*pubs.toTypedArray())
     }
-}
-
-tasks.withType<BintrayUploadTask> {
-    dependsOn("publishToMavenLocal")
+    val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
+        filter.excludeTestsMatching("com.liftric.auth.AuthHandlerIntegrationTests")
+    }
 }
