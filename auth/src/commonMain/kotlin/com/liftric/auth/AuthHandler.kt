@@ -3,6 +3,8 @@ package com.liftric.auth
 import com.liftric.auth.base.*
 import io.ktor.client.*
 import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -43,7 +45,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.signUp,
             serialize(
-                SignUp.serializer(),
                 SignUp(
                     ClientId = configuration.clientId,
                     Username = username,
@@ -53,7 +54,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             try {
-                Result.success(parse(SignUpResponse.serializer(), it))
+                Result.success(parse(it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
@@ -67,7 +68,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.confirmSignUp,
             serialize(
-                ConfirmSignUp.serializer(),
                 ConfirmSignUp(
                     configuration.clientId,
                     username,
@@ -86,7 +86,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.signIn,
             serialize(
-                Authentication.serializer(),
                 Authentication(
                     AuthFlow.UserPasswordAuth,
                     configuration.clientId,
@@ -95,7 +94,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             try {
-                Result.success(parse(SignInResponse.serializer(), it))
+                Result.success(parse(it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
@@ -105,13 +104,10 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     override suspend fun getUser(accessToken: String): Result<GetUserResponse> {
         return request(
             RequestType.getUser,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
+            serialize(AccessToken(accessToken))
         ).onResult {
             try {
-                Result.success(parse(GetUserResponse.serializer(), it))
+                Result.success(parse(it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
@@ -124,13 +120,10 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     ): Result<UpdateUserAttributesResponse> {
         return request(
             RequestType.updateUserAttributes,
-            serialize(
-                UpdateUserAttributes.serializer(),
-                UpdateUserAttributes(accessToken, attributes)
-            )
+            serialize(UpdateUserAttributes(accessToken, attributes))
         ).onResult {
             try {
-                Result.success(parse(UpdateUserAttributesResponse.serializer(), it))
+                Result.success(parse(it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
@@ -145,9 +138,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.changePassword,
             serialize(
-                ChangePassword.serializer(),
-                ChangePassword
-                    (
+                ChangePassword(
                     accessToken,
                     currentPassword,
                     newPassword
@@ -164,7 +155,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.forgotPassword,
             serialize(
-                ForgotPassword.serializer(),
                 ForgotPassword(
                     configuration.clientId,
                     username
@@ -172,7 +162,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             try {
-                Result.success(parse(ForgotPasswordResponse.serializer(), it))
+                Result.success(parse(it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
@@ -187,7 +177,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.confirmForgotPassword,
             serialize(
-                ConfirmForgotPassword.serializer(),
                 ConfirmForgotPassword(
                     configuration.clientId,
                     confirmationCode,
@@ -208,7 +197,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.getUserAttributeVerificationCode,
             serialize(
-                GetUserAttributeVerificationCode.serializer(),
                 GetUserAttributeVerificationCode(
                     accessToken,
                     attributeName,
@@ -217,7 +205,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             )
         ).onResult {
             try {
-                Result.success(parse(GetAttributeVerificationCodeResponse.serializer(), it))
+                Result.success(parse(it))
             } catch (e: SerializationException) {
                 Result.failure(e)
             }
@@ -232,7 +220,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         return request(
             RequestType.verifyUserAttribute,
             serialize(
-                VerifyUserAttribute.serializer(),
                 VerifyUserAttribute(
                     accessToken,
                     attributeName,
@@ -247,10 +234,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     override suspend fun signOut(accessToken: String): Result<Unit> {
         return request(
             RequestType.signOut,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
+            serialize(AccessToken(accessToken))
         ).onResult {
             Result.success(Unit)
         }
@@ -259,10 +243,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     override suspend fun deleteUser(accessToken: String): Result<Unit> {
         return request(
             RequestType.deleteUser,
-            serialize(
-                AccessToken.serializer(),
-                AccessToken(accessToken)
-            )
+            serialize(AccessToken(accessToken))
         ).onResult {
             Result.success(Unit)
         }
@@ -273,7 +254,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     //----------
 
     private suspend fun request(type: RequestType, payload: String): Result<String> {
-        try {
+        return try {
             val response = client.post<HttpResponse>(configuration.requestUrl) {
                 header(
                     Header.AmzTarget,
@@ -294,10 +275,10 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 )
                 body = payload
             }
-            return if (response.status == HttpStatusCode.OK) {
-                Result.success(String(response.readBytes()), response.status)
+            if (response.status == HttpStatusCode.OK) {
+                Result.success(response.readText(), response.status)
             } else {
-                val error = parse(RequestError.serializer(), String(response.readBytes()))
+                val error: RequestError = parse(response.readText())
                 Result.failure(
                     when (error.type) {
                         CognitoException.UserNotFound -> UserNotFoundException(error.message)
@@ -308,7 +289,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
                 )
             }
         } catch (e: Exception) {
-            return Result.failure(e)
+            Result.failure(e)
         }
     }
 }
