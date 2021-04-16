@@ -3,6 +3,7 @@ package com.liftric.auth
 import com.liftric.auth.base.Environment
 import com.liftric.auth.base.Region
 import com.liftric.auth.base.UserAttribute
+import com.liftric.auth.base.getOrThrow
 import com.liftric.auth.jwt.*
 import io.ktor.http.*
 import kotlinx.coroutines.delay
@@ -170,6 +171,33 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         assertEquals(HttpStatusCode.OK, signInResponse.statusCode)
 
         deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+    }
+
+    @JsName("SignOutSignInRefreshTest")
+    @Test
+    fun `Sign out, sign in and refresh should succeed`() = runTest {
+        val (token, credentials) = createUser()
+
+        val signOutResponse = authHandler.signOut(token)
+        assertNull(signOutResponse.exceptionOrNull())
+        assertEquals(HttpStatusCode.OK, signOutResponse.statusCode)
+
+        // AWS is not revoking Tokens instantly so give it some time
+        delay(1000)
+
+        val signInResponse = authHandler.signIn(credentials.username, credentials.password)
+        assertNull(signInResponse.exceptionOrNull())
+        assertNotNull(signInResponse.getOrNull())
+        assertEquals(HttpStatusCode.OK, signInResponse.statusCode)
+
+        val refreshToken = signInResponse.getOrThrow().AuthenticationResult.RefreshToken
+
+        val refreshResponse = authHandler.refresh(refreshToken)
+        assertNull(refreshResponse.exceptionOrNull())
+        assertNotNull(refreshResponse.getOrNull())
+        assertEquals(HttpStatusCode.OK, refreshResponse.statusCode)
+
+        deleteUser(refreshResponse.getOrNull()!!.AuthenticationResult.AccessToken)
     }
 
     @JsName("SignUpFailPasswordTooShortTest")

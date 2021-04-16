@@ -16,6 +16,18 @@ internal data class AuthParameters(
 )
 
 @Serializable
+internal data class RefreshAuthentication(
+    val AuthFlow: String,
+    val ClientId: String,
+    val AuthParameters: RefreshParameters
+)
+
+@Serializable
+internal data class RefreshParameters(
+    val REFRESH_TOKEN: String
+)
+
+@Serializable
 internal data class AccessToken(
     val AccessToken: String
 )

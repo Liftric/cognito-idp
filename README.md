@@ -89,10 +89,18 @@ confirmSignUp(username = "USERNAME", confirmationCode = "CODE_FROM_DELIVERY_MEDI
 
 Signs in the users.
 
-At the moment you can only sign in with username and password.
-
 ```kotlin
 signIn(username = "USERNAME", password = "PASSWORD"): Result<SignInResponse>
+```
+
+#### Refresh access token
+
+Refreshes access token based on refresh token that's retrieved from an earlier sign in.
+
+```kotlin
+val signInResponse: SignInResponse = ... // from earlier login or refresh
+val refreshToken = signInResponse.AuthenticationResult.RefreshToken
+refresh(refreshToken = refreshToken): Result<SignInResponse>
 ```
 
 #### Get Claims

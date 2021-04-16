@@ -102,6 +102,25 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         }
     }
 
+    override suspend fun refresh(refreshToken: String): Result<SignInResponse> {
+        return request(
+                RequestType.signIn,
+                serialize(
+                        RefreshAuthentication(
+                                AuthFlow.RefreshTokenAuth,
+                                configuration.clientId,
+                                RefreshParameters(refreshToken)
+                        )
+                )
+        ).onResult {
+            try {
+                Result.success(parse(it))
+            } catch (e: SerializationException) {
+                Result.failure(e)
+            }
+        }
+    }
+
     override suspend fun getUser(accessToken: String): Result<GetUserResponse> {
         return request(
             RequestType.getUser,
