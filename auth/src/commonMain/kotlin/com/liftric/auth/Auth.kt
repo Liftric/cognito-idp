@@ -32,6 +32,14 @@ interface Auth {
      */
     suspend fun signIn(username: String, password: String): Result<SignInResponse>
 
+
+    /**
+     * Signs in the user with the given parameters
+     * @param refreshToken The refresh token
+     * @return Result object containing SignInResponse on success or an error on failure
+     */
+    suspend fun refresh(refreshToken: String): Result<SignInResponse>
+
     /**
      * Fetches the user object
      * @param accessToken The access token from the sign in request
