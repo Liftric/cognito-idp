@@ -1,14 +1,15 @@
-import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
-import java.util.*
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.Jar
+import org.gradle.kotlin.dsl.signing
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("maven-publish")
     id("kotlinx-serialization")
-    id("com.jfrog.bintray") version "1.8.5"
     id("net.nemerosa.versioning") version "2.14.0"
+    id("signing")
 }
 
 kotlin {
@@ -93,32 +94,6 @@ val artifactVersion: String = with(versioning.info) {
 group = artifactGroup
 version = artifactVersion
 
-bintray {
-    user = System.getenv("bintrayUser")
-    key = System.getenv("bintrayApiKey")
-    publish = true
-    override = true
-
-    pkg.apply {
-        repo = "maven"
-        name = artifactName
-        userOrg = "liftric"
-        vcsUrl = "https://github.com/Liftric/Auth"
-        description = "Lightweight AWS Cognito client for Kotlin Multiplatform projects"
-        setLabels("kotlin-multiplatform", "liftric", "kotlin-native", "aws-cognito", "cognito", "aws")
-        setLicenses("MIT")
-        desc = description
-        websiteUrl = "https://github.com/Liftric/Auth"
-        issueTrackerUrl = "https://github.com/Liftric/Auth/issues"
-
-        version.apply {
-            name = artifactVersion
-            vcsTag = artifactVersion
-            released = Date().toString()
-        }
-    }
-}
-
 afterEvaluate {
     project.publishing.publications.withType(MavenPublication::class.java).forEach {
         it.groupId = artifactGroup
@@ -126,23 +101,62 @@ afterEvaluate {
 }
 
 tasks {
-    withType<BintrayUploadTask> {
-        dependsOn("publishToMavenLocal")
-        doFirst {
-            // https://github.com/bintray/gradle-bintray-plugin/issues/229
-            project.publishing.publications.withType(MavenPublication::class.java).forEach {
-                val moduleFile = buildDir.resolve("publications/${it.name}/module.json")
-                if (moduleFile.exists()) {
-                    it.artifact(object : org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
-                        override fun getDefaultExtension() = "module"
-                    })
-                }
-            }
-            val pubs = project.publishing.publications.map { it.name }
-            setPublications(*pubs.toTypedArray())
-        }
-    }
     val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
         filter.excludeTestsMatching("com.liftric.auth.AuthHandlerIntegrationTests")
     }
+}
+
+val ossrhUsername: String by project
+val ossrhPassword: String by project
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "sonatype"
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+
+    publications.withType<MavenPublication> {
+
+        artifact(javadocJar.get())
+
+        pom {
+            name.set(artifactName)
+            description.set("Lightweight AWS Cognito client for Kotlin Multiplatform projects.")
+            url.set("https://github.com/Liftric/Auth")
+
+            licenses {
+                license {
+                    name.set("MIT")
+                    url.set("https://github.com/Liftric/Auth/blob/master/LICENSE")
+                }
+            }
+            developers {
+                developer {
+                    id.set("gaebel")
+                    name.set("Jan Gaebel")
+                    email.set("gaebel@liftric.com")
+                }
+            }
+            scm {
+                url.set("https://github.com/Liftric/Auth")
+            }
+        }
+    }
+}
+
+signing {
+    val signingKey: String by project
+    val signingPassword: String by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications)
 }
