@@ -1,4 +1,4 @@
-![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![Published](https://github.com/Liftric/auth/workflows/Publish%20to%20Bintray/badge.svg) ![Release](https://img.shields.io/github/v/release/liftric/auth?label=release)
+![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![Release](https://img.shields.io/github/v/release/liftric/auth?label=release)
 
 # Auth
 
@@ -8,15 +8,7 @@ Auth is a lightweight AWS Cognito client for Kotlin Multiplatform projects
 
 ## Import
 
-Auth is published on Bintray.
-
-```kotlin
-repositories {
-    maven { url = uri("https://dl.bintray.com/liftric/maven/") }
-}
-```
-
-Then, simply add the dependencies to your sourceSets:
+Simply add the dependencies to your sourceSets:
 
 ```kotlin
 sourceSets {
