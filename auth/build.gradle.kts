@@ -106,8 +106,8 @@ tasks {
     }
 }
 
-val ossrhUsername: String by project
-val ossrhPassword: String by project
+val ossrhUsername: String? by project
+val ossrhPassword: String? by project
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
