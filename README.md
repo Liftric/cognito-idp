@@ -1,4 +1,4 @@
-![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![Release](https://img.shields.io/github/v/release/liftric/auth?label=release)
+![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![maven-central](https://img.shields.io/maven-central/v/com.liftric/auth)
 
 # Auth
 
