@@ -311,7 +311,9 @@ open class AuthHandler(private val configuration: Configuration): Auth {
                 Result.failure(e)
             }
         } catch (e: SerializationException) {
-             Result.failure(e)
+            Result.failure(e)
+        } catch (t: Throwable) {
+            Result.failure(t)
         }
     }
 }
