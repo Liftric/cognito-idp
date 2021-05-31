@@ -17,3 +17,4 @@ local.properties
 .DS_Store
 .externalNativeBuild
 .database
+private.key
