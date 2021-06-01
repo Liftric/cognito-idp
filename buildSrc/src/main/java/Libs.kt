@@ -13,6 +13,7 @@ object Android {
 object Versions {
     const val gradle = "4.2.1"
     const val kotlin = "1.5.10"
+    const val definitions = "4.9.1"
     const val coroutines = "1.5.0-native-mt"
     const val serialization = "1.2.1"
     const val ktor = "1.6.0"

@@ -1,7 +1,11 @@
+@file:JsExport
+
 package com.liftric.auth.base
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlin.js.JsExport
 
 @Serializable
 data class RequestError(
@@ -13,8 +17,15 @@ data class RequestError(
 @Serializable
 data class SignInResponse(
     val AuthenticationResult: AuthenticationResult,
-    val ChallengeParameters: Map<String, String> = mapOf()
+    val ChallengeParameters: Map<String, String> = mapOf(),
+    @Transient
+    val ChallengeParametersJs: Array<MapEntry> = ChallengeParameters
+        .map { MapEntry(it.key, it.value) }
+        .toTypedArray()
 )
+
+@Serializable
+data class MapEntry(val key: String, val value: String)
 
 @Serializable
 data class AuthenticationResult(
@@ -43,8 +54,8 @@ data class CodeDeliveryDetails(
 data class GetUserResponse(
     val MFAOptions: MFAOptions = MFAOptions(),
     val PreferredMfaSetting: String = "",
-    val UserAttributes : List<UserAttribute> = listOf(),
-    val UserMFASettingList: List<String> = listOf(),
+    val UserAttributes: Array<UserAttribute> = arrayOf(),
+    val UserMFASettingList: Array<String> = arrayOf(),
     val Username: String
 )
 
@@ -56,7 +67,7 @@ data class MFAOptions(
 
 @Serializable
 data class UpdateUserAttributesResponse(
-    val CodeDeliveryDetailsList: List<CodeDeliveryDetails> = listOf()
+    val CodeDeliveryDetailsList: Array<CodeDeliveryDetails> = arrayOf()
 )
 
 @Serializable

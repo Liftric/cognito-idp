@@ -15,6 +15,7 @@ buildscript {
 plugins {
     id("com.android.library")
     kotlin("multiplatform") version Versions.kotlin
+    id("com.github.turansky.kfc.definitions") version Versions.definitions // fixes Promise in generated typescript files
     id("maven-publish")
     id("org.jetbrains.kotlin.plugin.serialization") version Versions.kotlin
     id("net.nemerosa.versioning") version "2.14.0"
