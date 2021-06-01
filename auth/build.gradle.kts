@@ -1,14 +1,30 @@
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath(Libs.gradleAndroid)
+    }
+}
+
 plugins {
     id("com.android.library")
-    kotlin("multiplatform")
+    kotlin("multiplatform") version Versions.kotlin
     id("maven-publish")
-    id("kotlinx-serialization")
+    id("org.jetbrains.kotlin.plugin.serialization") version Versions.kotlin
     id("net.nemerosa.versioning") version "2.14.0"
     id("signing")
     id("com.liftric.vault-client-plugin") version "2.0.0"
+}
+
+repositories {
+    mavenCentral()
+    google()
 }
 
 kotlin {
@@ -18,6 +34,10 @@ kotlin {
         publishLibraryVariants("debug", "release")
     }
 
+//    js(IR) {
+//        browser()
+//        binaries.library()
+//    }
 
     sourceSets {
         val commonMain by getting {
@@ -108,6 +128,7 @@ tasks {
     val testSecrets by creating(GetVaultSecretTask::class) {
         secretPath.set("secret/apps/smartest/shared/cognito")
     }
+
     withType<Test> {
         if (System.getenv("origin") == null || System.getenv("clientid") == null) {
             // github ci provides origin and clientid envs, locally we'll use vault directly
