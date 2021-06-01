@@ -1,7 +1,5 @@
+import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.signing
 
 plugins {
     id("com.android.library")
@@ -10,6 +8,7 @@ plugins {
     id("kotlinx-serialization")
     id("net.nemerosa.versioning") version "2.14.0"
     id("signing")
+    id("com.liftric.vault-client-plugin") version "2.0.0"
 }
 
 kotlin {
@@ -18,6 +17,7 @@ kotlin {
     android {
         publishLibraryVariants("debug", "release")
     }
+
 
     sourceSets {
         val commonMain by getting {
@@ -104,6 +104,22 @@ tasks {
     val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
         filter.excludeTestsMatching("com.liftric.auth.AuthHandlerIntegrationTests")
     }
+
+    val testSecrets by creating(GetVaultSecretTask::class) {
+        secretPath.set("secret/apps/smartest/shared/cognito")
+    }
+    withType<Test> {
+        if (System.getenv("origin") == null || System.getenv("clientid") == null) {
+            // github ci provides origin and clientid envs, locally we'll use vault directly
+            dependsOn(testSecrets)
+            doFirst {
+                with(testSecrets.secret.get()) {
+                    environment("clientid", this["client_id_dev"].toString())
+                    environment("origin", this["client_origin_dev"].toString())
+                }
+            }
+        }
+    }
 }
 
 val ossrhUsername: String? by project
@@ -159,4 +175,13 @@ signing {
     val signingPassword: String? by project
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
+}
+
+vault {
+    vaultAddress.set("https://dark-lord.liftric.io")
+    if (System.getenv("CI") == null) {
+        vaultTokenFilePath.set("${System.getProperty("user.home")}/.vault-token")
+    } else {
+        vaultToken.set(System.getenv("VAULT_TOKEN"))
+    }
 }
