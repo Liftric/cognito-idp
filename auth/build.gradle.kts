@@ -35,7 +35,13 @@ kotlin {
     }
 
     js(IR) {
-        browser()
+        browser {
+            testTask {
+                useMocha {
+                    timeout = "10s"
+                }
+            }
+        }
         binaries.library()
     }
 
@@ -49,6 +55,7 @@ kotlin {
             }
         }
         val commonTest by getting {
+            kotlin.srcDir("${buildDir}/gen")
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-common"))
@@ -80,8 +87,6 @@ kotlin {
             dependencies {
                 implementation(Libs.ktorJS)
                 implementation(kotlin("test-js"))
-                implementation(npm("host-environment", "2.1.2", false))
-                implementation(npm("karma-host-environment", "3.0.3", false))
             }
         }
         val jsTest by getting {
@@ -141,6 +146,39 @@ tasks {
 
     val testSecrets by creating(GetVaultSecretTask::class) {
         secretPath.set("secret/apps/smartest/shared/cognito")
+    }
+
+    val createJsEnvHack by creating {
+        outputs.dir("$buildDir/gen")
+
+        if (System.getenv("origin") == null || System.getenv("clientid") == null) {
+            // github ci provides origin and clientid envs, locally we'll use vault directly
+            dependsOn(testSecrets)
+        }
+
+        doFirst {
+            val (clientid, origin) = with(testSecrets.secret.get()) {
+                ((System.getenv("clientid") ?: this["client_id_dev"].toString()) to
+                        (System.getenv("origin") ?: this["client_origin_dev"].toString()))
+            }
+
+            mkdir("$buildDir/gen")
+            with(File("$buildDir/gen/env.kt")) {
+                createNewFile()
+                writeText(
+                    """
+                val env = mapOf(
+                    "origin" to "$origin",
+                    "clientid" to "$clientid",
+                )
+            """.trimIndent()
+                )
+            }
+        }
+    }
+
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon> {
+        dependsOn(createJsEnvHack)
     }
 
     withType<Test> {
