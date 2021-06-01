@@ -37,6 +37,9 @@ object Libs {
 
     /* iOS */
     const val ktorIOS = "io.ktor:ktor-client-ios:${Versions.ktor}"
+
+    /* JS */
+    const val ktorJS = "io.ktor:ktor-client-js:${Versions.ktor}"
 }
 
 object TestLibs {

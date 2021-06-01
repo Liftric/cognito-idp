@@ -34,10 +34,10 @@ kotlin {
         publishLibraryVariants("debug", "release")
     }
 
-//    js(IR) {
-//        browser()
-//        binaries.library()
-//    }
+    js(IR) {
+        browser()
+        binaries.library()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -50,6 +50,7 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
+                implementation(kotlin("test"))
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 implementation(Libs.coroutinesCore)
@@ -73,6 +74,19 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 implementation(Libs.ktorIOS)
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation(Libs.ktorJS)
+                implementation(kotlin("test-js"))
+                implementation(npm("host-environment", "2.1.2", false))
+                implementation(npm("karma-host-environment", "3.0.3", false))
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+
             }
         }
     }
