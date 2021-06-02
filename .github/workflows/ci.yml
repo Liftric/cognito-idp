@@ -12,8 +12,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build and test (Android)
-        run: export origin=${{ secrets.origin }}; export clientid=${{ secrets.clientid }}; ./gradlew build test -x iosX64Test
+      - name: Build and test (Android & Js)
+        run: export origin=${{ secrets.origin }}; export clientid=${{ secrets.clientid }}; ./gradlew build allTest
       - name: Upload test result
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
