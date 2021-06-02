@@ -22,26 +22,44 @@ class AuthHandlerJS(origin: String, regionString: String, clientId: String) {
 
     fun confirmSignUp(username: String, confirmationCode: String): Promise<Unit> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.confirmSignUp(username, confirmationCode)
+                .getOrThrow()
         }
 
     fun signIn(username: String, password: String): Promise<SignInResponseJS> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.signIn(username, password)
+                .getOrThrow().let {
+                    SignInResponseJS(
+                        it.AuthenticationResult,
+                        it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
+                    )
+                }
         }
 
     fun refresh(refreshToken: String): Promise<SignInResponseJS> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.refresh(refreshToken)
+                .getOrThrow().let {
+                    SignInResponseJS(
+                        it.AuthenticationResult,
+                        it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
+                    )
+                }
         }
 
     fun getUser(accessToken: String): Promise<GetUserResponseJS> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.getUser(accessToken)
+                .getOrThrow().let {
+                    GetUserResponseJS(
+                        it.MFAOptions,
+                        it.PreferredMfaSetting,
+                        it.UserAttributes.toTypedArray(),
+                        it.UserMFASettingList.toTypedArray(),
+                        it.Username
+                    )
+                }
         }
 
     fun updateUserAttributes(
@@ -49,26 +67,28 @@ class AuthHandlerJS(origin: String, regionString: String, clientId: String) {
         attributes: Array<UserAttribute>
     ): Promise<UpdateUserAttributesResponseJS> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.updateUserAttributes(accessToken, attributes.toList())
+                .getOrThrow().let {
+                    UpdateUserAttributesResponseJS(it.CodeDeliveryDetailsList.toTypedArray())
+                }
         }
 
     fun changePassword(accessToken: String, currentPassword: String, newPassword: String): Promise<Unit> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.changePassword(accessToken, currentPassword, newPassword)
+                .getOrThrow()
         }
 
     fun forgotPassword(username: String): Promise<ForgotPasswordResponse> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.forgotPassword(username)
+                .getOrThrow()
         }
 
     fun confirmForgotPassword(confirmationCode: String, username: String, password: String): Promise<Unit> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.confirmForgotPassword(confirmationCode, username, password)
+                .getOrThrow()
         }
 
     fun getUserAttributeVerificationCode(
@@ -77,27 +97,29 @@ class AuthHandlerJS(origin: String, regionString: String, clientId: String) {
         clientMetadata: Array<MapEntry>? = null
     ): Promise<GetAttributeVerificationCodeResponse> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.getUserAttributeVerificationCode(
+                accessToken,
+                attributeName,
+                clientMetadata?.associate { it.key to it.value })
+                .getOrThrow()
         }
 
     fun verifyUserAttribute(accessToken: String, attributeName: String, code: String): Promise<Unit> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.verifyUserAttribute(accessToken, attributeName, code)
+                .getOrThrow()
         }
 
     fun signOut(accessToken: String): Promise<Unit> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.signOut(accessToken)
+                .getOrThrow()
         }
 
     fun deleteUser(accessToken: String): Promise<Unit> =
         MainScope().promise {
-            handler
-            TODO()
+            handler.deleteUser(accessToken)
+                .getOrThrow()
         }
-
 }
 

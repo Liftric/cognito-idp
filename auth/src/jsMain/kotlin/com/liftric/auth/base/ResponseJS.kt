@@ -35,8 +35,8 @@ data class SignInResponseJS(
 data class GetUserResponseJS(
     val MFAOptions: MFAOptions = MFAOptions(),
     val PreferredMfaSetting: String = "",
-    val UserAttributes : Array<MapEntry> = arrayOf(),
-    val UserMFASettingList: Array<MapEntry> = arrayOf(),
+    val UserAttributes : Array<UserAttribute> = arrayOf(),
+    val UserMFASettingList: Array<String> = arrayOf(),
     val Username: String
 ) {
     override fun equals(other: Any?): Boolean {
@@ -66,7 +66,7 @@ data class GetUserResponseJS(
 
 @Serializable
 data class UpdateUserAttributesResponseJS(
-    val CodeDeliveryDetailsList: Array<MapEntry> = arrayOf()
+    val CodeDeliveryDetailsList: Array<CodeDeliveryDetails> = arrayOf()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
