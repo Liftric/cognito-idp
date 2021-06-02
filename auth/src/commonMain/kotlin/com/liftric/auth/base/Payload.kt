@@ -1,6 +1,7 @@
 package com.liftric.auth.base
 
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
 internal data class Authentication(
@@ -68,6 +69,7 @@ internal data class ConfirmForgotPassword(
     val Password: String
 )
 
+@JsExport
 @Serializable
 data class UserAttribute(
     val Name: String = "",

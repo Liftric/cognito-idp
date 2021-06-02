@@ -16,21 +16,6 @@ object Header {
     const val AmzJson           = "application/x-amz-json-1.1"
 }
 
-object IdentityProviderService {
-    const val InitiateAuth              = "AWSCognitoIdentityProviderService.InitiateAuth"
-    const val GlobalSignOut             = "AWSCognitoIdentityProviderService.GlobalSignOut"
-    const val GetUser                   = "AWSCognitoIdentityProviderService.GetUser"
-    const val ChangePassword            = "AWSCognitoIdentityProviderService.ChangePassword"
-    const val ForgotPassword            = "AWSCognitoIdentityProviderService.ForgotPassword"
-    const val ConfirmForgotPassword     = "AWSCognitoIdentityProviderService.ConfirmForgotPassword"
-    const val DeleteUser                = "AWSCognitoIdentityProviderService.DeleteUser"
-    const val SignUp                    = "AWSCognitoIdentityProviderService.SignUp"
-    const val ConfirmSignUp             = "AWSCognitoIdentityProviderService.ConfirmSignUp"
-    const val UpdateUserAttributes      = "AWSCognitoIdentityProviderService.UpdateUserAttributes"
-    const val GetUserAttributeVerificationCode = "AWSCognitoIdentityProviderService.GetUserAttributeVerificationCode"
-    const val VerifyUserAttribute = "AWSCognitoIdentityProviderService.VerifyUserAttribute"
-}
-
 object AuthFlow {
     const val RefreshTokenAuth  = "REFRESH_TOKEN_AUTH"
     const val UserSrpAuth       = "USER_SRP_AUTH"

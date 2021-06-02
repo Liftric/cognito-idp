@@ -1,10 +1,10 @@
 package com.liftric.auth
 
-import com.liftric.auth.base.Environment
 import com.liftric.auth.base.Region
 import com.liftric.auth.base.UserAttribute
 import com.liftric.auth.base.getOrThrow
 import com.liftric.auth.jwt.*
+import env
 import io.ktor.http.*
 import kotlinx.coroutines.delay
 import kotlin.js.JsName
@@ -15,9 +15,9 @@ expect fun runTest(block: suspend () -> Unit)
 expect class AuthHandlerIntegrationTests: AbstractAuthHandlerIntegrationTests
 abstract class AbstractAuthHandlerIntegrationTests() {
     private val configuration = Configuration(
-        Environment.variable("origin") ?: "",
+        env["origin"] ?: "",
         Region.euCentral1,
-        Environment.variable("clientid") ?: ""
+        env["clientid"] ?: ""
     )
 
     // Randomize temp user account name to not exceed aws try threshold

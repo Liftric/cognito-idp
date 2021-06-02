@@ -5,9 +5,9 @@ import java.io.UnsupportedEncodingException
 
 internal actual class Base64 {
     actual companion object {
-        actual fun decode(string: String): String? {
+        actual fun decode(input: String): String? {
             return try {
-                String(Base64.decode(string, Base64.URL_SAFE), Charsets.UTF_8)
+                String(Base64.decode(input, Base64.URL_SAFE), Charsets.UTF_8)
             } catch (e: Exception) {
                 null
             }

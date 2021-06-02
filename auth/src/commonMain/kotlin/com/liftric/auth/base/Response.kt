@@ -1,8 +1,16 @@
+@file:OptIn(ExperimentalJsExport::class) // redundant because IDEA ignores configured freeCompilerArgs
+
+/**
+ * Don't forget to check [ResponseJS.kt] when doing changes here :)
+ */
 package com.liftric.auth.base
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
+@JsExport
 @Serializable
 data class RequestError(
     @SerialName("__type")
@@ -16,6 +24,7 @@ data class SignInResponse(
     val ChallengeParameters: Map<String, String> = mapOf()
 )
 
+@JsExport
 @Serializable
 data class AuthenticationResult(
     val AccessToken: String = "",
@@ -25,6 +34,7 @@ data class AuthenticationResult(
     val TokenType: String = ""
 )
 
+@JsExport
 @Serializable
 data class SignUpResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails(),
@@ -32,6 +42,7 @@ data class SignUpResponse(
     val UserSub: String = ""
 )
 
+@JsExport
 @Serializable
 data class CodeDeliveryDetails(
     val AttributeName: String = "",
@@ -43,11 +54,12 @@ data class CodeDeliveryDetails(
 data class GetUserResponse(
     val MFAOptions: MFAOptions = MFAOptions(),
     val PreferredMfaSetting: String = "",
-    val UserAttributes : List<UserAttribute> = listOf(),
+    val UserAttributes: List<UserAttribute> = listOf(),
     val UserMFASettingList: List<String> = listOf(),
     val Username: String
 )
 
+@JsExport
 @Serializable
 data class MFAOptions(
     val AttributeName: String = "",
@@ -59,11 +71,13 @@ data class UpdateUserAttributesResponse(
     val CodeDeliveryDetailsList: List<CodeDeliveryDetails> = listOf()
 )
 
+@JsExport
 @Serializable
 data class GetAttributeVerificationCodeResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails()
 )
 
+@JsExport
 @Serializable
 data class ForgotPasswordResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails = CodeDeliveryDetails()

@@ -8,6 +8,8 @@ Auth is a lightweight AWS Cognito client for Kotlin Multiplatform projects
 
 ## Import
 
+### Kotlin
+
 Simply add the dependencies to your sourceSets:
 
 ```kotlin
@@ -19,6 +21,9 @@ sourceSets {
     }
 }
 ```
+
+### Typescript
+TODO
 
 ## How-to
 
@@ -193,6 +198,18 @@ Deletes the user from the user pool.
 ```kotlin
 deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<Unit>
 ```
+
+## Contributing
+
+Auth is a simple kotlin project with one caveat: We're using a live Cogntio Userpool for integration tests and 
+the values are provided using code generation at compile time. 
+
+The build needs both `origin` and `clientid` configured, either using our hashicorp vault cluster (obviously not accessible from the outside),
+or via env var (github actions approach).
+
+So if you only want to build the project, provide `origin` and `clientid` env var with garbage values...
+
+... and if you want to execute to tests yourself, you can use your own congito user pool client values.
 
 ## License
 
