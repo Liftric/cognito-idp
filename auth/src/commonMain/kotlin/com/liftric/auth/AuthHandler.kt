@@ -10,10 +10,11 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-class UserNotFoundException(message: String): Exception(message)
-class NotAuthorizedException(message: String): Exception(message)
+class UserNotFoundException(message: String) : Exception(message)
+class NotAuthorizedException(message: String) : Exception(message)
 
 /**
  * AWS Cognito authentication client
@@ -21,15 +22,19 @@ class NotAuthorizedException(message: String): Exception(message)
  *
  * Don't forget to check [AuthHandlerJS] when doing changes here :)
  */
-open class AuthHandler(private val configuration: Configuration): Auth {
-    enum class RequestType {
-        signIn, signUp, confirmSignUp, signOut, getUser, changePassword,
-        deleteUser, updateUserAttributes, forgotPassword, confirmForgotPassword,
-        getUserAttributeVerificationCode, verifyUserAttribute
+open class AuthHandler(private val configuration: Configuration) : Auth {
+    private val json = Json {
+        allowStructuredMapKeys = true
     }
-
     private val client = HttpClient {
         val configuration = configuration
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(json)
+            acceptContentTypes = listOf(
+                ContentType.parse(Header.AmzJson),
+                ContentType.Application.Json
+            )
+        }
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))
@@ -44,278 +49,170 @@ open class AuthHandler(private val configuration: Configuration): Auth {
         username: String,
         password: String,
         attributes: List<UserAttribute>?
-    ): Result<SignUpResponse> {
-        return request(
-            RequestType.signUp,
-            serialize(
-                SignUp(
-                    ClientId = configuration.clientId,
-                    Username = username,
-                    Password = password,
-                    UserAttributes = attributes ?: listOf()
-                )
-            )
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+    ): Result<SignUpResponse> = request(
+        RequestType.signUp,
+        SignUp(
+            ClientId = configuration.clientId,
+            Username = username,
+            Password = password,
+            UserAttributes = attributes ?: listOf()
+        )
+    )
 
     override suspend fun confirmSignUp(
         username: String,
         confirmationCode: String
-    ): Result<Unit> {
-        return request(
-            RequestType.confirmSignUp,
-            serialize(
-                ConfirmSignUp(
-                    configuration.clientId,
-                    username,
-                    confirmationCode
-                )
-            )
-        ).onResult {
-            Result.success(Unit)
-        }
-    }
+    ): Result<Unit> = request(
+        RequestType.confirmSignUp,
+        ConfirmSignUp(
+            configuration.clientId,
+            username,
+            confirmationCode
+        )
+    )
 
     override suspend fun signIn(
         username: String,
         password: String
-    ): Result<SignInResponse> {
-        return request(
-            RequestType.signIn,
-            serialize(
-                Authentication(
-                    AuthFlow.UserPasswordAuth,
-                    configuration.clientId,
-                    AuthParameters(username, password)
-                )
-            )
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+    ): Result<SignInResponse> = request(
+        RequestType.signIn,
+        Authentication(
+            AuthFlow.UserPasswordAuth,
+            configuration.clientId,
+            AuthParameters(username, password)
+        )
+    )
 
-    override suspend fun refresh(refreshToken: String): Result<SignInResponse> {
-        return request(
-                RequestType.signIn,
-                serialize(
-                        RefreshAuthentication(
-                                AuthFlow.RefreshTokenAuth,
-                                configuration.clientId,
-                                RefreshParameters(refreshToken)
-                        )
-                )
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+    override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
+        RequestType.signIn,
 
-    override suspend fun getUser(accessToken: String): Result<GetUserResponse> {
-        return request(
-            RequestType.getUser,
-            serialize(AccessToken(accessToken))
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+        RefreshAuthentication(
+            AuthFlow.RefreshTokenAuth,
+            configuration.clientId,
+            RefreshParameters(refreshToken)
+        )
+    )
+
+    override suspend fun getUser(accessToken: String): Result<GetUserResponse> = request(
+        RequestType.getUser,
+        AccessToken(accessToken)
+    )
 
     override suspend fun updateUserAttributes(
         accessToken: String,
         attributes: List<UserAttribute>
-    ): Result<UpdateUserAttributesResponse> {
-        return request(
-            RequestType.updateUserAttributes,
-            serialize(UpdateUserAttributes(accessToken, attributes))
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+    ): Result<UpdateUserAttributesResponse> = request(
+        RequestType.updateUserAttributes,
+        UpdateUserAttributes(accessToken, attributes)
+    )
 
     override suspend fun changePassword(
         accessToken: String,
         currentPassword: String,
         newPassword: String
-    ): Result<Unit> {
-        return request(
-            RequestType.changePassword,
-            serialize(
-                ChangePassword(
-                    accessToken,
-                    currentPassword,
-                    newPassword
-                )
-            )
-        ).onResult {
-            Result.success(Unit)
-        }
-    }
+    ): Result<Unit> = request(
+        RequestType.changePassword,
+        ChangePassword(
+            accessToken,
+            currentPassword,
+            newPassword
+        )
+    )
 
     override suspend fun forgotPassword(
         username: String
-    ): Result<ForgotPasswordResponse> {
-        return request(
-            RequestType.forgotPassword,
-            serialize(
-                ForgotPassword(
-                    configuration.clientId,
-                    username
-                )
-            )
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+    ): Result<ForgotPasswordResponse> = request(
+        RequestType.forgotPassword,
+        ForgotPassword(
+            configuration.clientId,
+            username
+        )
+    )
 
     override suspend fun confirmForgotPassword(
         confirmationCode: String,
         username: String,
         password: String
-    ): Result<Unit> {
-        return request(
-            RequestType.confirmForgotPassword,
-            serialize(
-                ConfirmForgotPassword(
-                    configuration.clientId,
-                    confirmationCode,
-                    username,
-                    password
-                )
-            )
-        ).onResult {
-            Result.success(Unit)
-        }
-    }
+    ): Result<Unit> = request(
+        RequestType.confirmForgotPassword,
+
+        ConfirmForgotPassword(
+            configuration.clientId,
+            confirmationCode,
+            username,
+            password
+        )
+    )
 
     override suspend fun getUserAttributeVerificationCode(
         accessToken: String,
         attributeName: String,
         clientMetadata: Map<String, String>?
-    ): Result<GetAttributeVerificationCodeResponse> {
-        return request(
-            RequestType.getUserAttributeVerificationCode,
-            serialize(
-                GetUserAttributeVerificationCode(
-                    accessToken,
-                    attributeName,
-                    clientMetadata
-                )
-            )
-        ).onResult {
-            try {
-                Result.success(parse(it))
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
-        }
-    }
+    ): Result<GetAttributeVerificationCodeResponse> = request(
+        RequestType.getUserAttributeVerificationCode,
+
+        GetUserAttributeVerificationCode(
+            accessToken,
+            attributeName,
+            clientMetadata
+        )
+    )
 
     override suspend fun verifyUserAttribute(
         accessToken: String,
         attributeName: String,
         code: String
-    ): Result<Unit> {
-        return request(
-            RequestType.verifyUserAttribute,
-            serialize(
-                VerifyUserAttribute(
-                    accessToken,
-                    attributeName,
-                    code
-                )
-            )
-        ).onResult {
-            Result.success(Unit)
-        }
-    }
+    ): Result<Unit> = request(
+        RequestType.verifyUserAttribute,
 
-    override suspend fun signOut(accessToken: String): Result<Unit> {
-        return request(
-            RequestType.signOut,
-            serialize(AccessToken(accessToken))
-        ).onResult {
-            Result.success(Unit)
-        }
-    }
+        VerifyUserAttribute(
+            accessToken,
+            attributeName,
+            code
+        )
+    )
 
-    override suspend fun deleteUser(accessToken: String): Result<Unit> {
-        return request(
-            RequestType.deleteUser,
-            serialize(AccessToken(accessToken))
-        ).onResult {
-            Result.success(Unit)
-        }
-    }
+    override suspend fun signOut(accessToken: String): Result<Unit> = request(
+        RequestType.signOut,
+        AccessToken(accessToken)
+    )
+
+    override suspend fun deleteUser(accessToken: String): Result<Unit> = request(
+        RequestType.deleteUser,
+        AccessToken(accessToken)
+    )
 
     //----------
     // REQUEST
     //----------
 
-    private suspend fun request(type: RequestType, payload: String): Result<String> {
-        return try {
-            val response = client.post<HttpResponse>(configuration.requestUrl) {
-                header(
-                    Header.AmzTarget,
-                    when (type) {
-                        RequestType.signUp -> IdentityProviderService.SignUp
-                        RequestType.confirmSignUp -> IdentityProviderService.ConfirmSignUp
-                        RequestType.signIn -> IdentityProviderService.InitiateAuth
-                        RequestType.signOut -> IdentityProviderService.GlobalSignOut
-                        RequestType.getUser -> IdentityProviderService.GetUser
-                        RequestType.changePassword -> IdentityProviderService.ChangePassword
-                        RequestType.forgotPassword -> IdentityProviderService.ForgotPassword
-                        RequestType.confirmForgotPassword -> IdentityProviderService.ConfirmForgotPassword
-                        RequestType.deleteUser -> IdentityProviderService.DeleteUser
-                        RequestType.updateUserAttributes -> IdentityProviderService.UpdateUserAttributes
-                        RequestType.getUserAttributeVerificationCode -> IdentityProviderService.GetUserAttributeVerificationCode
-                        RequestType.verifyUserAttribute -> IdentityProviderService.VerifyUserAttribute
-                    }
-                )
-                body = payload
-            }
-            Result.success(response.readText(), response.status)
-        } catch (e: ResponseException) {
-            try {
-                val error = parse<RequestError>(e.response.readText())
-                Result.failure(
-                    when (error.type) {
-                        CognitoException.UserNotFound -> UserNotFoundException(error.message)
-                        CognitoException.NotAuthorized -> NotAuthorizedException(error.message)
-                        else -> Error(error.message)
-                    },
-                    e.response.status
-                )
-            } catch (e: SerializationException) {
-                Result.failure(e)
-            }
+    private suspend inline fun <reified T> request(type: RequestType, payload: Any): Result<T> = try {
+        val response = client.post<HttpResponse>(configuration.requestUrl) {
+            header(Header.AmzTarget, type.identityProviderServiceValue)
+            body = payload
+        }
+        if (T::class.simpleName == "Unit") {
+            // otherwise kotlinx.serialization will fail
+            Result.success(Unit as T, response.status)
+        } else {
+            Result.success(json.decodeFromString(response.readText()), response.status)
+        }
+    } catch (e: ResponseException) {
+        try {
+            val error = json.decodeFromString<RequestError>(e.response.readText())
+            Result.failure(
+                when (error.type) {
+                    CognitoException.UserNotFound -> UserNotFoundException(error.message)
+                    CognitoException.NotAuthorized -> NotAuthorizedException(error.message)
+                    else -> Error(error.message)
+                },
+                e.response.status
+            )
         } catch (e: SerializationException) {
             Result.failure(e)
-        } catch (t: Throwable) {
-            Result.failure(t)
         }
+    } catch (t: Throwable) {
+        Result.failure(t)
     }
 }
+

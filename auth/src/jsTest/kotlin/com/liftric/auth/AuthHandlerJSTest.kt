@@ -4,12 +4,11 @@ import AuthHandlerJS
 import com.liftric.auth.base.Region
 import com.liftric.auth.base.UserAttribute
 import env
-import io.ktor.http.*
 import kotlinx.coroutines.await
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.fail
 
 class AuthHandlerJSTest {
     // private val configuration = Configuration(
@@ -85,6 +84,21 @@ class AuthHandlerJSTest {
                 println("deleteUser=$it")
                 assertNotNull(it)
             }
+        }
+    }
+
+    @JsName("SignUpFailPasswordTooLongTest")
+    @Test
+    fun `Sign up should fail because password too long`() = runTest {
+        authHandler.signUp(
+            "Username", buildString { (1..260).forEach { _ -> append("A") } },
+            attributes = arrayOf(
+                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+            )
+        ).then {
+            fail("signUp must fail")
+        }.catch {
+            println(it.message)
         }
     }
 }
