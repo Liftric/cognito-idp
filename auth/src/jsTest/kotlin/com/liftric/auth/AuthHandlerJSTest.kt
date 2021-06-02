@@ -11,11 +11,6 @@ import kotlin.test.assertNull
 import kotlin.test.fail
 
 class AuthHandlerJSTest {
-    // private val configuration = Configuration(
-    //        env["origin"] ?: "",
-    //        Region.euCentral1,
-    //        env["clientid"] ?: ""
-    //    )
     private val authHandler = AuthHandlerJS(
         env["origin"] ?: error("missing origin"),
         Region.euCentral1.code,

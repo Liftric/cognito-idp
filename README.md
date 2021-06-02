@@ -199,10 +199,6 @@ Deletes the user from the user pool.
 deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<Unit>
 ```
 
-## License
-
-Auth is available under the MIT license. See the LICENSE file for more info.
-
 ## Contributing
 
 Auth is a simple kotlin project with one caveat: We're using a live Cogntio Userpool for integration tests and 
@@ -214,3 +210,7 @@ or via env var (github actions approach).
 So if you only want to build the project, provide `origin` and `clientid` env var with garbage values...
 
 ... and if you want to execute to tests yourself, you can use your own congito user pool client values.
+
+## License
+
+Auth is available under the MIT license. See the LICENSE file for more info.
