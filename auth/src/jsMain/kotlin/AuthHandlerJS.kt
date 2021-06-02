@@ -7,8 +7,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.promise
 import kotlin.js.Promise
 
-
-class AuthHandlerJs(val origin: String, regionString: String, val clientId: String) {
+/**
+ * Typescript compatible [AuthHandler] implementation.
+ */
+class AuthHandlerJS(origin: String, regionString: String, clientId: String) {
     private val region = Region.values().first { it.code == regionString }
     private val handler: AuthHandler = AuthHandler(Configuration(origin, region, clientId))
 

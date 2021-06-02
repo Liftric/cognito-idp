@@ -18,6 +18,8 @@ class NotAuthorizedException(message: String): Exception(message)
 /**
  * AWS Cognito authentication client
  * Provides common request methods
+ *
+ * Don't forget to check [AuthHandlerJS] when doing changes here :)
  */
 open class AuthHandler(private val configuration: Configuration): Auth {
     enum class RequestType {

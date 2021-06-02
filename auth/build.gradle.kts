@@ -1,5 +1,7 @@
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 buildscript {
     repositories {
@@ -178,8 +180,18 @@ tasks {
         }
     }
 
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon> {
+    withType<KotlinCompileCommon> {
         dependsOn(createJsEnvHack)
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions {
+            languageVersion = "1.5"
+            freeCompilerArgs = listOf(
+                "-Xinline-classes",
+                "-Xuse-experimental=kotlin.js.ExperimentalJsExport"
+            )
+        }
     }
 
     withType<Test> {
