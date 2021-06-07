@@ -10,9 +10,9 @@ import kotlin.js.Promise
 /**
  * Typescript compatible [AuthHandler] implementation.
  */
-class AuthHandlerJS(origin: String, regionString: String, clientId: String) {
+class AuthHandlerJS(regionString: String, clientId: String) {
     private val region = Region.values().first { it.code == regionString }
-    private val handler: AuthHandler = AuthHandler(Configuration(origin, region, clientId))
+    private val handler: AuthHandler = AuthHandler(Configuration(region, clientId))
 
     fun signUp(username: String, password: String, attributes: Array<UserAttribute>? = null): Promise<SignUpResponse> =
         MainScope().promise {
