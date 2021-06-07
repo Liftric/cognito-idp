@@ -12,8 +12,6 @@ Auth is a lightweight AWS Cognito client for Kotlin Multiplatform projects
 
 ### Kotlin
 
-Simply add the dependencies to your sourceSets:
-
 ```kotlin
 sourceSets {
     val commonMain by getting {
@@ -25,17 +23,19 @@ sourceSets {
 ```
 
 ### Typescript
-```
+
+#### Yarn
+```bash
 yarn add @liftric/auth@<version>
-[OR]
+```
+#### npm
+```sh
 npm i @liftric/auth@<version>
 ```
 
 ## How-to
 
 ### Instantiating
-
-At first you have to instantiate the dependencies for the authentication handler class.
 
 The handler needs a configuration object consisting of the region code and the client ID.
 
@@ -44,13 +44,13 @@ val configuration = Configuration(region = Region.euCentral1,
                                   clientId = "CLIENT_ID") 
 ```
 
-Now you have to pass the configuration object to the authentication handler via its constructor and you are good to go.
+#### Kotlin
 
 ```kotlin
 val authHandler = AuthHandler(configuration) 
 ```
 
-#### Instantiating - Typescript
+#### Typescript
 
 ```typescript
 import {AuthHandlerJS} from '@liftric/auth';
@@ -62,6 +62,8 @@ const auth = new AuthHandlerJS('<regionString>', '<clientId>');
 
 General usage of the request methods.
 
+#### Kotlin
+
 All methods are suspending and will return a `Result<T>` object which wraps the desired return object `T` and can contain an exception.
 
 ```kotlin
@@ -72,6 +74,10 @@ if (response.isSuccess) {
     println(signUpResponse.exceptionOrNull())
 }
 ```
+
+#### Typescript
+
+All methods return a `Promise` that returns the desired object `T` on success.
 
 #### Sign Up
 
