@@ -26,6 +26,11 @@ plugins {
     id("com.liftric.vault-client-plugin") version "2.0.0"
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 repositories {
     mavenCentral()
     google()
@@ -186,6 +191,7 @@ tasks {
 
     withType<KotlinCompile> {
         kotlinOptions {
+            jvmTarget = "1.8"
             languageVersion = "1.5"
             freeCompilerArgs = listOf(
                 "-Xinline-classes",
