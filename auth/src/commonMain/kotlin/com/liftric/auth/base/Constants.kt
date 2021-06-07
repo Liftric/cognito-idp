@@ -6,10 +6,8 @@ object Header {
     const val AmzUserAgent      = "x-amz-user-agent"
     const val Useragent         = "user-agent"
     const val Accept            = "accept"
-    const val Origin            = "origin"
     const val SecFetchSite      = "sec-fetch-site"
     const val SecFetchMode      = "sec-fetch-mode"
-    const val SecFetchDest      = "sec-fetch-dest"
     const val AcceptLanguage    = "accept-language"
     const val Dnt               = "dnt"
     const val AmzTarget         = "x-amz-target"
@@ -22,6 +20,9 @@ object AuthFlow {
     const val UserPasswordAuth  = "USER_PASSWORD_AUTH"
 }
 
+/**
+ * @see https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints
+ */
 enum class Region(val code: String) {
     usEast1("us-east-1"),
     usEast2("us-east-2"),

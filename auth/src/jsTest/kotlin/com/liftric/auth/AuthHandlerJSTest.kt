@@ -12,9 +12,8 @@ import kotlin.test.fail
 
 class AuthHandlerJSTest {
     private val authHandler = AuthHandlerJS(
-        env["origin"] ?: error("missing origin"),
-        Region.euCentral1.code,
-        env["clientid"] ?: error("missing origin")
+        env["region"] ?: error("missing region"),
+        env["clientid"] ?: error("missing clientid")
     )
 
     // Randomize temp user account name to not exceed aws try threshold

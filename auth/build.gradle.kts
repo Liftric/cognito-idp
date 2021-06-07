@@ -19,6 +19,7 @@ plugins {
     kotlin("multiplatform") version Versions.kotlin
     id("com.github.turansky.kfc.definitions") version Versions.definitions // fixes Promise in generated typescript files
     id("maven-publish")
+    id("dev.petuska.npm.publish") version Versions.npmPublish
     id("org.jetbrains.kotlin.plugin.serialization") version Versions.kotlin
     id("net.nemerosa.versioning") version "2.14.0"
     id("signing")
@@ -153,15 +154,15 @@ tasks {
     val createJsEnvHack by creating {
         outputs.dir("$buildDir/gen")
 
-        if (System.getenv("origin") == null || System.getenv("clientid") == null) {
-            // github ci provides origin and clientid envs, locally we'll use vault directly
+        if (System.getenv("region") == null || System.getenv("clientid") == null) {
+            // github ci provides region and clientid envs, locally we'll use vault directly
             dependsOn(testSecrets)
         }
 
         doFirst {
-            val (clientid, origin) = with(testSecrets.secret.get()) {
+            val (clientid, region) = with(testSecrets.secret.get()) {
                 ((System.getenv("clientid") ?: this["client_id_dev"].toString()) to
-                        (System.getenv("origin") ?: this["client_origin_dev"].toString()))
+                        (System.getenv("region") ?: this["client_region_dev"].toString()))
             }
 
             mkdir("$buildDir/gen")
@@ -170,7 +171,7 @@ tasks {
                 writeText(
                     """
                 val env = mapOf(
-                    "origin" to "$origin",
+                    "region" to "$region",
                     "clientid" to "$clientid",
                 )
             """.trimIndent()
@@ -190,19 +191,6 @@ tasks {
                 "-Xinline-classes",
                 "-Xuse-experimental=kotlin.js.ExperimentalJsExport"
             )
-        }
-    }
-
-    withType<Test> {
-        if (System.getenv("origin") == null || System.getenv("clientid") == null) {
-            // github ci provides origin and clientid envs, locally we'll use vault directly
-            dependsOn(testSecrets)
-            doFirst {
-                with(testSecrets.secret.get()) {
-                    environment("clientid", this["client_id_dev"].toString())
-                    environment("origin", this["client_origin_dev"].toString())
-                }
-            }
         }
     }
 }
@@ -227,7 +215,6 @@ publishing {
     }
 
     publications.withType<MavenPublication> {
-
         artifact(javadocJar.get())
 
         pom {
@@ -251,6 +238,43 @@ publishing {
             scm {
                 url.set("https://github.com/Liftric/Auth")
             }
+        }
+    }
+}
+
+val npmAccessKey: String? by project
+
+npmPublishing {
+    organization = "liftric"
+    access = PUBLIC
+
+    readme = rootProject.file("README.md")
+
+    publications {
+        val js by getting {
+            moduleName = artifactName.toLowerCase()
+            packageJson {
+                keywords = jsonArray(
+                    "kotlin",
+                    "auth",
+                    "cognito",
+                    "liftric",
+                    "aws"
+                )
+                licence = "MIT"
+                description = "Lightweight AWS Cognito client for Kotlin Multiplatform projects."
+                homepage = "https://github.com/Liftric/Auth"
+                bugs = mutableMapOf<String, Any?>().apply {
+                    put("url", "https://github.com/Liftric/Auth/issues")
+                }
+            }
+        }
+    }
+
+    repositories {
+        repository("npmjs") {
+            registry = uri("https://registry.npmjs.org")
+            authToken = npmAccessKey
         }
     }
 }

@@ -23,7 +23,11 @@ sourceSets {
 ```
 
 ### Typescript
-TODO
+```
+yarn add @liftric/auth@<version>
+[OR]
+npm i @liftric/auth@<version>
+```
 
 ## How-to
 
@@ -31,11 +35,10 @@ TODO
 
 At first you have to instantiate the dependencies for the authentication handler class.
 
-The handler needs a configuration object consisting of the origin url, the region code, and the client ID.
+The handler needs a configuration object consisting of the region code and the client ID.
 
 ```kotlin
-val configuration = Configuration(origin = "ORIGIN_URL",  
-                                  region = Region.euCentral1,
+val configuration = Configuration(region = Region.euCentral1,
                                   clientId = "CLIENT_ID") 
 ```
 
@@ -43,6 +46,14 @@ Now you have to pass the configuration object to the authentication handler via 
 
 ```kotlin
 val authHandler = AuthHandler(configuration) 
+```
+
+#### Instantiating - Typescript
+
+```typescript
+import {AuthHandlerJS} from '@liftric/auth';
+
+const auth = new AuthHandlerJS('<regionString>', '<clientId>');
 ```
 
 ### API
@@ -204,10 +215,10 @@ deleteUser(accessToken = "TOKEN_FROM_SIGN_IN_REQUEST"): Result<Unit>
 Auth is a simple kotlin project with one caveat: We're using a live Cogntio Userpool for integration tests and 
 the values are provided using code generation at compile time. 
 
-The build needs both `origin` and `clientid` configured, either using our hashicorp vault cluster (obviously not accessible from the outside),
-or via env var (github actions approach).
+The build needs both `region` and `clientid` configured, either using our hashicorp vault cluster (obviously not accessible from the outside),
+or via env var (github actions approach). `region` expects the AWS Region Code for the target region, like "us-east-1".
 
-So if you only want to build the project, provide `origin` and `clientid` env var with garbage values...
+So if you only want to build the project, provide `region` and `clientid` env var with garbage values...
 
 ... and if you want to execute to tests yourself, you can use your own congito user pool client values.
 
