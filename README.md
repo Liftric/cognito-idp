@@ -1,4 +1,6 @@
-![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) ![maven-central](https://img.shields.io/maven-central/v/com.liftric/auth)
+![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) 
+![maven-central](https://img.shields.io/maven-central/v/com.liftric/auth) 
+![npm (scoped)](https://img.shields.io/npm/v/@liftric/auth)
 
 # Auth
 
