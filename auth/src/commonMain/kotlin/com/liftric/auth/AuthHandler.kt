@@ -29,6 +29,7 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     }
     private val client = HttpClient {
         val configuration = configuration
+        val json = json
         install(JsonFeature) {
             serializer = KotlinxSerializer(json)
             acceptContentTypes = listOf(
