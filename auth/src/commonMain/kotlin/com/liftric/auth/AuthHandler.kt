@@ -9,6 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
+import io.ktor.utils.io.errors.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -211,6 +212,8 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         } catch (e: SerializationException) {
             Result.failure(e)
         }
+    } catch (t: IOException) {
+        Result.failure(t)
     } catch (t: Throwable) {
         Result.failure(t)
     }
