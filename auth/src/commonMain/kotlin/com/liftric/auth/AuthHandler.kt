@@ -14,8 +14,21 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-class UserNotFoundException(message: String) : Exception(message)
+class CodeMismatchException(message: String) : Exception(message)
+class ExpiredCodeException(message: String) : Exception(message)
+class InternalErrorException(message: String) : Exception(message)
+class InvalidLambdaResponseException(message: String) : Exception(message)
+class InvalidParameterException(message: String) : Exception(message)
+class InvalidPasswordException(message: String) : Exception(message)
+class LimitExceededException(message: String) : Exception(message)
 class NotAuthorizedException(message: String) : Exception(message)
+class ResourceNotFoundException(message: String) : Exception(message)
+class TooManyFailedAttemptsException(message: String) : Exception(message)
+class TooManyRequestsException(message: String) : Exception(message)
+class UnexpectedLambdaException(message: String) : Exception(message)
+class UserLambdaValidationException(message: String) : Exception(message)
+class UserNotConfirmedException(message: String) : Exception(message)
+class UserNotFoundException(message: String) : Exception(message)
 
 /**
  * AWS Cognito authentication client
@@ -204,8 +217,21 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
             val error = json.decodeFromString<RequestError>(e.response.readText())
             Result.failure(
                 when (error.type) {
-                    CognitoException.UserNotFound -> UserNotFoundException(error.message)
+                    CognitoException.CodeMismatch -> CodeMismatchException(error.message)
+                    CognitoException.ExpiredCode -> ExpiredCodeException(error.message)
+                    CognitoException.InternalError -> InternalErrorException(error.message)
+                    CognitoException.InvalidLambdaResponse -> InvalidLambdaResponseException(error.message)
+                    CognitoException.InvalidParameter -> InvalidParameterException(error.message)
+                    CognitoException.InvalidPassword -> InvalidPasswordException(error.message)
+                    CognitoException.LimitExceeded -> LimitExceededException(error.message)
                     CognitoException.NotAuthorized -> NotAuthorizedException(error.message)
+                    CognitoException.ResourceNotFound -> ResourceNotFoundException(error.message)
+                    CognitoException.TooManyFailedAttempts -> TooManyFailedAttemptsException(error.message)
+                    CognitoException.TooManyRequests -> TooManyRequestsException(error.message)
+                    CognitoException.UnexpectedLambda -> UnexpectedLambdaException(error.message)
+                    CognitoException.UserLambdaValidation -> UserLambdaValidationException(error.message)
+                    CognitoException.UserNotConfirmed -> UserNotConfirmedException(error.message)
+                    CognitoException.UserNotFound -> UserNotFoundException(error.message)
                     else -> Error(error.message)
                 },
                 e.response.status

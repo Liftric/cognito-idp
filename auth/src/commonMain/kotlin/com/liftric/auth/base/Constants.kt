@@ -50,6 +50,19 @@ enum class Region(val code: String) {
 }
 
 object CognitoException {
-    const val UserNotFound  = "UserNotFoundException"
+    const val CodeMismatch = "CodeMismatchException"
+    const val ExpiredCode = "ExpiredCodeException"
+    const val InternalError = "InternalErrorException"
+    const val InvalidLambdaResponse = "InvalidLambdaResponseException"
+    const val InvalidParameter = "InvalidParameterException"
+    const val InvalidPassword = "InvalidPasswordException"
+    const val LimitExceeded = "LimitExceededException"
     const val NotAuthorized = "NotAuthorizedException"
+    const val ResourceNotFound = "ResourceNotFoundException"
+    const val TooManyFailedAttempts = "TooManyFailedAttemptsException"
+    const val TooManyRequests = "TooManyRequestsException"
+    const val UnexpectedLambda = "UnexpectedLambdaException"
+    const val UserLambdaValidation = "UserLambdaValidationException"
+    const val UserNotConfirmed = "UserNotConfirmedException"
+    const val UserNotFound  = "UserNotFoundException"
 }
