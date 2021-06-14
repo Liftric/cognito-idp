@@ -1,5 +1,6 @@
 ![CI](https://github.com/Liftric/auth/workflows/CI/badge.svg) 
-![maven-central](https://img.shields.io/maven-central/v/com.liftric/auth) 
+![maven-central](https://img.shields.io/maven-central/v/com.liftric/auth?label=Maven%20Central) 
+![OSS Sonatype (Releases)](https://img.shields.io/nexus/r/com.liftric/auth?label=Sonatype%20OSSRH%20%28Releases%29&server=https%3A%2F%2Fs01.oss.sonatype.org)
 ![npm (scoped)](https://img.shields.io/npm/v/@liftric/auth)
 
 # Auth
