@@ -13,6 +13,8 @@ data class CognitoAccessTokenClaims(
     override val iat: Long,
     override val iss: String,
     override val jti: String,
+    @SerialName("origin_jti")
+    override val originJti: String? = null,
     override val nbf: Long? = null,
     override val sub: String,
     @SerialName("auth_time")
