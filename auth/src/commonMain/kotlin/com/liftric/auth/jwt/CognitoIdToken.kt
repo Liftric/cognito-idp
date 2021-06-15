@@ -33,7 +33,7 @@ data class CognitoIdTokenClaims(
     override val cognitoUsername: String,
     override val exp: Long,
     override val eventId: String,
-    override val jti: String?,
+    override val jti: String? = null,
     @SerialName("origin_jti")
     override val originJti: String? = null,
     override val iss: String,
