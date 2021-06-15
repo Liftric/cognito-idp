@@ -37,7 +37,7 @@ class CognitoAccessToken(accessTokenString: String): JWT<CognitoAccessTokenClaim
     override val claims: CognitoAccessTokenClaims
         get() {
             try {
-                return Json.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
+                return Json { ignoreUnknownKeys = true }.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
             } catch (e: Exception) {
                 throw InvalidCognitoAccessTokenException("This is not a valid access token")
             }
