@@ -103,6 +103,12 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
         }?: run {
             throw SerializationException("Missing field event_id")
         }
+        val jti = filtersMap["jti"]?.let {
+            json.decodeFromJsonElement(String.serializer(), it)
+        }
+        val originJti = filtersMap["origin_jti"]?.let {
+            json.decodeFromJsonElement(String.serializer(), it)
+        }
         val iss = filtersMap["iss"]?.let {
             json.decodeFromJsonElement(String.serializer(), it)
         }?: run {
@@ -168,6 +174,8 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
             cognitoUsername,
             exp,
             eventId,
+            jti,
+            originJti,
             iss,
             iat,
             scope,
@@ -206,6 +214,8 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
         value.cognitoUsername.let { map["cognito:username"] = json.encodeToJsonElement(String.serializer(), it) }
         value.exp.let { map["exp"] = json.encodeToJsonElement(Long.serializer(), it) }
         value.eventId.let { map["event_id"] = json.encodeToJsonElement(String.serializer(), it) }
+        value.jti?.let { map["jti"] = json.encodeToJsonElement(String.serializer(), it) }
+        value.originJti?.let { map["origin_jti"] = json.encodeToJsonElement(String.serializer(), it) }
         value.iss.let { map["iss"] = json.encodeToJsonElement(String.serializer(), it) }
         value.iat.let { map["iat"] = json.encodeToJsonElement(Long.serializer(), it) }
         value.scope?.let { map["scope"] = json.encodeToJsonElement(String.serializer(), it) }

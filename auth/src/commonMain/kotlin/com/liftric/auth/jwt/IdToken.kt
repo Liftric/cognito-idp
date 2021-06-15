@@ -13,16 +13,6 @@ interface IdToken {
     val sub: String?
 
     /**
-     * JWT ID
-     */
-    val jti: String?
-
-    /**
-     * JWT origin ID
-     */
-    val originJti: String?
-
-    /**
      * Full name in displayable form including all name parts
      */
     val name: String?
@@ -180,6 +170,16 @@ interface IdTokenExtension {
      * Event id
      */
     val eventId: String
+
+    /**
+     * JWT ID
+     */
+    val jti: String?
+
+    /**
+     * JWT origin ID
+     */
+    val originJti: String?
 
     /**
      * Issuer

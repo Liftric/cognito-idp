@@ -8,9 +8,6 @@ class InvalidCognitoIdTokenException(message:String): Exception(message)
 @Serializable(with = CustomAttributesSerializer::class)
 data class CognitoIdTokenClaims(
     override val sub: String? = null,
-    override val jti: String,
-    @SerialName("origin_jti")
-    override val originJti: String? = null,
     override val name: String? = null,
     override val givenName: String? = null,
     override val familyName: String? = null,
@@ -36,6 +33,9 @@ data class CognitoIdTokenClaims(
     override val cognitoUsername: String,
     override val exp: Long,
     override val eventId: String,
+    override val jti: String?,
+    @SerialName("origin_jti")
+    override val originJti: String? = null,
     override val iss: String,
     override val iat: Long,
     override val scope: String? = null,
