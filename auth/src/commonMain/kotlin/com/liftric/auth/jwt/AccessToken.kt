@@ -28,7 +28,12 @@ interface AccessToken {
     /**
      * JWT ID
      */
-    val jti: String
+    val jti: String?
+
+    /**
+     * JWT origin ID
+     */
+    val originJti: String?
 
     /**
      * Not Before

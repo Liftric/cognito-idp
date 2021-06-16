@@ -12,7 +12,9 @@ data class CognitoAccessTokenClaims(
     override val exp: Long,
     override val iat: Long,
     override val iss: String,
-    override val jti: String,
+    override val jti: String? = null,
+    @SerialName("origin_jti")
+    override val originJti: String? = null,
     override val nbf: Long? = null,
     override val sub: String,
     @SerialName("auth_time")
@@ -35,9 +37,14 @@ class CognitoAccessToken(accessTokenString: String): JWT<CognitoAccessTokenClaim
     override val claims: CognitoAccessTokenClaims
         get() {
             try {
-                return Json.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
+                return json.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
             } catch (e: Exception) {
                 throw InvalidCognitoAccessTokenException("This is not a valid access token", e)
             }
         }
+    companion object {
+        private val json by lazy {
+            Json { ignoreUnknownKeys = true }
+        }
+    }
 }

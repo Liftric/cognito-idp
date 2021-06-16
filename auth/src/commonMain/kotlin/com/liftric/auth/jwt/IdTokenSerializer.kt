@@ -3,7 +3,6 @@ package com.liftric.auth.jwt
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -22,124 +21,129 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
         val json = decoder.json
         val filtersMap = decoder.decodeSerializableValue(stringToJsonElementSerializer)
 
-        val address = filtersMap["address"]?.let {
-            json.decodeFromJsonElement(Address.serializer(), it)
+        val address: Address? = filtersMap["address"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val birthdate = filtersMap["birthdate"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val birthdate: String? = filtersMap["birthdate"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val email = filtersMap["email"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val email: String? = filtersMap["email"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val emailVerified = filtersMap["email_verified"]?.let {
-            json.decodeFromJsonElement(Boolean.serializer(), it)
+        val emailVerified: Boolean? = filtersMap["email_verified"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val familyName = filtersMap["family_name"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val familyName: String? = filtersMap["family_name"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val middleName = filtersMap["middle_name"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val middleName: String? = filtersMap["middle_name"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val gender = filtersMap["gender"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val gender: String? = filtersMap["gender"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val givenName = filtersMap["given_name"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val givenName: String? = filtersMap["given_name"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val locale = filtersMap["locale"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val locale: String? = filtersMap["locale"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val name = filtersMap["name"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val name: String? = filtersMap["name"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val nickname = filtersMap["nickname"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val nickname: String? = filtersMap["nickname"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val phoneNumber = filtersMap["phone_number"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val phoneNumber: String? = filtersMap["phone_number"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val phoneNumberVerified = filtersMap["phone_number_verified"]?.let {
-            json.decodeFromJsonElement(Boolean.serializer(), it)
+        val phoneNumberVerified: Boolean? = filtersMap["phone_number_verified"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val picture = filtersMap["picture"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val picture: String? = filtersMap["picture"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val profile = filtersMap["profile"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val profile: String? = filtersMap["profile"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val preferredUsername = filtersMap["preferred_username"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val preferredUsername: String? = filtersMap["preferred_username"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val sub = filtersMap["sub"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val sub: String? = filtersMap["sub"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val aud = filtersMap["aud"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val aud: String = filtersMap["aud"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field aud")
+            throw SerializationException(missingField("aud"))
         }
-        val authTime = filtersMap["auth_time"]?.let {
-            json.decodeFromJsonElement(Long.serializer(), it)
+        val authTime: Long = filtersMap["auth_time"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field auth_time")
+            throw SerializationException(missingField("auth_time"))
         }
-        val cognitoGroups = filtersMap["cognito:groups"]?.let {
-            json.decodeFromJsonElement(ListSerializer(String.serializer()), it)
+        val cognitoGroups: List<String> = filtersMap["cognito:groups"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field cognito:groups")
+            throw SerializationException(missingField("cognito:groups"))
         }
-        val cognitoUsername = filtersMap["cognito:username"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val cognitoUsername: String = filtersMap["cognito:username"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field cognito:username")
+            throw SerializationException(missingField("cognito:username"))
         }
-        val exp = filtersMap["exp"]?.let {
-            json.decodeFromJsonElement(Long.serializer(), it)
+        val exp: Long = filtersMap["exp"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field exp")
+            throw SerializationException(missingField("exp"))
         }
-        val eventId = filtersMap["event_id"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val eventId: String = filtersMap["event_id"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field event_id")
+            throw SerializationException(missingField("event_id"))
         }
-        val iss = filtersMap["iss"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val jti: String? = filtersMap["jti"]?.let {
+            json.decodeFromJsonElement(it)
+        }
+        val originJti: String? = filtersMap["origin_jti"]?.let {
+            json.decodeFromJsonElement(it)
+        }
+        val iss: String = filtersMap["iss"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field iss")
+            throw SerializationException(missingField("iss"))
         }
-        val zoneinfo = filtersMap["zoneinfo"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val zoneinfo: String? = filtersMap["zoneinfo"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val iat = filtersMap["iat"]?.let {
-            json.decodeFromJsonElement(Long.serializer(), it)
+        val iat: Long = filtersMap["iat"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field iat")
+            throw SerializationException(missingField("iat"))
         }
-        val scope = filtersMap["scope"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val scope: String? = filtersMap["scope"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val tokenUse = filtersMap["token_use"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val tokenUse: String = filtersMap["token_use"]?.let {
+            json.decodeFromJsonElement(it)
         }?: run {
-            throw SerializationException("Missing field token_use")
+            throw SerializationException(missingField("token_use"))
         }
-        val website = filtersMap["website"]?.let {
-            json.decodeFromJsonElement(String.serializer(), it)
+        val website: String? = filtersMap["website"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val updatedAt = filtersMap["updated_at"]?.let {
-            json.decodeFromJsonElement(Long.serializer(), it)
+        val updatedAt: Long? = filtersMap["updated_at"]?.let {
+            json.decodeFromJsonElement(it)
         }
-        val unknownFilters = filtersMap.filter { (key, _) -> key.contains("custom") }
-        val customAttributes = mutableMapOf<String, String>()
-        unknownFilters.forEach {
-            val value = if (it.value.jsonPrimitive.isString) {
-                json.decodeFromJsonElement(String.serializer(), it.value)
+        val customAttributes = filtersMap.filter { (key, _) ->
+            key.contains("custom")
+        }.map { (key, value) ->
+            key to if (value.jsonPrimitive.isString) {
+                json.decodeFromJsonElement(String.serializer(), value)
             } else {
-                json.decodeFromJsonElement(Long.serializer(), it.value).toString()
+                json.decodeFromJsonElement(Long.serializer(), value).toString()
             }
-            customAttributes[it.key] = value
-        }
+        }.toMap()
 
         return CognitoIdTokenClaims(
             sub,
@@ -168,6 +172,8 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
             cognitoUsername,
             exp,
             eventId,
+            jti,
+            originJti,
             iss,
             iat,
             scope,
@@ -178,42 +184,46 @@ internal object CustomAttributesSerializer : KSerializer<CognitoIdTokenClaims> {
     override fun serialize(encoder: Encoder, value: CognitoIdTokenClaims) {
         require(encoder is JsonEncoder)
         val json = encoder.json
-        val map: MutableMap<String, JsonElement> = mutableMapOf()
 
-        value.sub?.let { map["name"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.name?.let { map["name"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.givenName?.let { map["given_name"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.familyName?.let { map["family_name"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.middleName?.let { map["middle_name"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.nickname?.let { map["nickname"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.preferredUsername?.let { map["preferred_username"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.profile?.let { map["profile"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.picture?.let { map["picture"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.website?.let { map["website"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.email?.let { map["email"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.emailVerified?.let { map["email_verified"] = json.encodeToJsonElement(Boolean.serializer(), it) }
-        value.gender?.let { map["gender"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.birthdate?.let { map["birthdate"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.zoneinfo?.let { map["zoneinfo"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.locale?.let { map["locale"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.phoneNumber?.let { map["phone_number"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.phoneNumberVerified?.let { map["phone_number_verified"] = json.encodeToJsonElement(Boolean.serializer(), it) }
-        value.address?.let { map["address"] = json.encodeToJsonElement(Address.serializer(), it) }
-        value.updatedAt?.let { map["updated_at"] = json.encodeToJsonElement(Long.serializer(), it) }
-        value.aud.let { map["aud"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.authTime.let { map["auth_time"] = json.encodeToJsonElement(Long.serializer(), it) }
-        value.cognitoGroups.let { map["cognito:groups"] = json.encodeToJsonElement(ListSerializer(String.serializer()), it) }
-        value.cognitoUsername.let { map["cognito:username"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.exp.let { map["exp"] = json.encodeToJsonElement(Long.serializer(), it) }
-        value.eventId.let { map["event_id"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.iss.let { map["iss"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.iat.let { map["iat"] = json.encodeToJsonElement(Long.serializer(), it) }
-        value.scope?.let { map["scope"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.tokenUse.let { map["token_user"] = json.encodeToJsonElement(String.serializer(), it) }
-        value.customAttributes?.forEach {
-            map[it.key] = json.encodeToJsonElement(String.serializer(), it.value)
-        }
+        val map: MutableMap<String, JsonElement> = mutableMapOf()
+        value.sub?.let { map["name"] = json.encodeToJsonElement(it) }
+        value.name?.let { map["name"] = json.encodeToJsonElement(it) }
+        value.givenName?.let { map["given_name"] = json.encodeToJsonElement(it) }
+        value.familyName?.let { map["family_name"] = json.encodeToJsonElement(it) }
+        value.middleName?.let { map["middle_name"] = json.encodeToJsonElement(it) }
+        value.nickname?.let { map["nickname"] = json.encodeToJsonElement(it) }
+        value.preferredUsername?.let { map["preferred_username"] = json.encodeToJsonElement(it) }
+        value.profile?.let { map["profile"] = json.encodeToJsonElement(it) }
+        value.picture?.let { map["picture"] = json.encodeToJsonElement(it) }
+        value.website?.let { map["website"] = json.encodeToJsonElement(it) }
+        value.email?.let { map["email"] = json.encodeToJsonElement(it) }
+        value.emailVerified?.let { map["email_verified"] = json.encodeToJsonElement(it) }
+        value.gender?.let { map["gender"] = json.encodeToJsonElement(it) }
+        value.birthdate?.let { map["birthdate"] = json.encodeToJsonElement(it) }
+        value.zoneinfo?.let { map["zoneinfo"] = json.encodeToJsonElement(it) }
+        value.locale?.let { map["locale"] = json.encodeToJsonElement(it) }
+        value.phoneNumber?.let { map["phone_number"] = json.encodeToJsonElement(it) }
+        value.phoneNumberVerified?.let { map["phone_number_verified"] = json.encodeToJsonElement(it) }
+        value.address?.let { map["address"] = json.encodeToJsonElement(it) }
+        value.updatedAt?.let { map["updated_at"] = json.encodeToJsonElement(it) }
+        value.aud.let { map["aud"] = json.encodeToJsonElement(it) }
+        value.authTime.let { map["auth_time"] = json.encodeToJsonElement(it) }
+        value.cognitoGroups.let { map["cognito:groups"] = json.encodeToJsonElement(it) }
+        value.cognitoUsername.let { map["cognito:username"] = json.encodeToJsonElement(it) }
+        value.exp.let { map["exp"] = json.encodeToJsonElement(it) }
+        value.eventId.let { map["event_id"] = json.encodeToJsonElement(it) }
+        value.jti?.let { map["jti"] = json.encodeToJsonElement(it) }
+        value.originJti?.let { map["origin_jti"] = json.encodeToJsonElement(it) }
+        value.iss.let { map["iss"] = json.encodeToJsonElement(it) }
+        value.iat.let { map["iat"] = json.encodeToJsonElement(it) }
+        value.scope?.let { map["scope"] = json.encodeToJsonElement(it) }
+        value.tokenUse.let { map["token_user"] = json.encodeToJsonElement(it) }
+        value.customAttributes?.forEach { map[it.key] = json.encodeToJsonElement(it.value) }
 
         encoder.encodeSerializableValue(stringToJsonElementSerializer, map)
+    }
+
+    private fun missingField(name: String): String {
+        return "Missing field $name"
     }
 }

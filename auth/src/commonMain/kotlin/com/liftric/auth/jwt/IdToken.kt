@@ -172,6 +172,16 @@ interface IdTokenExtension {
     val eventId: String
 
     /**
+     * JWT ID
+     */
+    val jti: String?
+
+    /**
+     * JWT origin ID
+     */
+    val originJti: String?
+
+    /**
      * Issuer
      */
     val iss: String

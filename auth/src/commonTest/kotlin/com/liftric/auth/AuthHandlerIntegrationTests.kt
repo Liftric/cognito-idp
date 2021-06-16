@@ -238,7 +238,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @JsName("SignUpFailUsernameTooLongTest")
     @Test
     fun `Sign up should fail because username too long`() = runTest {
-        var signUpResponse = authHandler.signUp(
+        val signUpResponse = authHandler.signUp(
             buildString { (1..130).forEach { _ -> append("A") } }, "Password",
             attributes = listOf(
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
