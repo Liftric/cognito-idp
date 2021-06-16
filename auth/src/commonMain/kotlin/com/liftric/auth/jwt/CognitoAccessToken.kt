@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-class InvalidCognitoAccessTokenException(message:String): Exception(message)
+class InvalidCognitoAccessTokenException(message: String, cause: Throwable): Exception(message, cause)
 
 @Serializable
 data class CognitoAccessTokenClaims(
@@ -37,7 +37,7 @@ class CognitoAccessToken(accessTokenString: String): JWT<CognitoAccessTokenClaim
             try {
                 return Json.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
             } catch (e: Exception) {
-                throw InvalidCognitoAccessTokenException("This is not a valid access token")
+                throw InvalidCognitoAccessTokenException("This is not a valid access token", e)
             }
         }
 }
