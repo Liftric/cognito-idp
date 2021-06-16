@@ -37,9 +37,14 @@ class CognitoAccessToken(accessTokenString: String): JWT<CognitoAccessTokenClaim
     override val claims: CognitoAccessTokenClaims
         get() {
             try {
-                return Json { ignoreUnknownKeys = true }.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
+                return json.decodeFromString(CognitoAccessTokenClaims.serializer(), getPayload())
             } catch (e: Exception) {
                 throw InvalidCognitoAccessTokenException("This is not a valid access token", e)
             }
         }
+    companion object {
+        private val json by lazy {
+            Json { ignoreUnknownKeys = true }
+        }
+    }
 }
