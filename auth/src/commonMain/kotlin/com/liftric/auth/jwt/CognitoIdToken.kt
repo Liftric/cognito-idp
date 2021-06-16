@@ -5,7 +5,7 @@ import kotlinx.serialization.json.Json
 
 class InvalidCognitoIdTokenException(message:String, cause: Throwable): Exception(message, cause)
 
-@Serializable(with = CustomAttributesSerializer::class)
+@Serializable(with = CognitoIdTokenSerializer::class)
 data class CognitoIdTokenClaims(
     override val sub: String? = null,
     override val name: String? = null,
