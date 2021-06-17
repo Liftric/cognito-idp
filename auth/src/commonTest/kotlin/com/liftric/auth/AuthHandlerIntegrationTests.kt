@@ -1,5 +1,6 @@
 package com.liftric.auth
 
+import com.liftric.auth.base.AuthenticationResult
 import com.liftric.auth.base.Region
 import com.liftric.auth.base.UserAttribute
 import com.liftric.auth.base.getOrThrow
@@ -13,7 +14,7 @@ import kotlin.test.*
 expect fun runTest(block: suspend () -> Unit)
 
 expect class AuthHandlerIntegrationTests : AbstractAuthHandlerIntegrationTests
-abstract class AbstractAuthHandlerIntegrationTests() {
+abstract class AbstractAuthHandlerIntegrationTests {
     private val configuration = Configuration(
         Region.values().first { it.code == (env["region"] ?: error("region env missing")) },
         env["clientid"] ?: error("clientid env missing")
@@ -40,7 +41,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         )
     }
 
-    private suspend fun createUser(): Pair<String, Credentials> {
+    private suspend fun createUser(): Pair<AuthenticationResult, Credentials> {
         val credential = randomUser()
         val userAttributes: List<UserAttribute> = listOf(
             UserAttribute(
@@ -56,7 +57,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         val signInResponse = authHandler.signIn(credential.username, credential.password)
         assertNotNull(signInResponse.getOrNull())
 
-        return Pair(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken, credential)
+        return Pair(signInResponse.getOrNull()!!.AuthenticationResult, credential)
     }
 
     private suspend fun deleteUser(token: String) {
@@ -91,30 +92,30 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @JsName("GetUserTest")
     @Test
     fun `Should get user`() = runTest {
-        val (token, _) = createUser()
+        val (result, _) = createUser()
 
-        val getUserAttribute = authHandler.getUser(token)
+        val getUserAttribute = authHandler.getUser(result.AccessToken)
         assertNull(getUserAttribute.exceptionOrNull())
         assertNotNull(getUserAttribute.getOrNull())
         assertEquals(HttpStatusCode.OK, getUserAttribute.statusCode)
 
-        deleteUser(token)
+        deleteUser(result.AccessToken)
     }
 
     @JsName("ChangeAttributeTest")
     @Test
     fun `Should change attribute`() = runTest {
-        val (token, _) = createUser()
+        val (result, _) = createUser()
 
         val updateUserAttributesResponse = authHandler.updateUserAttributes(
-            token,
+            result.AccessToken,
             listOf(UserAttribute(Name = "custom:target_group", Value = "ROLE_USER"))
         )
         assertNull(updateUserAttributesResponse.exceptionOrNull())
         assertNotNull(updateUserAttributesResponse.getOrNull())
         assertEquals(HttpStatusCode.OK, updateUserAttributesResponse.statusCode)
 
-        val getUserResponse = authHandler.getUser(token)
+        val getUserResponse = authHandler.getUser(result.AccessToken)
         assertNull(getUserResponse.exceptionOrNull())
         assertNotNull(getUserResponse.getOrNull())
 
@@ -125,19 +126,19 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         }
         assertEquals(HttpStatusCode.OK, getUserResponse.statusCode)
 
-        deleteUser(token)
+        deleteUser(result.AccessToken)
     }
 
     @JsName("ChangePasswordTest")
     @Test
     fun `Should change password`() = runTest {
-        val (token, credentials) = createUser()
+        val (result, credentials) = createUser()
 
-        val changePasswordResponse = authHandler.changePassword(token, credentials.password, credentials.password + "B")
+        val changePasswordResponse = authHandler.changePassword(result.AccessToken, credentials.password, credentials.password + "B")
         assertNull(changePasswordResponse.exceptionOrNull())
         assertEquals(HttpStatusCode.OK, changePasswordResponse.statusCode)
 
-        val signOutResponse = authHandler.signOut(token)
+        val signOutResponse = authHandler.signOut(result.AccessToken)
         assertNull(signOutResponse.exceptionOrNull())
         assertEquals(HttpStatusCode.OK, signOutResponse.statusCode)
 
@@ -155,9 +156,9 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @JsName("SignOutSignInTest")
     @Test
     fun `Sign out and sign in should succeed`() = runTest {
-        val (token, credentials) = createUser()
+        val (result, credentials) = createUser()
 
-        val signOutResponse = authHandler.signOut(token)
+        val signOutResponse = authHandler.signOut(result.AccessToken)
         assertNull(signOutResponse.exceptionOrNull())
         assertEquals(HttpStatusCode.OK, signOutResponse.statusCode)
 
@@ -175,9 +176,9 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @JsName("SignOutSignInRefreshTest")
     @Test
     fun `Sign out, sign in and refresh should succeed`() = runTest {
-        val (token, credentials) = createUser()
+        val (result, credentials) = createUser()
 
-        val signOutResponse = authHandler.signOut(token)
+        val signOutResponse = authHandler.signOut(result.AccessToken)
         assertNull(signOutResponse.exceptionOrNull())
         assertEquals(HttpStatusCode.OK, signOutResponse.statusCode)
 
@@ -197,6 +198,31 @@ abstract class AbstractAuthHandlerIntegrationTests() {
         assertEquals(HttpStatusCode.OK, refreshResponse.statusCode)
 
         deleteUser(refreshResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+    }
+
+    @JsName("RevokeTokenAndValidateExpiration")
+    @Test
+    fun `Sign in, revoke token, validate`() = runTest {
+        val (result, credentials) = createUser()
+
+        val revokeTokenResponse = authHandler.revokeToken(result.RefreshToken)
+        assertNull(revokeTokenResponse.exceptionOrNull())
+        assertEquals(HttpStatusCode.OK, revokeTokenResponse.statusCode)
+
+        // AWS is not revoking Tokens instantly so give it some time
+        delay(1000)
+
+        // This should fail since the token has been revoked
+        val signOutResponse = authHandler.signOut(result.AccessToken)
+        assertTrue(signOutResponse.exceptionOrNull() is NotAuthorizedException)
+
+        // We delete the user after we're done with the test
+        val signInResponse = authHandler.signIn(credentials.username, credentials.password)
+        assertNull(signInResponse.exceptionOrNull())
+        assertNotNull(signInResponse.getOrNull())
+        assertEquals(HttpStatusCode.OK, signInResponse.statusCode)
+
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
     }
 
     @JsName("SignUpFailPasswordTooShortTest")
@@ -238,7 +264,7 @@ abstract class AbstractAuthHandlerIntegrationTests() {
     @JsName("SignUpFailUsernameTooLongTest")
     @Test
     fun `Sign up should fail because username too long`() = runTest {
-        var signUpResponse = authHandler.signUp(
+        val signUpResponse = authHandler.signUp(
             buildString { (1..130).forEach { _ -> append("A") } }, "Password",
             attributes = listOf(
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
