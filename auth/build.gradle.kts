@@ -240,6 +240,16 @@ publishing {
                     name.set("Jan Gaebel")
                     email.set("gaebel@liftric.com")
                 }
+                developer {
+                    id.set("benjohnde")
+                    name.set("Ben John")
+                    email.set("john@liftric.com")
+                }
+                developer {
+                    id.set("ingwersaft")
+                    name.set("Marcel Kesselring")
+                    email.set("kesselring@liftric.com")
+                }
             }
             scm {
                 url.set("https://github.com/Liftric/Auth")
@@ -268,7 +278,7 @@ npmPublishing {
                     "aws"
                 )
                 licence = "MIT"
-                description = "Lightweight AWS Cognito client for Kotlin Multiplatform projects."
+                description = "Lightweight AWS Cognito client."
                 homepage = "https://github.com/Liftric/Auth"
                 bugs = mutableMapOf<String, Any?>().apply {
                     put("url", "https://github.com/Liftric/Auth/issues")
