@@ -192,6 +192,14 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         AccessToken(accessToken)
     )
 
+    override suspend fun revokeToken(refreshToken: String): Result<Unit> = request(
+        RequestType.revokeToken,
+        RevokeToken(
+            configuration.clientId,
+            refreshToken
+        )
+    )
+
     override suspend fun deleteUser(accessToken: String): Result<Unit> = request(
         RequestType.deleteUser,
         AccessToken(accessToken)

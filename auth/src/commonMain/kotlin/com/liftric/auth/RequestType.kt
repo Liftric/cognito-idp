@@ -6,6 +6,7 @@ enum class RequestType(val identityProviderServiceValue: String) {
     signUp ("AWSCognitoIdentityProviderService.SignUp"),
     confirmSignUp( "AWSCognitoIdentityProviderService.ConfirmSignUp"),
     signOut("AWSCognitoIdentityProviderService.GlobalSignOut"),
+    revokeToken("AWSCognitoIdentityProviderService.RevokeToken"),
     getUser("AWSCognitoIdentityProviderService.GetUser"),
     changePassword("AWSCognitoIdentityProviderService.ChangePassword"),
     deleteUser("AWSCognitoIdentityProviderService.DeleteUser"),

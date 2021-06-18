@@ -34,6 +34,12 @@ internal data class AccessToken(
 )
 
 @Serializable
+internal data class RevokeToken(
+    val ClientId: String,
+    val Token: String,
+)
+
+@Serializable
 internal data class ChangePassword(
     val AccessToken: String,
     val PreviousPassword: String,

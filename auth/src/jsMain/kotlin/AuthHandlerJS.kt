@@ -116,6 +116,12 @@ class AuthHandlerJS(regionString: String, clientId: String) {
                 .getOrThrow()
         }
 
+    fun revokeToken(refreshToken: String): Promise<Unit> =
+        MainScope().promise {
+            handler.revokeToken(refreshToken)
+                .getOrThrow()
+        }
+
     fun deleteUser(accessToken: String): Promise<Unit> =
         MainScope().promise {
             handler.deleteUser(accessToken)
