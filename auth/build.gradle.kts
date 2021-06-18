@@ -277,7 +277,7 @@ npmPublishing {
                     "liftric",
                     "aws"
                 )
-                licence = "MIT"
+                license = "MIT"
                 description = "Lightweight AWS Cognito client."
                 homepage = "https://github.com/Liftric/Auth"
                 bugs = mutableMapOf<String, Any?>().apply {
