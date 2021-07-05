@@ -12,21 +12,19 @@ object Android {
 
 object Versions {
     const val gradle = "4.2.1"
-    const val kotlin = "1.5.10"
+    const val kotlin = "1.5.20"
     const val npmPublish = "2.0.3"
     const val definitions = "4.9.1"
     const val coroutines = "1.5.0-native-mt"
     const val serialization = "1.2.1"
-    const val ktor = "1.6.0"
+    const val ktor = "1.6.1"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
 }
 
 object Libs {
-    const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val serialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
     const val gradleAndroid = "com.android.tools.build:gradle:${Versions.gradle}"
-    const val kotlinAndroid = "org.jetbrains.kotlin:kotlin-android-extensions:${Versions.kotlin}"
 
     /* Common */
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
