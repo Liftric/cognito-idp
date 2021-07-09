@@ -1,4 +1,4 @@
-package com.liftric.auth.base
+package com.liftric.auth.core
 
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport

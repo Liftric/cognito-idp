@@ -1,8 +1,7 @@
 package com.liftric.auth
 
-import AuthHandlerJS
-import com.liftric.auth.base.Region
-import com.liftric.auth.base.UserAttribute
+import IdentityProviderJS
+import com.liftric.auth.core.UserAttribute
 import env
 import kotlinx.coroutines.await
 import kotlin.test.Test
@@ -10,8 +9,8 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.fail
 
-class AuthHandlerJSTest {
-    private val authHandler = AuthHandlerJS(
+class IdentityProviderJSTests {
+    private val provider = IdentityProviderJS(
         env["region"] ?: error("missing region"),
         env["clientid"] ?: error("missing clientid")
     )
@@ -40,19 +39,19 @@ class AuthHandlerJSTest {
                 Value = "ROLE_PATIENT"
             )
         )
-        val signUpResponse = authHandler.signUp(credential.username, credential.password, userAttributes.toTypedArray())
+        val signUpResponse = provider.signUp(credential.username, credential.password, userAttributes.toTypedArray())
 
         assertNull(signUpResponse.await())
         assertNotNull(signUpResponse.await())
 
-        val signInResponse = authHandler.signIn(credential.username, credential.password)
+        val signInResponse = provider.signIn(credential.username, credential.password)
         assertNotNull(signInResponse.await())
 
         return Pair(signInResponse.await().AuthenticationResult.AccessToken, credential)
     }
 
     private suspend fun deleteUser(token: String) {
-        val deleteUserResponse = authHandler.deleteUser(token)
+        val deleteUserResponse = provider.deleteUser(token)
         assertNull(deleteUserResponse.await())
     }
 
@@ -60,7 +59,7 @@ class AuthHandlerJSTest {
     @Test
     fun `Sign up, sign in, delete user should succeed`() = runTest {
         println("Sign up, sign in, delete user should succeed")
-        authHandler.signUp(
+        provider.signUp(
             username, password,
             attributes = arrayOf(
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
@@ -70,11 +69,11 @@ class AuthHandlerJSTest {
             assertNotNull(it)
         }
 
-        authHandler.signIn(username, password).await().also {
+        provider.signIn(username, password).await().also {
             println("signInResponse=$it")
             assertNotNull(it)
 
-            authHandler.deleteUser(it.AuthenticationResult.AccessToken).await().also {
+            provider.deleteUser(it.AuthenticationResult.AccessToken).await().also {
                 println("deleteUser=$it")
                 assertNotNull(it)
             }
@@ -84,7 +83,7 @@ class AuthHandlerJSTest {
     @JsName("SignUpFailPasswordTooLongTest")
     @Test
     fun `Sign up should fail because password too long`() = runTest {
-        authHandler.signUp(
+        provider.signUp(
             "Username", buildString { (1..260).forEach { _ -> append("A") } },
             attributes = arrayOf(
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")

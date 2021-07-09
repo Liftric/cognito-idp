@@ -5,7 +5,7 @@
 
 # Auth
 
-Auth is a lightweight AWS Cognito client for Kotlin Multiplatform projects
+Auth is a lightweight AWS Cognito Identity Provider for Kotlin Multiplatform projects.
 
 > In its current state it provides only the bare minimum that was needed for our project. Feel free to contribute if there is something missing for you.
 
@@ -38,25 +38,24 @@ npm i @liftric/auth@<version>
 
 ### Instantiating
 
-The handler needs a configuration object consisting of the region code and the client ID.
+The provider needs a configuration object consisting of the region code and the client ID.
 
 ```kotlin
-val configuration = Configuration(region = Region.euCentral1,
-                                  clientId = "CLIENT_ID") 
+val configuration = Configuration(region = Region.euCentral1, clientId = "CLIENT_ID") 
 ```
 
 #### Kotlin
 
 ```kotlin
-val authHandler = AuthHandler(configuration) 
+val provider = IdentityProvider(configuration) 
 ```
 
 #### Typescript
 
 ```typescript
-import {AuthHandlerJS} from '@liftric/auth';
+import {IdentityProviderJS} from '@liftric/auth';
 
-const auth = new AuthHandlerJS('<regionString>', '<clientId>');
+const provider = new IdentityProviderJS('<regionString>', '<clientId>');
 ```
 
 ### API
@@ -67,8 +66,10 @@ General usage of the request methods.
 
 All methods are suspending and will return a `Result<T>` object which wraps the desired return object `T` and can contain an exception.
 
+Request related exceptions are of type `IdentityProviderException` and do also contain the `HttpStatusCode`.
+
 ```kotlin
-val response = signUp(username = "user", password = "password")
+val response = provider.signUp(username = "user", password = "password")
 if (response.isSuccess) {
     println(signUpResponse.getOrNull())
 } else {
@@ -91,7 +92,6 @@ val attribute = UserAttribute(Name = "email", Value = "name@url.tld")
 
 signUp(username = "USERNAME", password = "PASSWORD",
        attributes = listOf(attribute)): Result<SignUpResponse>
-...
 ```
 
 #### Confirm Sign Up

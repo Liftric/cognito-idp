@@ -11,7 +11,7 @@ object Android {
 }
 
 object Versions {
-    const val gradle = "4.2.1"
+    const val gradle = "4.0.1"
     const val kotlin = "1.5.20"
     const val npmPublish = "2.0.3"
     const val definitions = "4.9.1"

@@ -1,23 +1,23 @@
-package com.liftric.auth.base
+package com.liftric.auth.core
 
 object Header {
-    const val Authority         = "authority"
-    const val CacheControl      = "cache-control"
-    const val AmzUserAgent      = "x-amz-user-agent"
-    const val Useragent         = "user-agent"
-    const val Accept            = "accept"
-    const val SecFetchSite      = "sec-fetch-site"
-    const val SecFetchMode      = "sec-fetch-mode"
-    const val AcceptLanguage    = "accept-language"
-    const val Dnt               = "dnt"
-    const val AmzTarget         = "x-amz-target"
-    const val AmzJson           = "application/x-amz-json-1.1"
+    const val Authority = "authority"
+    const val CacheControl = "cache-control"
+    const val AmzUserAgent = "x-amz-user-agent"
+    const val Useragent = "user-agent"
+    const val Accept = "accept"
+    const val SecFetchSite = "sec-fetch-site"
+    const val SecFetchMode = "sec-fetch-mode"
+    const val AcceptLanguage = "accept-language"
+    const val Dnt = "dnt"
+    const val AmzTarget = "x-amz-target"
+    const val AmzJson = "application/x-amz-json-1.1"
 }
 
 object AuthFlow {
-    const val RefreshTokenAuth  = "REFRESH_TOKEN_AUTH"
-    const val UserSrpAuth       = "USER_SRP_AUTH"
-    const val UserPasswordAuth  = "USER_PASSWORD_AUTH"
+    const val RefreshTokenAuth = "REFRESH_TOKEN_AUTH"
+    const val UserSrpAuth = "USER_SRP_AUTH"
+    const val UserPasswordAuth = "USER_PASSWORD_AUTH"
 }
 
 /**
@@ -49,7 +49,7 @@ enum class Region(val code: String) {
     saEast1("sa-east-1")
 }
 
-object CognitoException {
+object AWSException {
     const val CodeMismatch = "CodeMismatchException"
     const val ExpiredCode = "ExpiredCodeException"
     const val InternalError = "InternalErrorException"

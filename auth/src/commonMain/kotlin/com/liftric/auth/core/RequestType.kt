@@ -1,5 +1,4 @@
-package com.liftric.auth
-
+package com.liftric.auth.core
 
 enum class RequestType(val identityProviderServiceValue: String) {
     signIn("AWSCognitoIdentityProviderService.InitiateAuth"),

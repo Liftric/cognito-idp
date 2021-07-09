@@ -3,7 +3,7 @@
 /**
  * Don't forget to check [ResponseJS.kt] when doing changes here :)
  */
-package com.liftric.auth.base
+package com.liftric.auth.core
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

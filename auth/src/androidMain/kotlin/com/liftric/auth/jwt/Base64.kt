@@ -1,7 +1,6 @@
 package com.liftric.auth.jwt
 
 import android.util.Base64
-import java.io.UnsupportedEncodingException
 
 internal actual class Base64 {
     actual companion object {

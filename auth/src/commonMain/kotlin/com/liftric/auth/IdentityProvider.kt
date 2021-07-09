@@ -1,6 +1,6 @@
 package com.liftric.auth
 
-import com.liftric.auth.base.*
+import com.liftric.auth.core.*
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
@@ -14,29 +14,13 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-class CodeMismatchException(message: String) : Exception(message)
-class ExpiredCodeException(message: String) : Exception(message)
-class InternalErrorException(message: String) : Exception(message)
-class InvalidLambdaResponseException(message: String) : Exception(message)
-class InvalidParameterException(message: String) : Exception(message)
-class InvalidPasswordException(message: String) : Exception(message)
-class LimitExceededException(message: String) : Exception(message)
-class NotAuthorizedException(message: String) : Exception(message)
-class ResourceNotFoundException(message: String) : Exception(message)
-class TooManyFailedAttemptsException(message: String) : Exception(message)
-class TooManyRequestsException(message: String) : Exception(message)
-class UnexpectedLambdaException(message: String) : Exception(message)
-class UserLambdaValidationException(message: String) : Exception(message)
-class UserNotConfirmedException(message: String) : Exception(message)
-class UserNotFoundException(message: String) : Exception(message)
+/** Don't forget [IdentityProviderJS] when doing changes here :) */
 
 /**
- * AWS Cognito authentication client
- * Provides common request methods
- *
- * Don't forget to check [AuthHandlerJS] when doing changes here :)
+ * AWS Cognito Identity Provider.
+ * Provides common request methods.
  */
-open class AuthHandler(private val configuration: Configuration) : Auth {
+open class IdentityProvider(private val configuration: Configuration) : Provider {
     private val json = Json {
         allowStructuredMapKeys = true
     }
@@ -56,10 +40,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
     }
 
-    //----------
-    // INTERFACE
-    //----------
-
     override suspend fun signUp(
         username: String,
         password: String,
@@ -67,10 +47,10 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
     ): Result<SignUpResponse> = request(
         RequestType.signUp,
         SignUp(
-            ClientId = configuration.clientId,
-            Username = username,
-            Password = password,
-            UserAttributes = attributes ?: listOf()
+            configuration.clientId,
+            username,
+            password,
+            attributes ?: listOf()
         )
     )
 
@@ -100,7 +80,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
 
     override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
         RequestType.signIn,
-
         RefreshAuthentication(
             AuthFlow.RefreshTokenAuth,
             configuration.clientId,
@@ -118,7 +97,10 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         attributes: List<UserAttribute>
     ): Result<UpdateUserAttributesResponse> = request(
         RequestType.updateUserAttributes,
-        UpdateUserAttributes(accessToken, attributes)
+        UpdateUserAttributes(
+            accessToken,
+            attributes
+        )
     )
 
     override suspend fun changePassword(
@@ -150,7 +132,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         password: String
     ): Result<Unit> = request(
         RequestType.confirmForgotPassword,
-
         ConfirmForgotPassword(
             configuration.clientId,
             confirmationCode,
@@ -165,7 +146,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         clientMetadata: Map<String, String>?
     ): Result<GetAttributeVerificationCodeResponse> = request(
         RequestType.getUserAttributeVerificationCode,
-
         GetUserAttributeVerificationCode(
             accessToken,
             attributeName,
@@ -179,7 +159,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         code: String
     ): Result<Unit> = request(
         RequestType.verifyUserAttribute,
-
         VerifyUserAttribute(
             accessToken,
             attributeName,
@@ -205,10 +184,6 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         AccessToken(accessToken)
     )
 
-    //----------
-    // REQUEST
-    //----------
-
     private suspend inline fun <reified T> request(type: RequestType, payload: Any): Result<T> = try {
         val response = client.post<HttpResponse>(configuration.requestUrl) {
             header(Header.AmzTarget, type.identityProviderServiceValue)
@@ -216,39 +191,36 @@ open class AuthHandler(private val configuration: Configuration) : Auth {
         }
         if (T::class.simpleName == "Unit") {
             // otherwise kotlinx.serialization will fail
-            Result.success(Unit as T, response.status)
+            Result.success(Unit as T)
         } else {
-            Result.success(json.decodeFromString(response.readText()), response.status)
+            Result.success(json.decodeFromString(response.readText()))
         }
     } catch (e: ResponseException) {
         try {
             val error = json.decodeFromString<RequestError>(e.response.readText())
             Result.failure(
                 when (error.type) {
-                    CognitoException.CodeMismatch -> CodeMismatchException(error.message)
-                    CognitoException.ExpiredCode -> ExpiredCodeException(error.message)
-                    CognitoException.InternalError -> InternalErrorException(error.message)
-                    CognitoException.InvalidLambdaResponse -> InvalidLambdaResponseException(error.message)
-                    CognitoException.InvalidParameter -> InvalidParameterException(error.message)
-                    CognitoException.InvalidPassword -> InvalidPasswordException(error.message)
-                    CognitoException.LimitExceeded -> LimitExceededException(error.message)
-                    CognitoException.NotAuthorized -> NotAuthorizedException(error.message)
-                    CognitoException.ResourceNotFound -> ResourceNotFoundException(error.message)
-                    CognitoException.TooManyFailedAttempts -> TooManyFailedAttemptsException(error.message)
-                    CognitoException.TooManyRequests -> TooManyRequestsException(error.message)
-                    CognitoException.UnexpectedLambda -> UnexpectedLambdaException(error.message)
-                    CognitoException.UserLambdaValidation -> UserLambdaValidationException(error.message)
-                    CognitoException.UserNotConfirmed -> UserNotConfirmedException(error.message)
-                    CognitoException.UserNotFound -> UserNotFoundException(error.message)
-                    else -> Error(error.message)
-                },
-                e.response.status
+                    AWSException.CodeMismatch -> CodeMismatchException(e.response.status, error.message)
+                    AWSException.ExpiredCode -> ExpiredCodeException(e.response.status, error.message)
+                    AWSException.InternalError -> InternalErrorException(e.response.status, error.message)
+                    AWSException.InvalidLambdaResponse -> InvalidLambdaResponseException(e.response.status, error.message)
+                    AWSException.InvalidParameter -> InvalidParameterException(e.response.status, error.message)
+                    AWSException.InvalidPassword -> InvalidPasswordException(e.response.status, error.message)
+                    AWSException.LimitExceeded -> LimitExceededException(e.response.status, error.message)
+                    AWSException.NotAuthorized -> NotAuthorizedException(e.response.status, error.message)
+                    AWSException.ResourceNotFound -> ResourceNotFoundException(e.response.status, error.message)
+                    AWSException.TooManyFailedAttempts -> TooManyFailedAttemptsException(e.response.status, error.message)
+                    AWSException.TooManyRequests -> TooManyRequestsException(e.response.status, error.message)
+                    AWSException.UnexpectedLambda -> UnexpectedLambdaException(e.response.status, error.message)
+                    AWSException.UserLambdaValidation -> UserLambdaValidationException(e.response.status, error.message)
+                    AWSException.UserNotConfirmed -> UserNotConfirmedException(e.response.status, error.message)
+                    AWSException.UserNotFound -> UserNotFoundException(e.response.status, error.message)
+                    else -> IdentityProviderException(e.response.status, error.message)
+                }
             )
         } catch (e: SerializationException) {
             Result.failure(e)
         }
-    } catch (t: IOException) {
-        Result.failure(t)
     } catch (t: Throwable) {
         Result.failure(t)
     }

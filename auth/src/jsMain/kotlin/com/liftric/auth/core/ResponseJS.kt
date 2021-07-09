@@ -3,7 +3,7 @@
 /**
  * Adapted [Response.kt] classes for Typescript usage (Map and List aren't compatible for [kotlin.js.JsExport])
  */
-package com.liftric.auth.base
+package com.liftric.auth.core
 
 import kotlinx.serialization.Serializable
 
