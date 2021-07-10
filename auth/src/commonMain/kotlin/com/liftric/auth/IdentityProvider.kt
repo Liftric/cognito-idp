@@ -14,6 +14,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
+open class IdentityProviderException(val status: HttpStatusCode?, val type: AWSException?, message: String) : Exception(message)
+
 /** Don't forget [IdentityProviderJS] when doing changes here :) */
 
 /**
@@ -25,6 +27,12 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         allowStructuredMapKeys = true
     }
     private val client = HttpClient {
+        /**
+         * When referencing members that are in the
+         * IdentityProvider's scope, assign them to
+         * a new variable in this scope. Needed to
+         * avoid [InvalidMutationException] in iOS.
+         */
         val configuration = configuration
         val json = json
         install(JsonFeature) {
@@ -45,12 +53,12 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         password: String,
         attributes: List<UserAttribute>?
     ): Result<SignUpResponse> = request(
-        RequestType.signUp,
+        Request.SignUp,
         SignUp(
             configuration.clientId,
             username,
             password,
-            attributes ?: listOf()
+            attributes?: listOf()
         )
     )
 
@@ -58,7 +66,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         username: String,
         confirmationCode: String
     ): Result<Unit> = request(
-        RequestType.confirmSignUp,
+        Request.ConfirmSignUp,
         ConfirmSignUp(
             configuration.clientId,
             username,
@@ -70,25 +78,25 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         username: String,
         password: String
     ): Result<SignInResponse> = request(
-        RequestType.signIn,
-        Authentication(
-            AuthFlow.UserPasswordAuth,
+        Request.SignIn,
+        SignIn(
+            Authentication.UserPasswordAuth.flow,
             configuration.clientId,
-            AuthParameters(username, password)
+            SignIn.Parameters(username, password)
         )
     )
 
     override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
-        RequestType.signIn,
-        RefreshAuthentication(
-            AuthFlow.RefreshTokenAuth,
+        Request.SignIn,
+        Refresh(
+            Authentication.RefreshTokenAuth.flow,
             configuration.clientId,
-            RefreshParameters(refreshToken)
+            Refresh.Parameters(refreshToken)
         )
     )
 
     override suspend fun getUser(accessToken: String): Result<GetUserResponse> = request(
-        RequestType.getUser,
+        Request.GetUser,
         AccessToken(accessToken)
     )
 
@@ -96,7 +104,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         accessToken: String,
         attributes: List<UserAttribute>
     ): Result<UpdateUserAttributesResponse> = request(
-        RequestType.updateUserAttributes,
+        Request.UpdateUserAttributes,
         UpdateUserAttributes(
             accessToken,
             attributes
@@ -108,7 +116,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         currentPassword: String,
         newPassword: String
     ): Result<Unit> = request(
-        RequestType.changePassword,
+        Request.ChangePassword,
         ChangePassword(
             accessToken,
             currentPassword,
@@ -119,7 +127,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
     override suspend fun forgotPassword(
         username: String
     ): Result<ForgotPasswordResponse> = request(
-        RequestType.forgotPassword,
+        Request.ForgotPassword,
         ForgotPassword(
             configuration.clientId,
             username
@@ -131,7 +139,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         username: String,
         password: String
     ): Result<Unit> = request(
-        RequestType.confirmForgotPassword,
+        Request.ConfirmForgotPassword,
         ConfirmForgotPassword(
             configuration.clientId,
             confirmationCode,
@@ -145,7 +153,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         attributeName: String,
         clientMetadata: Map<String, String>?
     ): Result<GetAttributeVerificationCodeResponse> = request(
-        RequestType.getUserAttributeVerificationCode,
+        Request.GetUserAttributeVerificationCode,
         GetUserAttributeVerificationCode(
             accessToken,
             attributeName,
@@ -158,7 +166,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
         attributeName: String,
         code: String
     ): Result<Unit> = request(
-        RequestType.verifyUserAttribute,
+        Request.VerifyUserAttribute,
         VerifyUserAttribute(
             accessToken,
             attributeName,
@@ -167,12 +175,12 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
     )
 
     override suspend fun signOut(accessToken: String): Result<Unit> = request(
-        RequestType.signOut,
+        Request.SignOut,
         AccessToken(accessToken)
     )
 
     override suspend fun revokeToken(refreshToken: String): Result<Unit> = request(
-        RequestType.revokeToken,
+        Request.RevokeToken,
         RevokeToken(
             configuration.clientId,
             refreshToken
@@ -180,44 +188,32 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
     )
 
     override suspend fun deleteUser(accessToken: String): Result<Unit> = request(
-        RequestType.deleteUser,
+        Request.DeleteUser,
         AccessToken(accessToken)
     )
 
-    private suspend inline fun <reified T> request(type: RequestType, payload: Any): Result<T> = try {
-        val response = client.post<HttpResponse>(configuration.requestUrl) {
+    private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
+        client.post<HttpResponse>(configuration.requestUrl) {
             header(Header.AmzTarget, type.identityProviderServiceValue)
             body = payload
-        }
-        if (T::class.simpleName == "Unit") {
-            // otherwise kotlinx.serialization will fail
-            Result.success(Unit as T)
-        } else {
-            Result.success(json.decodeFromString(response.readText()))
+        }.run {
+            when(T::class) {
+                Unit::class -> Result.success(Unit as T)
+                else -> Result.success(json.decodeFromString(readText()))
+            }
         }
     } catch (e: ResponseException) {
         try {
-            val error = json.decodeFromString<RequestError>(e.response.readText())
-            Result.failure(
-                when (error.type) {
-                    AWSException.CodeMismatch -> CodeMismatchException(e.response.status, error.message)
-                    AWSException.ExpiredCode -> ExpiredCodeException(e.response.status, error.message)
-                    AWSException.InternalError -> InternalErrorException(e.response.status, error.message)
-                    AWSException.InvalidLambdaResponse -> InvalidLambdaResponseException(e.response.status, error.message)
-                    AWSException.InvalidParameter -> InvalidParameterException(e.response.status, error.message)
-                    AWSException.InvalidPassword -> InvalidPasswordException(e.response.status, error.message)
-                    AWSException.LimitExceeded -> LimitExceededException(e.response.status, error.message)
-                    AWSException.NotAuthorized -> NotAuthorizedException(e.response.status, error.message)
-                    AWSException.ResourceNotFound -> ResourceNotFoundException(e.response.status, error.message)
-                    AWSException.TooManyFailedAttempts -> TooManyFailedAttemptsException(e.response.status, error.message)
-                    AWSException.TooManyRequests -> TooManyRequestsException(e.response.status, error.message)
-                    AWSException.UnexpectedLambda -> UnexpectedLambdaException(e.response.status, error.message)
-                    AWSException.UserLambdaValidation -> UserLambdaValidationException(e.response.status, error.message)
-                    AWSException.UserNotConfirmed -> UserNotConfirmedException(e.response.status, error.message)
-                    AWSException.UserNotFound -> UserNotFoundException(e.response.status, error.message)
-                    else -> IdentityProviderException(e.response.status, error.message)
-                }
-            )
+            json.decodeFromString<RequestError>(e.response.readText()).run {
+                Result.failure(
+                    IdentityProviderException(
+                        e.response.status,
+                        try { AWSException.valueOf(this.type) }
+                        catch (e: IllegalArgumentException) { null },
+                        this.message
+                    )
+                )
+            }
         } catch (e: SerializationException) {
             Result.failure(e)
         }

@@ -1,6 +1,6 @@
 package com.liftric.auth.core
 
-object Header {
+internal object Header {
     const val Authority = "authority"
     const val CacheControl = "cache-control"
     const val AmzUserAgent = "x-amz-user-agent"
@@ -14,55 +14,70 @@ object Header {
     const val AmzJson = "application/x-amz-json-1.1"
 }
 
-object AuthFlow {
-    const val RefreshTokenAuth = "REFRESH_TOKEN_AUTH"
-    const val UserSrpAuth = "USER_SRP_AUTH"
-    const val UserPasswordAuth = "USER_PASSWORD_AUTH"
+internal enum class Authentication(val flow: String) {
+    RefreshTokenAuth("REFRESH_TOKEN_AUTH"),
+    UserPasswordAuth("USER_PASSWORD_AUTH")
 }
 
 /**
  * @see https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints
  */
 enum class Region(val code: String) {
-    usEast1("us-east-1"),
-    usEast2("us-east-2"),
-    usWest1("us-west-1"),
-    usWest2("us-west-2"),
-    afSouth1("af-south-1"),
-    apEast1("ap-east-1"),
-    apSouth1("ap-south-1"),
-    apNortheast3("ap-northeast-3"),
-    apNortheast2("ap-northeast-2"),
-    apSoutheast1("ap-southeast-1"),
-    apSoutheast2("ap-southeast-2"),
-    apNortheast1("ap-northeast-1"),
-    caCentral1("ca-central-1"),
-    cnNorth1("cn-north-1"),
-    cnNorthwest1("cn-northwest-1"),
-    euCentral1("eu-central-1"),
-    euWest1("eu-west-1"),
-    euWest2("eu-west-2"),
-    euSouth1("eu-south-1"),
-    euWest3("eu-west-3"),
-    euNorth1("eu-north-1"),
-    meSouth1("me-south-1"),
-    saEast1("sa-east-1")
+    USEast1("us-east-1"),
+    USEast2("us-east-2"),
+    USWest1("us-west-1"),
+    USWest2("us-west-2"),
+    AFSouth1("af-south-1"),
+    APEast1("ap-east-1"),
+    APSouth1("ap-south-1"),
+    APNortheast3("ap-northeast-3"),
+    APNortheast2("ap-northeast-2"),
+    APSoutheast1("ap-southeast-1"),
+    APSoutheast2("ap-southeast-2"),
+    APNortheast1("ap-northeast-1"),
+    CACentral1("ca-central-1"),
+    CNNorth1("cn-north-1"),
+    CNNorthwest1("cn-northwest-1"),
+    EUCentral1("eu-central-1"),
+    EUWest1("eu-west-1"),
+    EUWest2("eu-west-2"),
+    EUSouth1("eu-south-1"),
+    EUWest3("eu-west-3"),
+    EUNorth1("eu-north-1"),
+    MESouth1("me-south-1"),
+    SAEast1("sa-east-1")
 }
 
-object AWSException {
-    const val CodeMismatch = "CodeMismatchException"
-    const val ExpiredCode = "ExpiredCodeException"
-    const val InternalError = "InternalErrorException"
-    const val InvalidLambdaResponse = "InvalidLambdaResponseException"
-    const val InvalidParameter = "InvalidParameterException"
-    const val InvalidPassword = "InvalidPasswordException"
-    const val LimitExceeded = "LimitExceededException"
-    const val NotAuthorized = "NotAuthorizedException"
-    const val ResourceNotFound = "ResourceNotFoundException"
-    const val TooManyFailedAttempts = "TooManyFailedAttemptsException"
-    const val TooManyRequests = "TooManyRequestsException"
-    const val UnexpectedLambda = "UnexpectedLambdaException"
-    const val UserLambdaValidation = "UserLambdaValidationException"
-    const val UserNotConfirmed = "UserNotConfirmedException"
-    const val UserNotFound  = "UserNotFoundException"
+internal enum class Request(val identityProviderServiceValue: String) {
+    SignIn("AWSCognitoIdentityProviderService.InitiateAuth"),
+    SignUp ("AWSCognitoIdentityProviderService.SignUp"),
+    ConfirmSignUp( "AWSCognitoIdentityProviderService.ConfirmSignUp"),
+    SignOut("AWSCognitoIdentityProviderService.GlobalSignOut"),
+    RevokeToken("AWSCognitoIdentityProviderService.RevokeToken"),
+    GetUser("AWSCognitoIdentityProviderService.GetUser"),
+    ChangePassword("AWSCognitoIdentityProviderService.ChangePassword"),
+    DeleteUser("AWSCognitoIdentityProviderService.DeleteUser"),
+    UpdateUserAttributes("AWSCognitoIdentityProviderService.UpdateUserAttributes"),
+    ForgotPassword("AWSCognitoIdentityProviderService.ForgotPassword"),
+    ConfirmForgotPassword("AWSCognitoIdentityProviderService.ConfirmForgotPassword"),
+    GetUserAttributeVerificationCode("AWSCognitoIdentityProviderService.GetUserAttributeVerificationCode"),
+    VerifyUserAttribute("AWSCognitoIdentityProviderService.VerifyUserAttribute")
+}
+
+enum class AWSException(val identifier: String) {
+     CodeMismatch("CodeMismatchException"),
+     ExpiredCode("ExpiredCodeException"),
+     InternalError("InternalErrorException"),
+     InvalidLambdaResponse("InvalidLambdaResponseException"),
+     InvalidParameter("InvalidParameterException"),
+     InvalidPassword("InvalidPasswordException"),
+     LimitExceeded("LimitExceededException"),
+     NotAuthorized("NotAuthorizedException"),
+     ResourceNotFound("ResourceNotFoundException"),
+     TooManyFailedAttempts("TooManyFailedAttemptsException"),
+     TooManyRequests("TooManyRequestsException"),
+     UnexpectedLambda("UnexpectedLambdaException"),
+     UserLambdaValidation("UserLambdaValidationException"),
+     UserNotConfirmed("UserNotConfirmedException"),
+     UserNotFound("UserNotFoundException")
 }

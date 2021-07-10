@@ -196,7 +196,7 @@ abstract class AbstractIdentityProviderTests {
 
         // This should fail since the token has been revoked
         val signOutResponse = provider.signOut(result.AccessToken)
-        assertTrue(signOutResponse.exceptionOrNull() is NotAuthorizedException)
+        assertEquals((signOutResponse.exceptionOrNull() as IdentityProviderException).type, AWSException.NotAuthorized)
 
         // We delete the user after we're done with the test
         val signInResponse = provider.signIn(credentials.username, credentials.password)
