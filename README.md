@@ -38,16 +38,10 @@ npm i @liftric/auth@<version>
 
 ### Instantiating
 
-The provider needs a configuration object consisting of the region code and the client ID.
-
-```kotlin
-val configuration = Configuration(region = Region.euCentral1, clientId = "CLIENT_ID") 
-```
-
 #### Kotlin
 
 ```kotlin
-val provider = IdentityProvider(configuration) 
+val provider = IdentityProvider(Region.EUCentral1, "CLIENT_ID") 
 ```
 
 #### Typescript

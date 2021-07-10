@@ -48,7 +48,7 @@ enum class Region(val code: String) {
     SAEast1("sa-east-1")
 }
 
-internal enum class Request(val identityProviderServiceValue: String) {
+internal enum class Request(val value: String) {
     SignIn("AWSCognitoIdentityProviderService.InitiateAuth"),
     SignUp ("AWSCognitoIdentityProviderService.SignUp"),
     ConfirmSignUp( "AWSCognitoIdentityProviderService.ConfirmSignUp"),
@@ -64,7 +64,7 @@ internal enum class Request(val identityProviderServiceValue: String) {
     VerifyUserAttribute("AWSCognitoIdentityProviderService.VerifyUserAttribute")
 }
 
-enum class AWSException(val identifier: String) {
+enum class AWSException(val description: String) {
      CodeMismatch("CodeMismatchException"),
      ExpiredCode("ExpiredCodeException"),
      InternalError("InternalErrorException"),

@@ -12,7 +12,7 @@ import kotlin.js.Promise
  */
 class IdentityProviderJS(regionString: String, clientId: String) {
     private val region = Region.values().first { it.code == regionString }
-    private val provider: IdentityProvider = IdentityProvider(Configuration(region, clientId))
+    private val provider: IdentityProvider = IdentityProvider(region, clientId)
 
     fun signUp(username: String, password: String, attributes: Array<UserAttribute>? = null): Promise<SignUpResponse> =
         MainScope().promise {

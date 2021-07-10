@@ -22,10 +22,11 @@ open class IdentityProviderException(val status: HttpStatusCode?, val type: AWSE
  * AWS Cognito Identity Provider.
  * Provides common request methods.
  */
-open class IdentityProvider(private val configuration: Configuration) : Provider {
+open class IdentityProvider(region: Region, clientId: String) : Provider {
     private val json = Json {
         allowStructuredMapKeys = true
     }
+    private val configuration = Configuration(region, clientId)
     private val client = HttpClient {
         /**
          * When referencing members that are in the
@@ -194,7 +195,7 @@ open class IdentityProvider(private val configuration: Configuration) : Provider
 
     private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
         client.post<HttpResponse>(configuration.requestUrl) {
-            header(Header.AmzTarget, type.identityProviderServiceValue)
+            header(Header.AmzTarget, type.value)
             body = payload
         }.run {
             when(T::class) {
