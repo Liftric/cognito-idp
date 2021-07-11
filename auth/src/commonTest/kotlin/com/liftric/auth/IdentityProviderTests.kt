@@ -12,17 +12,15 @@ expect fun runTest(block: suspend () -> Unit)
 
 expect class IdentityProviderTests : AbstractIdentityProviderTests
 abstract class AbstractIdentityProviderTests {
-    private val configuration = Configuration(
-        Region.values().first { it.code == (env["region"] ?: error("region env missing")) },
-        env["clientid"] ?: error("clientid env missing")
-    )
-
     // Randomize temp user account name to not exceed aws try threshold
     private val random = (0..999).random()
     private val username = "auth-lib-test-user-${random}"
     private val password = "auth-lib-test-user-${random}A1@"
 
-    private val provider = IdentityProvider(configuration)
+    private val provider = IdentityProvider(
+        Region.values().first { it.code == (env["region"] ?: error("region env missing")) },
+        env["clientid"] ?: error("clientid env missing")
+    )
 
     //-------------------
     // INTEGRATION TESTS
