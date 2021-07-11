@@ -7,7 +7,8 @@
 
 Auth is a lightweight AWS Cognito Identity Provider for Kotlin Multiplatform and Typescript projects.
 
-> Not all requests, errors, and auth flows are implemented. Feel free to [contribute](Contributing.md) if there is something missing for you.
+> Not all requests, errors, and auth flows are implemented.  
+> Feel free to [contribute](Contributing.md) if there is something missing for you.
 
 ## Import
 
@@ -81,6 +82,7 @@ Request related exceptions are of type `IdentityProviderException`. They contain
 
 Network related exceptions (e.g. no internet) are of type `IOException`.
 
+### Requests 
 #### Sign Up
 
 Signs up the user.
@@ -124,9 +126,6 @@ You can retrieve the claims of both the IdTokens' and AccessTokens' payload by c
 
 ```kotlin
 val idToken = CognitoIdToken(idTokenString)
-// or
-val accessToken = CognitoAccessToken(accessTokenString)
-
 val phoneNumber = idToken.claims.phoneNumber
 val sub = idToken.claims.sub
 ```
