@@ -204,22 +204,23 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
             }
         }
     } catch (e: ResponseException) {
-        try {
-            json.decodeFromString<RequestError>(e.response.readText()).run {
-                Result.failure(
-                    IdentityProviderException(
-                        e.response.status,
-                        try { AWSException.valueOf(this.type) }
-                        catch (e: IllegalArgumentException) { null },
-                        this.message
-                    )
-                )
-            }
-        } catch (e: SerializationException) {
-            Result.failure(e)
-        }
+        e.toIdentityProviderException()
     } catch (t: Throwable) {
         Result.failure(t)
     }
-}
 
+    private suspend inline fun <reified T> ResponseException.toIdentityProviderException(): Result<T> = try {
+        json.decodeFromString<RequestError>(response.readText()).run {
+            Result.failure(
+                IdentityProviderException(
+                    response.status,
+                    try { AWSException.valueOf(this.type) }
+                    catch (e: IllegalArgumentException) { null },
+                    this.message
+                )
+            )
+        }
+    } catch (e: SerializationException) {
+        Result.failure(e)
+    }
+}

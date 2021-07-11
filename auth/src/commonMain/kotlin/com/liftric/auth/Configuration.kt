@@ -8,7 +8,7 @@ import io.ktor.http.HeadersBuilder
  * Configuration object for the auth handler
  * Holds all headers needed to make requests to AWS Cognito
  */
-class Configuration(region: Region, val clientId: String) {
+internal class Configuration(region: Region, val clientId: String) {
 
     /**
      * For compatibility reasons this constructor is needed, previous Auth versions set the Origin header
