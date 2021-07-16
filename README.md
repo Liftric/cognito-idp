@@ -3,9 +3,9 @@
 ![OSS Sonatype (Releases)](https://img.shields.io/nexus/r/com.liftric/auth?label=Sonatype%20OSSRH%20%28Releases%29&server=https%3A%2F%2Fs01.oss.sonatype.org)
 ![npm (scoped)](https://img.shields.io/npm/v/@liftric/auth)
 
-# Auth
+# Cognito-idp
 
-Auth is a lightweight AWS Cognito Identity Provider for Kotlin Multiplatform and Typescript projects.
+Lightweight AWS Cognito Identity Provider client for Kotlin Multiplatform and Typescript projects.
 
 > Not all requests, errors, and auth flows are implemented.  
 > Feel free to [contribute](Contributing.md) if there is something missing for you.
@@ -20,7 +20,7 @@ Auth is a lightweight AWS Cognito Identity Provider for Kotlin Multiplatform and
 sourceSets {
     val commonMain by getting {
         dependencies {
-            implementation("com.liftric:auth:<version>")
+            implementation("com.liftric:cognito-idp:<version>")
         }
     }
 }
@@ -30,11 +30,11 @@ sourceSets {
 
 #### Yarn
 ```bash
-yarn add @liftric/auth@<version>
+yarn add @liftric/cognito-idp@<version>
 ```
 #### npm
 ```sh
-npm i @liftric/auth@<version>
+npm i @liftric/cognito-idp@<version>
 ```
 
 ## How-to
@@ -44,22 +44,22 @@ npm i @liftric/auth@<version>
 #### Kotlin
 
 ```kotlin
-val provider = IdentityProvider(Region.EUCentral1, "<clientId>") 
+val provider = IdentityProviderClient("<region>", "<clientId>") 
 ```
 
 #### Typescript
 
 ```typescript
-import {IdentityProviderJS} from '@liftric/auth';
+import {IdentityProviderClientJS} from '@liftric/cognito-idp';
 
-const provider = new IdentityProviderJS('<regionString>', '<clientId>');
+const provider = new IdentityProviderClientJS('<region>', '<clientId>');
 ```
 
 ### Usage
 
 #### Kotlin
 
-All methods are suspending and return a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/).
+All methods are suspending and return a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/)<T> object.
 
 ```kotlin
 provider.signUp("user", "password").fold(
@@ -74,11 +74,11 @@ provider.signUp("user", "password").fold(
 
 #### Typescript
 
-All methods return a [Promise](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+All methods return a [Promise](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Promise)<T> object.
 
 ### Errors
 
-Request related exceptions are of type `IdentityProviderException`. They contain the http `status` code, eventually the AWS specific exception `type` and the `message`.
+Request related exceptions are of type `IdentityProviderException`. They contain the http `status` code and the `message`. Common AWS exceptions are implemented as subclasses. In case that we don't have implemented the exception type it will default to ´IdentityProviderException.Unknown´, which will contain the AWS exception `type`.
 
 Network related exceptions (e.g. no internet) are of type `IOException`.
 
@@ -225,4 +225,4 @@ deleteUser("<accessToken>"): Result<Unit>
 
 ## License
 
-Auth is available under the MIT license. See the LICENSE file for more info.
+Cognito-idp is available under the MIT license. See the LICENSE file for more info.
