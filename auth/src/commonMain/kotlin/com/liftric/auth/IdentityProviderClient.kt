@@ -8,21 +8,19 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.utils.io.core.*
-import io.ktor.utils.io.errors.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 open class IdentityProviderException(val status: HttpStatusCode?, val type: AWSException?, message: String) : Exception(message)
 
-/** Don't forget [IdentityProviderJS] when doing changes here :) */
+/** Don't forget [IdentityProviderClientJS] when doing changes here :) */
 
 /**
- * AWS Cognito Identity Provider.
+ * AWS Cognito Identity Provider client.
  * Provides common request methods.
  */
-open class IdentityProvider(region: Region, clientId: String) : Provider {
+open class IdentityProviderClient(region: String, clientId: String) : IdentityProvider {
     private val json = Json {
         allowStructuredMapKeys = true
     }
@@ -32,7 +30,7 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
          * When referencing members that are in the
          * IdentityProvider's scope, assign them to
          * a new variable in this scope. Needed to
-         * avoid [InvalidMutationException] in iOS.
+         * avoid [InvalidMutabilityException] in iOS.
          */
         val configuration = configuration
         val json = json
@@ -56,10 +54,10 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<SignUpResponse> = request(
         Request.SignUp,
         SignUp(
-            configuration.clientId,
-            username,
-            password,
-            attributes?: listOf()
+            ClientId = configuration.clientId,
+            Username = username,
+            Password = password,
+            UserAttributes = attributes?: listOf()
         )
     )
 
@@ -69,9 +67,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.ConfirmSignUp,
         ConfirmSignUp(
-            configuration.clientId,
-            username,
-            confirmationCode
+            ClientId = configuration.clientId,
+            Username = username,
+            ConfirmationCode = confirmationCode
         )
     )
 
@@ -81,18 +79,18 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<SignInResponse> = request(
         Request.SignIn,
         SignIn(
-            Authentication.UserPasswordAuth.flow,
-            configuration.clientId,
-            SignIn.Parameters(username, password)
+            AuthFlow = Authentication.UserPasswordAuth.flow,
+            ClientId = configuration.clientId,
+            AuthParameters = SignIn.Parameters(username, password)
         )
     )
 
     override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
         Request.SignIn,
         Refresh(
-            Authentication.RefreshTokenAuth.flow,
-            configuration.clientId,
-            Refresh.Parameters(refreshToken)
+            AuthFlow = Authentication.RefreshTokenAuth.flow,
+            ClientId = configuration.clientId,
+            AuthParameters = Refresh.Parameters(refreshToken)
         )
     )
 
@@ -107,8 +105,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<UpdateUserAttributesResponse> = request(
         Request.UpdateUserAttributes,
         UpdateUserAttributes(
-            accessToken,
-            attributes
+            AccessToken = accessToken,
+            UserAttributes = attributes
         )
     )
 
@@ -119,9 +117,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.ChangePassword,
         ChangePassword(
-            accessToken,
-            currentPassword,
-            newPassword
+            AccessToken = accessToken,
+            PreviousPassword = currentPassword,
+            ProposedPassword = newPassword
         )
     )
 
@@ -130,8 +128,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<ForgotPasswordResponse> = request(
         Request.ForgotPassword,
         ForgotPassword(
-            configuration.clientId,
-            username
+            ClientId = configuration.clientId,
+            Username = username
         )
     )
 
@@ -142,10 +140,10 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.ConfirmForgotPassword,
         ConfirmForgotPassword(
-            configuration.clientId,
-            confirmationCode,
-            username,
-            password
+            ClientId = configuration.clientId,
+            ConfirmationCode = confirmationCode,
+            Username = username,
+            Password = password
         )
     )
 
@@ -156,9 +154,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<GetAttributeVerificationCodeResponse> = request(
         Request.GetUserAttributeVerificationCode,
         GetUserAttributeVerificationCode(
-            accessToken,
-            attributeName,
-            clientMetadata
+            AccessToken = accessToken,
+            AttributeName = attributeName,
+            ClientMetadata = clientMetadata
         )
     )
 
@@ -169,9 +167,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.VerifyUserAttribute,
         VerifyUserAttribute(
-            accessToken,
-            attributeName,
-            code
+            AccessToken = accessToken,
+            AttributeName = attributeName,
+            Code = code
         )
     )
 
@@ -183,8 +181,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     override suspend fun revokeToken(refreshToken: String): Result<Unit> = request(
         Request.RevokeToken,
         RevokeToken(
-            configuration.clientId,
-            refreshToken
+            ClientId = configuration.clientId,
+            Token = refreshToken
         )
     )
 

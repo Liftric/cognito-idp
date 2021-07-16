@@ -1,18 +1,16 @@
 @file:JsExport
 
-import com.liftric.auth.IdentityProvider
-import com.liftric.auth.Configuration
+import com.liftric.auth.IdentityProviderClient
 import com.liftric.auth.core.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.promise
 import kotlin.js.Promise
 
 /**
- * Typescript compatible [IdentityProvider] implementation.
+ * Typescript compatible [IdentityProviderClient] implementation.
  */
-class IdentityProviderJS(regionString: String, clientId: String) {
-    private val region = Region.values().first { it.code == regionString }
-    private val provider: IdentityProvider = IdentityProvider(region, clientId)
+class IdentityProviderClientJS(region: String, clientId: String) {
+    private val provider: IdentityProviderClient = IdentityProviderClient(region, clientId)
 
     fun signUp(username: String, password: String, attributes: Array<UserAttribute>? = null): Promise<SignUpResponse> =
         MainScope().promise {

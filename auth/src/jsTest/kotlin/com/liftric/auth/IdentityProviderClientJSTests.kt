@@ -1,6 +1,6 @@
 package com.liftric.auth
 
-import IdentityProviderJS
+import IdentityProviderClientJS
 import com.liftric.auth.core.UserAttribute
 import env
 import kotlinx.coroutines.await
@@ -9,8 +9,8 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.fail
 
-class IdentityProviderJSTests {
-    private val provider = IdentityProviderJS(
+class IdentityProviderClientJSTests {
+    private val provider = IdentityProviderClientJS(
         env["region"] ?: error("missing region"),
         env["clientid"] ?: error("missing clientid")
     )

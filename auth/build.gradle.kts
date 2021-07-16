@@ -152,7 +152,7 @@ afterEvaluate {
 
 tasks {
     val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
-        filter.excludeTestsMatching("com.liftric.auth.IdentityProviderTests")
+        filter.excludeTestsMatching("com.liftric.auth.IdentityProviderClientTests")
     }
 
     val testSecrets by creating(GetVaultSecretTask::class) {
