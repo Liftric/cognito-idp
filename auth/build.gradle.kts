@@ -54,6 +54,8 @@ kotlin {
         binaries.library()
     }
 
+    jvm()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -77,6 +79,11 @@ kotlin {
                 implementation(Libs.ktorAndroid)
             }
         }
+        val jvmMain by getting {
+            dependencies {
+                implementation(Libs.ktorJvm)
+            }
+        }
         val androidTest by getting {
             dependencies {
                 implementation(TestLibs.RoboElectrics) {
@@ -85,6 +92,12 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(TestLibs.TestCore)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
             }
         }
         val iosMain by getting {

@@ -16,44 +16,11 @@ class IdentityProviderClientJSTests {
     )
 
     // Randomize temp user account name to not exceed aws try threshold
-    private val random = (0..999).random()
+    private val random = (0..999999).random()
     private val username = "auth-lib-test-user-${random}"
     private val password = "auth-lib-test-user-${random}A1@"
 
-
     data class Credentials(val username: String, val password: String)
-
-    private fun randomUser(): Credentials {
-        val random = (0..9999).random()
-        return Credentials(
-            username = "auth-lib-test-user-${random}",
-            password = "auth-lib-test-user-${random}A1@"
-        )
-    }
-
-    private suspend fun createUser(): Pair<String, Credentials> {
-        val credential = randomUser()
-        val userAttributes: List<UserAttribute> = listOf(
-            UserAttribute(
-                Name = "custom:target_group",
-                Value = "ROLE_PATIENT"
-            )
-        )
-        val signUpResponse = provider.signUp(credential.username, credential.password, userAttributes.toTypedArray())
-
-        assertNull(signUpResponse.await())
-        assertNotNull(signUpResponse.await())
-
-        val signInResponse = provider.signIn(credential.username, credential.password)
-        assertNotNull(signInResponse.await())
-
-        return Pair(signInResponse.await().AuthenticationResult.AccessToken, credential)
-    }
-
-    private suspend fun deleteUser(token: String) {
-        val deleteUserResponse = provider.deleteUser(token)
-        assertNull(deleteUserResponse.await())
-    }
 
     @JsName("SignUpSignInDeleteUserTest")
     @Test
