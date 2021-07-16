@@ -190,8 +190,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     )
 
     private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
-        // TODO remove me - or better, only log while running tests
-        println("request: type=$type payload=$payload")
+        // println("request: type=$type payload=$payload")
         client.post<HttpResponse>(configuration.requestUrl) {
             header(Header.AmzTarget, type.value)
             body = payload

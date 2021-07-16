@@ -13,11 +13,6 @@ expect fun runTest(block: suspend () -> Unit)
 
 expect class IdentityProviderClientTests : AbstractIdentityProviderClientTests
 abstract class AbstractIdentityProviderClientTests {
-    // Randomize temp user account name to not exceed aws try threshold
-    private val random = (0..999).random()
-    private val username = "auth-lib-test-user-${random}"
-    private val password = "auth-lib-test-user-${random}A1@"
-
     private val provider = IdentityProviderClient(
         env["region"] ?: error("region env missing"),
         env["clientId"] ?: error("clientId env missing")
@@ -30,7 +25,7 @@ abstract class AbstractIdentityProviderClientTests {
     data class Credentials(val username: String, val password: String)
 
     private fun randomUser(): Credentials {
-        val random = (0..9999).random()
+        val random = (0..999999).random()
         return Credentials(
             username = "auth-lib-test-user-${random}",
             password = "auth-lib-test-user-${random}A1@"
@@ -65,8 +60,9 @@ abstract class AbstractIdentityProviderClientTests {
     @JvmName("SignUpSignInDeleteUserTest")
     @Test
     fun `Sign up, sign in, delete user should succeed`() = runTest {
+        val credentials = randomUser()
         val signUpResponse = provider.signUp(
-            username, password,
+            credentials.username, credentials.password,
             attributes = listOf(
                 UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
             )
@@ -75,7 +71,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signUpResponse.exceptionOrNull())
         assertNotNull(signUpResponse.getOrNull())
 
-        val signInResponse = provider.signIn(username, password)
+        val signInResponse = provider.signIn(credentials.username, credentials.password)
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
