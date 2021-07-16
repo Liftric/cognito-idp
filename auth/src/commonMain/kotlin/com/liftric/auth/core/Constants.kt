@@ -19,35 +19,6 @@ internal enum class Authentication(val flow: String) {
     UserPasswordAuth("USER_PASSWORD_AUTH")
 }
 
-/**
- * @see https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints
- */
-enum class Region(val code: String) {
-    USEast1("us-east-1"),
-    USEast2("us-east-2"),
-    USWest1("us-west-1"),
-    USWest2("us-west-2"),
-    AFSouth1("af-south-1"),
-    APEast1("ap-east-1"),
-    APSouth1("ap-south-1"),
-    APNortheast3("ap-northeast-3"),
-    APNortheast2("ap-northeast-2"),
-    APSoutheast1("ap-southeast-1"),
-    APSoutheast2("ap-southeast-2"),
-    APNortheast1("ap-northeast-1"),
-    CACentral1("ca-central-1"),
-    CNNorth1("cn-north-1"),
-    CNNorthwest1("cn-northwest-1"),
-    EUCentral1("eu-central-1"),
-    EUWest1("eu-west-1"),
-    EUWest2("eu-west-2"),
-    EUSouth1("eu-south-1"),
-    EUWest3("eu-west-3"),
-    EUNorth1("eu-north-1"),
-    MESouth1("me-south-1"),
-    SAEast1("sa-east-1")
-}
-
 internal enum class Request(val value: String) {
     SignIn("AWSCognitoIdentityProviderService.InitiateAuth"),
     SignUp ("AWSCognitoIdentityProviderService.SignUp"),

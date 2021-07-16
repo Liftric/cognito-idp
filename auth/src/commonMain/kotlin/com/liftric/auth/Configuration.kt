@@ -8,17 +8,8 @@ import io.ktor.http.HeadersBuilder
  * Configuration object for the auth handler
  * Holds all headers needed to make requests to AWS Cognito
  */
-internal class Configuration(region: Region, val clientId: String) {
-
-    /**
-     * For compatibility reasons this constructor is needed, previous Auth versions set the Origin header
-     */
-    @Deprecated("origin isn't required, please adapt to the primary constructor")
-    constructor(origin: String, region: Region, clientId: String) : this(region,clientId) {
-        println("Configuration: origin isn't required, please adapt to the primary constructor")
-    }
-
-    internal val requestUrl = "https://cognito-idp.${region.code}.amazonaws.com"
+internal class Configuration(region: String, val clientId: String) {
+    internal val requestUrl = "https://cognito-idp.$region.amazonaws.com"
 
     private val headers = mapOf(
         Header.Authority to requestUrl,
