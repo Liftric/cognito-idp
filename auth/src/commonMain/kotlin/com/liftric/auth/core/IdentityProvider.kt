@@ -1,6 +1,6 @@
 package com.liftric.auth.core
 
-interface Provider {
+interface IdentityProvider {
     /**
      * Signs up a new user
      * @param username The username

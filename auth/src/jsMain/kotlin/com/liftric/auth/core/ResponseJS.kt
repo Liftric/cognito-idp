@@ -34,7 +34,7 @@ data class SignInResponseJS(
 @Serializable
 data class GetUserResponseJS(
     val MFAOptions: MFAOptions? = null,
-    val PreferredMfaSetting: String,
+    val PreferredMfaSetting: String? = null,
     val UserAttributes : Array<UserAttribute> = arrayOf(),
     val UserMFASettingList: Array<String> = arrayOf(),
     val Username: String

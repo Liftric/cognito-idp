@@ -8,21 +8,17 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.utils.io.core.*
-import io.ktor.utils.io.errors.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-open class IdentityProviderException(val status: HttpStatusCode?, val type: AWSException?, message: String) : Exception(message)
-
-/** Don't forget [IdentityProviderJS] when doing changes here :) */
+/** Don't forget [IdentityProviderClientJS] when doing changes here :) */
 
 /**
- * AWS Cognito Identity Provider.
+ * AWS Cognito Identity Provider client.
  * Provides common request methods.
  */
-open class IdentityProvider(region: Region, clientId: String) : Provider {
+open class IdentityProviderClient(region: String, clientId: String) : IdentityProvider {
     private val json = Json {
         allowStructuredMapKeys = true
     }
@@ -32,7 +28,7 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
          * When referencing members that are in the
          * IdentityProvider's scope, assign them to
          * a new variable in this scope. Needed to
-         * avoid [InvalidMutationException] in iOS.
+         * avoid [InvalidMutabilityException] in iOS.
          */
         val configuration = configuration
         val json = json
@@ -81,18 +77,18 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<SignInResponse> = request(
         Request.SignIn,
         SignIn(
-            Authentication.UserPasswordAuth.flow,
-            configuration.clientId,
-            SignIn.Parameters(username, password)
+            AuthFlow = Authentication.UserPasswordAuth.flow,
+            ClientId = configuration.clientId,
+            AuthParameters = SignIn.Parameters(username, password)
         )
     )
 
     override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
         Request.SignIn,
         Refresh(
-            Authentication.RefreshTokenAuth.flow,
-            configuration.clientId,
-            Refresh.Parameters(refreshToken)
+            AuthFlow = Authentication.RefreshTokenAuth.flow,
+            ClientId = configuration.clientId,
+            AuthParameters = Refresh.Parameters(refreshToken)
         )
     )
 
@@ -107,8 +103,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<UpdateUserAttributesResponse> = request(
         Request.UpdateUserAttributes,
         UpdateUserAttributes(
-            accessToken,
-            attributes
+            AccessToken = accessToken,
+            UserAttributes = attributes
         )
     )
 
@@ -183,8 +179,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     override suspend fun revokeToken(refreshToken: String): Result<Unit> = request(
         Request.RevokeToken,
         RevokeToken(
-            configuration.clientId,
-            refreshToken
+            ClientId = configuration.clientId,
+            Token = refreshToken
         )
     )
 
@@ -214,12 +210,24 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     private suspend inline fun <reified T> ResponseException.toIdentityProviderException(): Result<T> = try {
         json.decodeFromString<RequestError>(response.readText()).run {
             Result.failure(
-                IdentityProviderException(
-                    response.status,
-                    try { AWSException.valueOf(this.type) }
-                    catch (e: IllegalArgumentException) { null },
-                    this.message
-                )
+                when(type) {
+                    AWSException.CodeMismatch -> IdentityProviderException.CodeMismatch(response.status, message)
+                    AWSException.ExpiredCode -> IdentityProviderException.ExpiredCode(response.status, message)
+                    AWSException.InternalError -> IdentityProviderException.InternalError(response.status, message)
+                    AWSException.InvalidLambdaResponse -> IdentityProviderException.InvalidLambdaResponse(response.status, message)
+                    AWSException.InvalidParameter -> IdentityProviderException.InvalidParameter(response.status, message)
+                    AWSException.InvalidPassword -> IdentityProviderException.InvalidPassword(response.status, message)
+                    AWSException.LimitExceeded -> IdentityProviderException.LimitExceeded(response.status, message)
+                    AWSException.NotAuthorized -> IdentityProviderException.NotAuthorized(response.status, message)
+                    AWSException.ResourceNotFound -> IdentityProviderException.ResourceNotFound(response.status, message)
+                    AWSException.TooManyFailedAttempts -> IdentityProviderException.TooManyFailedAttempts(response.status, message)
+                    AWSException.TooManyRequests -> IdentityProviderException.TooManyRequests(response.status, message)
+                    AWSException.UnexpectedLambda -> IdentityProviderException.UnexpectedLambda(response.status, message)
+                    AWSException.UserLambdaValidation -> IdentityProviderException.UserLambdaValidation(response.status, message)
+                    AWSException.UserNotConfirmed -> IdentityProviderException.UserNotConfirmed(response.status, message)
+                    AWSException.UserNotFound -> IdentityProviderException.UserNotFound(response.status, message)
+                    else -> IdentityProviderException.Unknown(response.status, type, message)
+                }
             )
         }
     } catch (e: SerializationException) {
