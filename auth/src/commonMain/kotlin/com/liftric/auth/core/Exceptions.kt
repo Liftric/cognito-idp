@@ -18,5 +18,5 @@ sealed class IdentityProviderException(val status: HttpStatusCode, message: Stri
     class UserLambdaValidation(status: HttpStatusCode, message: String): IdentityProviderException(status, message)
     class UserNotConfirmed(status: HttpStatusCode, message: String): IdentityProviderException(status, message)
     class UserNotFound(status: HttpStatusCode, message: String): IdentityProviderException(status, message)
-    class Unknown(status: HttpStatusCode, type: String, message: String): IdentityProviderException(status, message)
+    class Unknown(status: HttpStatusCode, val type: String, message: String): IdentityProviderException(status, message)
 }

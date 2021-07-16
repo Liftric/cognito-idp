@@ -30,14 +30,14 @@ data class AuthenticationResult(
     val AccessToken: String,
     val ExpiresIn: Int,
     val IdToken: String,
-    val RefreshToken: String,
+    val RefreshToken: String? = null,
     val TokenType: String
 )
 
 @JsExport
 @Serializable
 data class SignUpResponse(
-    val CodeDeliveryDetails: CodeDeliveryDetails,
+    val CodeDeliveryDetails: CodeDeliveryDetails? = null,
     val UserConfirmed: Boolean = false,
     val UserSub: String
 )
@@ -53,7 +53,7 @@ data class CodeDeliveryDetails(
 @Serializable
 data class GetUserResponse(
     val MFAOptions: MFAOptions? = null,
-    val PreferredMfaSetting: String,
+    val PreferredMfaSetting: String? = null,
     val UserAttributes: List<UserAttribute> = listOf(),
     val UserMFASettingList: List<String> = listOf(),
     val Username: String

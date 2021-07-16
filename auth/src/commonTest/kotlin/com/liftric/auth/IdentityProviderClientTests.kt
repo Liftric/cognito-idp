@@ -10,15 +10,15 @@ import kotlin.test.*
 
 expect fun runTest(block: suspend () -> Unit)
 
-expect class IdentityProviderTests : AbstractIdentityProviderTests
-abstract class AbstractIdentityProviderTests {
+expect class IdentityProviderClientTests : AbstractIdentityProviderClientTests
+abstract class AbstractIdentityProviderClientTests {
     // Randomize temp user account name to not exceed aws try threshold
     private val random = (0..999).random()
     private val username = "auth-lib-test-user-${random}"
     private val password = "auth-lib-test-user-${random}A1@"
 
-    private val provider = IdentityProvider(
-        Region.values().first { it.code == (env["region"] ?: error("region env missing")) },
+    private val provider = IdentityProviderClient(
+        env["region"] ?: error("region env missing"),
         env["clientid"] ?: error("clientid env missing")
     )
 
@@ -174,7 +174,7 @@ abstract class AbstractIdentityProviderTests {
 
         val refreshToken = signInResponse.getOrThrow().AuthenticationResult.RefreshToken
 
-        val refreshResponse = provider.refresh(refreshToken)
+        val refreshResponse = provider.refresh(refreshToken!!)
         assertNull(refreshResponse.exceptionOrNull())
         assertNotNull(refreshResponse.getOrNull())
 
@@ -186,7 +186,7 @@ abstract class AbstractIdentityProviderTests {
     fun `Sign in, revoke token, validate`() = runTest {
         val (result, credentials) = createUser()
 
-        val revokeTokenResponse = provider.revokeToken(result.RefreshToken)
+        val revokeTokenResponse = provider.revokeToken(result.RefreshToken!!)
         assertNull(revokeTokenResponse.exceptionOrNull())
 
         // AWS is not revoking Tokens instantly so give it some time
@@ -194,7 +194,7 @@ abstract class AbstractIdentityProviderTests {
 
         // This should fail since the token has been revoked
         val signOutResponse = provider.signOut(result.AccessToken)
-        assertEquals((signOutResponse.exceptionOrNull() as IdentityProviderException).type, AWSException.NotAuthorized)
+        assertTrue(signOutResponse.exceptionOrNull() is IdentityProviderException.NotAuthorized)
 
         // We delete the user after we're done with the test
         val signInResponse = provider.signIn(credentials.username, credentials.password)
@@ -216,7 +216,7 @@ abstract class AbstractIdentityProviderTests {
         assertNotNull(signUpResponse.exceptionOrNull())
         assertNull(signUpResponse.getOrNull())
         assertEquals(
-            "1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length greater than or equal to 6",
+            "Password did not conform with policy: Password not long enough",
             signUpResponse.exceptionOrNull()!!.message
         )
         assertEquals(HttpStatusCode.BadRequest, (signUpResponse.exceptionOrNull() as IdentityProviderException).status)
@@ -340,10 +340,8 @@ abstract class AbstractIdentityProviderTests {
         val token =
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3NTUzZGRmOC1hMTAzLTRjYjItOWVkZi0yNDcwMTBmNGNjNGQiLCJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImlzcyI6Imh0dHBzOi8vY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb20vZXUtY2VudHJhbC0xX0MxR243SGJZTiIsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEzMDE1ODYsImlhdCI6MTU5OTU2NjkyMywiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiY3VzdG9tOnR3aXR0ZXIiOiJ0ZXN0IiwiY3VzdG9tOmFnZSI6MTgsImp0aSI6ImI0NjE2MzZmLWUxOGMtNDhjZi04Mjk5LTUzYjZmMWIxNWZmMyJ9.Mzh2RGW1VWd1oxE89xW05Ce_JRs1Y2HifL3brBkf7NE"
         val idToken = CognitoIdToken(token)
-        assertNotNull(idToken.claims.customAttributes?.get("custom:age"))
-        assertNotNull(idToken.claims.customAttributes?.get("custom:twitter"))
-        assertEquals(idToken.claims.customAttributes?.get("custom:age")?.toLong(), 18)
-        assertEquals(idToken.claims.customAttributes?.get("custom:twitter"), "test")
+        assertEquals(idToken.claims.customAttributes?.get("age")?.toLong(), 18)
+        assertEquals(idToken.claims.customAttributes?.get("twitter"), "test")
     }
 
     @JsName("TestGetAccessTokenClaims")
