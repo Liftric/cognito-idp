@@ -12,7 +12,7 @@ import kotlin.test.fail
 class IdentityProviderClientJSTests {
     private val provider = IdentityProviderClientJS(
         env["region"] ?: error("missing region"),
-        env["clientid"] ?: error("missing clientid")
+        env["clientId"] ?: error("missing clientId")
     )
 
     // Randomize temp user account name to not exceed aws try threshold

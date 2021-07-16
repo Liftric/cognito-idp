@@ -162,14 +162,14 @@ tasks {
     val createJsEnvHack by creating {
         outputs.dir("$buildDir/gen")
 
-        if (System.getenv("region") == null || System.getenv("clientid") == null) {
-            // github ci provides region and clientid envs, locally we'll use vault directly
+        if (System.getenv("region") == null || System.getenv("clientId") == null) {
+            // github ci provides region and clientId envs, locally we'll use vault directly
             dependsOn(testSecrets)
         }
 
         doFirst {
-            val (clientid, region) = with(testSecrets.secret.get()) {
-                ((System.getenv("clientid") ?: this["client_id_dev"].toString()) to
+            val (clientId, region) = with(testSecrets.secret.get()) {
+                ((System.getenv("clientId") ?: this["client_id_dev"].toString()) to
                         (System.getenv("region") ?: this["client_region_dev"].toString()))
             }
 
@@ -180,7 +180,7 @@ tasks {
                     """
                 val env = mapOf(
                     "region" to "$region",
-                    "clientid" to "$clientid",
+                    "clientId" to "$clientId",
                 )
             """.trimIndent()
                 )

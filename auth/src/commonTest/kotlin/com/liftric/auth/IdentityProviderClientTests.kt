@@ -19,7 +19,7 @@ abstract class AbstractIdentityProviderClientTests {
 
     private val provider = IdentityProviderClient(
         env["region"] ?: error("region env missing"),
-        env["clientid"] ?: error("clientid env missing")
+        env["clientId"] ?: error("clientId env missing")
     )
 
     //-------------------
