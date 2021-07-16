@@ -1,7 +1,6 @@
 package com.liftric.auth
 
 import com.liftric.auth.core.Header
-import com.liftric.auth.core.Region
 import io.ktor.http.HeadersBuilder
 
 /**

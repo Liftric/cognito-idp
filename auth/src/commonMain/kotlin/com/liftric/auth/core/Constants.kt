@@ -35,20 +35,20 @@ internal enum class Request(val value: String) {
     VerifyUserAttribute("AWSCognitoIdentityProviderService.VerifyUserAttribute")
 }
 
-enum class AWSException(val description: String) {
-     CodeMismatch("CodeMismatchException"),
-     ExpiredCode("ExpiredCodeException"),
-     InternalError("InternalErrorException"),
-     InvalidLambdaResponse("InvalidLambdaResponseException"),
-     InvalidParameter("InvalidParameterException"),
-     InvalidPassword("InvalidPasswordException"),
-     LimitExceeded("LimitExceededException"),
-     NotAuthorized("NotAuthorizedException"),
-     ResourceNotFound("ResourceNotFoundException"),
-     TooManyFailedAttempts("TooManyFailedAttemptsException"),
-     TooManyRequests("TooManyRequestsException"),
-     UnexpectedLambda("UnexpectedLambdaException"),
-     UserLambdaValidation("UserLambdaValidationException"),
-     UserNotConfirmed("UserNotConfirmedException"),
-     UserNotFound("UserNotFoundException")
+internal object AWSException {
+    const val CodeMismatch = "CodeMismatchException"
+    const val ExpiredCode = "ExpiredCodeException"
+    const val InternalError = "InternalErrorException"
+    const val InvalidLambdaResponse = "InvalidLambdaResponseException"
+    const val InvalidParameter = "InvalidParameterException"
+    const val InvalidPassword = "InvalidPasswordException"
+    const val LimitExceeded = "LimitExceededException"
+    const val NotAuthorized = "NotAuthorizedException"
+    const val ResourceNotFound = "ResourceNotFoundException"
+    const val TooManyFailedAttempts = "TooManyFailedAttemptsException"
+    const val TooManyRequests = "TooManyRequestsException"
+    const val UnexpectedLambda = "UnexpectedLambdaException"
+    const val UserLambdaValidation = "UserLambdaValidationException"
+    const val UserNotConfirmed = "UserNotConfirmedException"
+    const val UserNotFound = "UserNotFoundException"
 }
