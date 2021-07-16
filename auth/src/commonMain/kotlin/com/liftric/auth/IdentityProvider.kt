@@ -56,10 +56,10 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<SignUpResponse> = request(
         Request.SignUp,
         SignUp(
-            configuration.clientId,
-            username,
-            password,
-            attributes?: listOf()
+            ClientId = configuration.clientId,
+            Username = username,
+            Password = password,
+            UserAttributes = attributes?: listOf()
         )
     )
 
@@ -69,9 +69,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.ConfirmSignUp,
         ConfirmSignUp(
-            configuration.clientId,
-            username,
-            confirmationCode
+            ClientId = configuration.clientId,
+            Username = username,
+            ConfirmationCode = confirmationCode
         )
     )
 
@@ -119,9 +119,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.ChangePassword,
         ChangePassword(
-            accessToken,
-            currentPassword,
-            newPassword
+            AccessToken = accessToken,
+            PreviousPassword = currentPassword,
+            ProposedPassword = newPassword
         )
     )
 
@@ -130,8 +130,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<ForgotPasswordResponse> = request(
         Request.ForgotPassword,
         ForgotPassword(
-            configuration.clientId,
-            username
+            ClientId = configuration.clientId,
+            Username = username
         )
     )
 
@@ -142,10 +142,10 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.ConfirmForgotPassword,
         ConfirmForgotPassword(
-            configuration.clientId,
-            confirmationCode,
-            username,
-            password
+            ClientId = configuration.clientId,
+            ConfirmationCode = confirmationCode,
+            Username = username,
+            Password = password
         )
     )
 
@@ -156,9 +156,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<GetAttributeVerificationCodeResponse> = request(
         Request.GetUserAttributeVerificationCode,
         GetUserAttributeVerificationCode(
-            accessToken,
-            attributeName,
-            clientMetadata
+            AccessToken = accessToken,
+            AttributeName = attributeName,
+            ClientMetadata = clientMetadata
         )
     )
 
@@ -169,9 +169,9 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     ): Result<Unit> = request(
         Request.VerifyUserAttribute,
         VerifyUserAttribute(
-            accessToken,
-            attributeName,
-            code
+            AccessToken = accessToken,
+            AttributeName = attributeName,
+            Code = code
         )
     )
 
@@ -194,6 +194,8 @@ open class IdentityProvider(region: Region, clientId: String) : Provider {
     )
 
     private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
+        // TODO remove me - or better, only log while running tests
+        println("request: type=$type payload=$payload")
         client.post<HttpResponse>(configuration.requestUrl) {
             header(Header.AmzTarget, type.value)
             body = payload

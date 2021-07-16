@@ -6,6 +6,7 @@ import env
 import io.ktor.http.*
 import kotlinx.coroutines.delay
 import kotlin.js.JsName
+import kotlin.jvm.JvmName
 import kotlin.test.*
 
 expect fun runTest(block: suspend () -> Unit)
@@ -61,6 +62,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignUpSignInDeleteUserTest")
+    @JvmName("SignUpSignInDeleteUserTest")
     @Test
     fun `Sign up, sign in, delete user should succeed`() = runTest {
         val signUpResponse = provider.signUp(
@@ -82,6 +84,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("GetUserTest")
+    @JvmName("GetUserTest")
     @Test
     fun `Should get user`() = runTest {
         val (result, _) = createUser()
@@ -94,6 +97,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("ChangeAttributeTest")
+    @JvmName("ChangeAttributeTest")
     @Test
     fun `Should change attribute`() = runTest {
         val (result, _) = createUser()
@@ -119,6 +123,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("ChangePasswordTest")
+    @JvmName("ChangePasswordTest")
     @Test
     fun `Should change password`() = runTest {
         val (result, credentials) = createUser()
@@ -140,6 +145,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignOutSignInTest")
+    @JvmName("SignOutSignInTest")
     @Test
     fun `Sign out and sign in should succeed`() = runTest {
         val (result, credentials) = createUser()
@@ -158,6 +164,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignOutSignInRefreshTest")
+    @JvmName("SignOutSignInRefreshTest")
     @Test
     fun `Sign out, sign in and refresh should succeed`() = runTest {
         val (result, credentials) = createUser()
@@ -182,6 +189,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("RevokeTokenAndValidateExpiration")
+    @JvmName("RevokeTokenAndValidateExpiration")
     @Test
     fun `Sign in, revoke token, validate`() = runTest {
         val (result, credentials) = createUser()
@@ -205,6 +213,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignUpFailPasswordTooShortTest")
+    @JvmName("SignUpFailPasswordTooShortTest")
     @Test
     fun `Sign up should fail because password too short`() = runTest {
         val signUpResponse = provider.signUp(
@@ -223,6 +232,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignUpFailPasswordTooLongTest")
+    @JvmName("SignUpFailPasswordTooLongTest")
     @Test
     fun `Sign up should fail because password too long`() = runTest {
         val signUpResponse = provider.signUp(
@@ -241,6 +251,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignUpFailUsernameTooLongTest")
+    @JvmName("SignUpFailUsernameTooLongTest")
     @Test
     fun `Sign up should fail because username too long`() = runTest {
         val signUpResponse = provider.signUp(
@@ -259,6 +270,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignInTest")
+    @JvmName("SignInTest")
     @Test
     fun `Sign in should fail because wrong credentials`() = runTest {
         val signInResponse = provider.signIn(
@@ -271,6 +283,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("DeleteUserFailTest")
+    @JvmName("DeleteUserFailTest")
     @Test
     fun `Get user should fail since access token wrong`() = runTest {
         val deleteUserResponse = provider.deleteUser("WRONG_TOKEN")
@@ -280,6 +293,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("DeleteUserTest")
+    @JvmName("DeleteUserTest")
     @Test
     fun `Delete user should fail since access token wrong`() = runTest {
         val deleteUserResponse = provider.deleteUser("WRONG_TOKEN")
@@ -289,6 +303,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("SignOutTest")
+    @JvmName("SignOutTest")
     @Test
     fun `Sign out should fail since access token wrong`() = runTest {
         val signOutResponse = provider.signOut("WRONG_TOKEN")
@@ -298,6 +313,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("UpdateUserAttributesTest")
+    @JvmName("UpdateUserAttributesTest")
     @Test
     fun `Update attributes should fail since access token wrong`() = runTest {
         val updateUserAttributesResponse = provider.updateUserAttributes(
@@ -313,6 +329,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("TestGetIdTokenClaimsWithEmailNullValue")
+    @JvmName("TestGetIdTokenClaimsWithEmailNullValue")
     @Test
     fun `Test if get id token  claims works without email address`() {
         val token =
@@ -324,6 +341,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("TestGetIdTokenClaimsWithEmail")
+    @JvmName("TestGetIdTokenClaimsWithEmail")
     @Test
     fun `Test if get id token claims works with email address`() {
         val token =
@@ -335,6 +353,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("GetCustomAttributes")
+    @JvmName("GetCustomAttributes")
     @Test
     fun `Test if custom attributes get mapped correctly`() {
         val token =
@@ -347,6 +366,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("TestGetAccessTokenClaims")
+    @JvmName("TestGetAccessTokenClaims")
     @Test
     fun `Test if get access token claims`() {
         val token =
@@ -367,6 +387,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("ShouldThrowMissingComponentsException")
+    @JvmName("ShouldThrowMissingComponentsException")
     @Test
     fun `Test should throw MissingComponentsException since it has no components`() {
         assertFailsWith(MissingComponentsException::class) {
@@ -377,6 +398,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("ShouldThrowInvalidBase64Exception")
+    @JvmName("ShouldThrowInvalidBase64Exception")
     @Test
     fun `Test should throw InvalidBase64Exception since it is not a base 64 encoded string`() {
         assertFailsWith(InvalidBase64Exception::class) {
@@ -388,6 +410,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("ShouldThrowInvalidCognitoIdTokenException")
+    @JvmName("ShouldThrowInvalidCognitoIdTokenException")
     @Test
     fun `Test should throw InvalidCognitoIdTokenException since this is not a valid Cognito Id token`() {
         assertFailsWith(InvalidCognitoIdTokenException::class) {
@@ -399,6 +422,7 @@ abstract class AbstractIdentityProviderTests {
     }
 
     @JsName("ShouldThrowInvalidCognitoAccessTokenException")
+    @JvmName("ShouldThrowInvalidCognitoAccessTokenException")
     @Test
     fun `Test should throw InvalidCognitoAccessTokenException since this is not a valid Cognito Access token`() {
         assertFailsWith(InvalidCognitoAccessTokenException::class) {
