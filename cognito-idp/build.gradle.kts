@@ -37,7 +37,9 @@ buildscript {
 }
 
 kotlin {
-    ios()
+    ios {
+        binaries.framework()
+    }
     android {
         publishLibraryVariants("debug", "release")
     }
@@ -158,7 +160,7 @@ afterEvaluate {
 
 tasks {
     val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
-        filter.excludeTestsMatching("com.liftric.cognito-idp.IdentityProviderClientTests")
+        filter.excludeTestsMatching("com.liftric.cognito.idp.IdentityProviderClientTests")
     }
 
     val testSecrets by creating(GetVaultSecretTask::class) {

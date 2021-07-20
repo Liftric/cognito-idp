@@ -1,7 +1,7 @@
 @file:JsExport
 
-import com.liftric.auth.IdentityProviderClient
-import com.liftric.auth.core.*
+import com.liftric.cognito.idp.IdentityProviderClient
+import com.liftric.cognito.idp.core.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.promise
 import kotlin.js.Promise
