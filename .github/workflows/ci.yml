@@ -17,7 +17,6 @@ jobs:
       - name: Build testapp and test request (iOS)
         run: |
           cd iostests
-          sudo xcode-select -switch /Applications/Xcode_12.4.app
           xcodebuild clean test -project TestApp.xcodeproj -scheme TestApp -destination "platform=iOS Simulator,OS=14.4,name=iPhone 12" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO region=${{ secrets.region }} clientId=${{ secrets.clientid }}
       - name: Upload test result
         if: ${{ always() }}
