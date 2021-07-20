@@ -4,7 +4,7 @@ import com.liftric.cognito.idp.core.Header
 import io.ktor.http.HeadersBuilder
 
 /**
- * Configuration object for the auth handler
+ * Configuration object for the Identity Provider client.
  * Holds all headers needed to make requests to AWS Cognito
  */
 internal class Configuration(region: String, val clientId: String) {
@@ -23,7 +23,7 @@ internal class Configuration(region: String, val clientId: String) {
     )
 
     /**
-     * Appends configuration headers to HeadersBuilder
+     * Appends configuration headers to the builder
      */
     fun setupDefaultRequest(builder: HeadersBuilder) {
         headers.forEach {

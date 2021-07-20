@@ -2,6 +2,10 @@ package com.liftric.cognito.idp.core
 
 import kotlinx.serialization.SerializationException
 
+/**
+ * Since it is not possible to export [kotlin.Result] to iOS
+ * we recreated the class with some of its methods and properties.
+ */
 class Result<out T> constructor(val value: Any?) {
     val isSuccess: Boolean get() = value !is Failure
     val isFailure: Boolean get() = value is Failure
