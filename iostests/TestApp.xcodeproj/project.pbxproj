@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		3DF2E7A726A6D262009F6554 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF2E7A626A6D262009F6554 /* Main.swift */; };
-		3DF2E7A926A6D262009F6554 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF2E7A826A6D262009F6554 /* ContentView.swift */; };
-		3DF2E7AB26A6D264009F6554 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DF2E7AA26A6D264009F6554 /* Assets.xcassets */; };
-		3DF2E7AE26A6D264009F6554 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DF2E7AD26A6D264009F6554 /* Preview Assets.xcassets */; };
 		3DF2E7B926A6D264009F6554 /* RequestTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF2E7B826A6D264009F6554 /* RequestTest.swift */; };
 		3DF2E7D326A6E878009F6554 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF2E7D226A6E878009F6554 /* Request.swift */; };
 /* End PBXBuildFile section */
@@ -28,9 +25,6 @@
 /* Begin PBXFileReference section */
 		3DF2E7A326A6D262009F6554 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DF2E7A626A6D262009F6554 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
-		3DF2E7A826A6D262009F6554 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		3DF2E7AA26A6D264009F6554 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		3DF2E7AD26A6D264009F6554 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3DF2E7AF26A6D264009F6554 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3DF2E7B426A6D264009F6554 /* TestAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DF2E7B826A6D264009F6554 /* RequestTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTest.swift; sourceTree = "<group>"; };
@@ -78,21 +72,10 @@
 			isa = PBXGroup;
 			children = (
 				3DF2E7A626A6D262009F6554 /* Main.swift */,
-				3DF2E7A826A6D262009F6554 /* ContentView.swift */,
 				3DF2E7D226A6E878009F6554 /* Request.swift */,
-				3DF2E7AA26A6D264009F6554 /* Assets.xcassets */,
 				3DF2E7AF26A6D264009F6554 /* Info.plist */,
-				3DF2E7AC26A6D264009F6554 /* Preview Content */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		3DF2E7AC26A6D264009F6554 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				3DF2E7AD26A6D264009F6554 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		3DF2E7B726A6D264009F6554 /* Tests */ = {
@@ -186,8 +169,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DF2E7AE26A6D264009F6554 /* Preview Assets.xcassets in Resources */,
-				3DF2E7AB26A6D264009F6554 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,7 +224,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DF2E7A926A6D262009F6554 /* ContentView.swift in Sources */,
 				3DF2E7D326A6E878009F6554 /* Request.swift in Sources */,
 				3DF2E7A726A6D262009F6554 /* Main.swift in Sources */,
 			);
@@ -387,7 +367,6 @@
 		3DF2E7C926A6D264009F6554 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Sources/Preview Content\"";
@@ -419,7 +398,6 @@
 		3DF2E7CA26A6D264009F6554 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Sources/Preview Content\"";
