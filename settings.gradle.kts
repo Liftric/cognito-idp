@@ -1,2 +1,2 @@
-include(":auth")
-rootProject.name = "auth"
+include(":cognito-idp")
+rootProject.name = "cognito-idp"
