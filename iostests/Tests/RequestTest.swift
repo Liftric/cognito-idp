@@ -21,7 +21,7 @@ class RequestTest: XCTestCase {
                     XCTFail("Request should fail.")
                 },
                 onFailure: { error in
-                    XCTAssertTrue(error is IdentityProviderException.UserNotFound)
+                    XCTAssertTrue(error is IdentityProviderException.NotAuthorized, error.message!)
                 }
             )
         }
