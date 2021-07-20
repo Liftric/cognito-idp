@@ -11,7 +11,6 @@ import io.ktor.http.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlin.Result as KResult
 
 /** Don't forget [IdentityProviderClientJS] when doing changes here :) */
 
@@ -50,7 +49,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         username: String,
         password: String,
         attributes: List<UserAttribute>?
-    ): KResult<SignUpResponse> = request(
+    ): Result<SignUpResponse> = request(
         Request.SignUp,
         SignUp(
             ClientId = configuration.clientId,
@@ -63,7 +62,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     override suspend fun confirmSignUp(
         username: String,
         confirmationCode: String
-    ): KResult<Unit> = request(
+    ): Result<Unit> = request(
         Request.ConfirmSignUp,
         ConfirmSignUp(
             ClientId = configuration.clientId,
@@ -75,7 +74,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     override suspend fun signIn(
         username: String,
         password: String
-    ): KResult<SignInResponse> = request(
+    ): Result<SignInResponse> = request(
         Request.SignIn,
         SignIn(
             AuthFlow = Authentication.UserPasswordAuth.flow,
@@ -84,7 +83,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         )
     )
 
-    override suspend fun refresh(refreshToken: String): KResult<SignInResponse> = request(
+    override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
         Request.SignIn,
         Refresh(
             AuthFlow = Authentication.RefreshTokenAuth.flow,
@@ -93,7 +92,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         )
     )
 
-    override suspend fun getUser(accessToken: String): KResult<GetUserResponse> = request(
+    override suspend fun getUser(accessToken: String): Result<GetUserResponse> = request(
         Request.GetUser,
         AccessToken(accessToken)
     )
@@ -101,7 +100,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     override suspend fun updateUserAttributes(
         accessToken: String,
         attributes: List<UserAttribute>
-    ): KResult<UpdateUserAttributesResponse> = request(
+    ): Result<UpdateUserAttributesResponse> = request(
         Request.UpdateUserAttributes,
         UpdateUserAttributes(
             AccessToken = accessToken,
@@ -113,7 +112,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         accessToken: String,
         currentPassword: String,
         newPassword: String
-    ): KResult<Unit> = request(
+    ): Result<Unit> = request(
         Request.ChangePassword,
         ChangePassword(
             AccessToken = accessToken,
@@ -124,7 +123,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
 
     override suspend fun forgotPassword(
         username: String
-    ): KResult<ForgotPasswordResponse> = request(
+    ): Result<ForgotPasswordResponse> = request(
         Request.ForgotPassword,
         ForgotPassword(
             ClientId = configuration.clientId,
@@ -136,7 +135,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         confirmationCode: String,
         username: String,
         password: String
-    ): KResult<Unit> = request(
+    ): Result<Unit> = request(
         Request.ConfirmForgotPassword,
         ConfirmForgotPassword(
             ClientId = configuration.clientId,
@@ -150,7 +149,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         accessToken: String,
         attributeName: String,
         clientMetadata: Map<String, String>?
-    ): KResult<GetAttributeVerificationCodeResponse> = request(
+    ): Result<GetAttributeVerificationCodeResponse> = request(
         Request.GetUserAttributeVerificationCode,
         GetUserAttributeVerificationCode(
             AccessToken = accessToken,
@@ -163,7 +162,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         accessToken: String,
         attributeName: String,
         code: String
-    ): KResult<Unit> = request(
+    ): Result<Unit> = request(
         Request.VerifyUserAttribute,
         VerifyUserAttribute(
             AccessToken = accessToken,
@@ -172,12 +171,12 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         )
     )
 
-    override suspend fun signOut(accessToken: String): KResult<Unit> = request(
+    override suspend fun signOut(accessToken: String): Result<Unit> = request(
         Request.SignOut,
         AccessToken(accessToken)
     )
 
-    override suspend fun revokeToken(refreshToken: String): KResult<Unit> = request(
+    override suspend fun revokeToken(refreshToken: String): Result<Unit> = request(
         Request.RevokeToken,
         RevokeToken(
             ClientId = configuration.clientId,
@@ -185,31 +184,31 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         )
     )
 
-    override suspend fun deleteUser(accessToken: String): KResult<Unit> = request(
+    override suspend fun deleteUser(accessToken: String): Result<Unit> = request(
         Request.DeleteUser,
         AccessToken(accessToken)
     )
 
-    private suspend inline fun <reified T> request(type: Request, payload: Any): KResult<T> = try {
+    private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
         // println("request: type=$type payload=$payload")
         client.post<HttpResponse>(configuration.requestUrl) {
             header(Header.AmzTarget, type.value)
             body = payload
         }.run {
             when(T::class) {
-                Unit::class -> KResult.success(Unit as T)
-                else -> KResult.success(json.decodeFromString(readText()))
+                Unit::class -> Result.success(Unit as T)
+                else -> Result.success(json.decodeFromString(readText()))
             }
         }
     } catch (e: ResponseException) {
         e.toIdentityProviderException()
     } catch (t: Throwable) {
-        KResult.failure(t)
+        Result.failure(t)
     }
 
-    private suspend inline fun <reified T> ResponseException.toIdentityProviderException(): KResult<T> = try {
+    private suspend inline fun <reified T> ResponseException.toIdentityProviderException(): Result<T> = try {
         json.decodeFromString<RequestError>(response.readText()).run {
-            KResult.failure(
+            Result.failure(
                 when(type) {
                     AWSException.CodeMismatch -> IdentityProviderException.CodeMismatch(response.status, message)
                     AWSException.ExpiredCode -> IdentityProviderException.ExpiredCode(response.status, message)
@@ -231,6 +230,6 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
             )
         }
     } catch (e: SerializationException) {
-        KResult.failure(e)
+        Result.failure(e)
     }
 }

@@ -59,7 +59,7 @@ const provider = new IdentityProviderClientJS('<region>', '<clientId>');
 
 #### Kotlin
 
-All methods are suspending and return a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/)<T> object.
+All methods are suspending and return a Result<T> object.
 
 ```kotlin
 provider.signUp("user", "password").fold(
