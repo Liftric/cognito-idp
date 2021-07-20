@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,4 +23,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: reports
-          path: auth/build/reports/
+          path: cognito-idp/build/reports/
