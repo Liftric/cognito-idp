@@ -237,7 +237,7 @@ abstract class AbstractAuthHandlerIntegrationTests {
         assertNotNull(signUpResponse.exceptionOrNull())
         assertNull(signUpResponse.getOrNull())
         assertEquals(
-            "1 validation error detected: Value at 'password' failed to satisfy constraint: Member must have length greater than or equal to 6",
+            "Password did not conform with policy: Password not long enough",
             signUpResponse.exceptionOrNull()!!.message
         )
         assertEquals(HttpStatusCode.BadRequest, signUpResponse.statusCode)

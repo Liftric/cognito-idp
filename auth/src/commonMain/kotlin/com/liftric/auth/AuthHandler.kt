@@ -36,6 +36,7 @@ class UserNotFoundException(message: String) : Exception(message)
  *
  * Don't forget to check [AuthHandlerJS] when doing changes here :)
  */
+@Deprecated("The maven repository name will change to 'com.liftric.cognito-idp' in the next major release. Please refer to the Github repository for help regarding migration.")
 open class AuthHandler(private val configuration: Configuration) : Auth {
     private val json = Json {
         allowStructuredMapKeys = true
