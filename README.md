@@ -2,13 +2,15 @@
 ![maven-central](https://img.shields.io/maven-central/v/com.liftric/cognito-idp?label=Maven%20Central) 
 ![OSS Sonatype (Releases)](https://img.shields.io/nexus/r/com.liftric/cognito-idp?label=Sonatype%20OSSRH%20%28Releases%29&server=https%3A%2F%2Fs01.oss.sonatype.org)
 ![npm (scoped)](https://img.shields.io/npm/v/@liftric/cognito-idp)
-
+![platforms](https://img.shields.io/badge/platforms-android%20%7C%20ios%20%7C%20jvm%20%7C%20js-blue)
 # Cognito-idp
 
 Lightweight AWS Cognito Identity Provider client for Kotlin Multiplatform and Typescript projects.
 
 > Not all requests, errors, and auth flows are implemented.  
 > Feel free to [contribute](Contributing.md) if there is something missing for you.
+
+> Version 2.0.0 introduced breaking changes, please refer to the [Migration](Migrating.md) document for help.
 
 ## Import
 
@@ -59,7 +61,7 @@ const provider = new IdentityProviderClientJS('<region>', '<clientId>');
 
 #### Kotlin
 
-All methods are suspending and return a Result<T> object.
+All methods are suspending and return a `Result<T>`, which wraps the desired object `T` on success or a `Throwable` on failure.
 
 ```kotlin
 provider.signUp("user", "password").fold(
@@ -78,11 +80,12 @@ All methods return a [Promise](https://developer.mozilla.org/de/docs/Web/JavaScr
 
 ### Errors
 
-Request related exceptions are of type `IdentityProviderException`. They contain the http `status` code and the `message`. Common AWS exceptions are implemented as subclasses. In case that we don't have implemented the exception type it will default to ´IdentityProviderException.Unknown´, which will contain the AWS exception `type`.
+Request related exceptions are defined as a sealed class of type `IdentityProviderException`. They contain the http `status` code and the `message`. Common AWS exceptions are implemented as subclasses. In case that we don't have implemented the exception type it will default to `IdentityProviderException.Unknown`, which will contain the AWS exception `type`.
 
 Network related exceptions (e.g. no internet) are of type `IOException`.
 
 ### Requests 
+
 #### Sign Up
 
 Signs up the user.
