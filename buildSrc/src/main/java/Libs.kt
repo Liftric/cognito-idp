@@ -24,7 +24,6 @@ object Versions {
 
 object Libs {
     const val serialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
-    const val gradleAndroid = "com.android.tools.build:gradle:${Versions.gradle}"
 
     /* Common */
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
