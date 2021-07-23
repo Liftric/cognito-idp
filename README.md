@@ -10,7 +10,7 @@ Lightweight AWS Cognito Identity Provider client for Kotlin Multiplatform and Ty
 > Not all requests, errors, and auth flows are implemented.  
 > Feel free to [contribute](Contributing.md) if there is something missing for you.
 
-> Version 2.0.0 introduced breaking changes, please refer to the [Migration](Migrating.md) document for help.
+> Version 2 introduced breaking changes, please refer to the [migration](Migrating.md) document for help.
 
 ## Import
 
