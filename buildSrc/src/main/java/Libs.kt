@@ -11,10 +11,10 @@ object Android {
 }
 
 object Versions {
-    const val gradle = "4.2.1"
-    const val kotlin = "1.5.20"
+    const val gradle = "4.2.2"
+    const val kotlin = "1.5.21"
     const val npmPublish = "2.0.3"
-    const val definitions = "4.9.1"
+    const val definitions = "4.12.4"
     const val coroutines = "1.5.0-native-mt"
     const val serialization = "1.2.1"
     const val ktor = "1.6.1"
@@ -24,7 +24,6 @@ object Versions {
 
 object Libs {
     const val serialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
-    const val gradleAndroid = "com.android.tools.build:gradle:${Versions.gradle}"
 
     /* Common */
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
@@ -34,6 +33,9 @@ object Libs {
 
     /* Android */
     const val ktorAndroid = "io.ktor:ktor-client-android:${Versions.ktor}"
+
+    /* JVM */
+    const val ktorJvm = "io.ktor:ktor-client-cio:${Versions.ktor}"
 
     /* iOS */
     const val ktorIOS = "io.ktor:ktor-client-ios:${Versions.ktor}"

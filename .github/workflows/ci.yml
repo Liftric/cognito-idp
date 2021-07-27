@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -12,11 +12,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Build and test (Android & Js)
-        run: region=${{ secrets.region }} clientid=${{ secrets.clientid }} ./gradlew build allTest
+      - name: Build and test (Android, Jvm, Js)
+        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew build test jsTest
+      - name: Build testapp and test request (iOS)
+        run: |
+          cd iostests
+          xcodebuild clean test -project TestApp.xcodeproj -scheme TestApp -destination "platform=iOS Simulator,OS=14.4,name=iPhone 12" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO region=${{ secrets.region }} clientId=${{ secrets.clientid }}
       - name: Upload test result
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: reports
-          path: auth/build/reports/
+          path: cognito-idp/build/reports/
