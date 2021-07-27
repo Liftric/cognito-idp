@@ -8,7 +8,6 @@
 import Foundation
 import cognito_idp
 
-
 public class Provider {
     var request: IdentityProviderClient = {
         let process = ProcessInfo.processInfo
