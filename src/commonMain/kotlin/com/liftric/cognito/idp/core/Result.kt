@@ -69,11 +69,11 @@ class Result<out T> constructor(val value: Any?) {
             is Failure -> value.toString()
             else -> "Success($value)"
         }
-}
 
-fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> {
-    return when (value) {
-        is Result.Failure -> Result.failure(value.exception)
-        else -> action(value as T)
+    fun <R> onResult(action: (value: T) -> Result<R>): Result<R> {
+        return when (value) {
+            is Failure -> failure(value.exception)
+            else -> action(value as T)
+        }
     }
 }
