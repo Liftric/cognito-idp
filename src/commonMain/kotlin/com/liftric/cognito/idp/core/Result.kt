@@ -47,16 +47,6 @@ class Result<out T> constructor(val value: Any?) {
         if (value is Failure) throw value.exception
     }
 
-    fun onFailure(action: (exception: Throwable) -> Unit): Result<T> {
-        exceptionOrNull()?.let { action(it) }
-        return this
-    }
-
-    fun onSuccess(action: (value: T) -> Unit): Result<T> {
-        if (isSuccess) action(value as T)
-        return this
-    }
-
     fun fold(onSuccess: (value: T) -> Unit, onFailure: (exception: Throwable) -> Unit) {
         when(value) {
             is Failure -> exceptionOrNull()?.let { onFailure(it) }
@@ -69,11 +59,37 @@ class Result<out T> constructor(val value: Any?) {
             is Failure -> value.toString()
             else -> "Success($value)"
         }
+}
 
-    fun <R> onResult(action: (value: T) -> Result<R>): Result<R> {
-        return when (value) {
-            is Failure -> failure(value.exception)
-            else -> action(value as T)
-        }
+inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> {
+    return when (value) {
+        is Result.Failure -> Result.failure(value.exception)
+        else -> action(value as T)
+    }
+}
+
+inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> {
+    exceptionOrNull()?.let { action(it) }
+    return this
+}
+
+inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
+    if (isSuccess) action(value as T)
+    return this
+}
+
+inline fun <R> runCatching(block: () -> R): Result<R> {
+    return try {
+        Result.success(block())
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
+}
+
+inline fun <T, R> T.runCatching(block: T.() -> R): Result<R> {
+    return try {
+        Result.success(block())
+    } catch (e: Throwable) {
+        Result.failure(e)
     }
 }

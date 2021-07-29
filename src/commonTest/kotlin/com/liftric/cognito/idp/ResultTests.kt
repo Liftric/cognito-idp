@@ -2,6 +2,9 @@ package com.liftric.cognito.idp
 
 import io.ktor.utils.io.errors.*
 import com.liftric.cognito.idp.core.Result
+import com.liftric.cognito.idp.core.onFailure
+import com.liftric.cognito.idp.core.onResult
+import com.liftric.cognito.idp.core.onSuccess
 import kotlin.test.*
 
 class ResultTests {
