@@ -104,6 +104,12 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+        all {
+            languageSettings {
+                optIn("kotlinx.serialization.ExperimentalSerializationApi")
+                optIn("kotlin.js.ExperimentalJsExport")
+            }
+        }
     }
 }
 
@@ -186,8 +192,7 @@ tasks {
             jvmTarget = "11"
             languageVersion = "1.5"
             freeCompilerArgs = listOf(
-                "-Xinline-classes",
-                "-Xuse-experimental=kotlin.js.ExperimentalJsExport"
+                "-Xinline-classes"
             )
         }
     }
