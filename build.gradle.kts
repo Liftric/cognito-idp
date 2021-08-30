@@ -108,19 +108,17 @@ kotlin {
 }
 
 android {
-    compileSdkVersion(Apps.compileSdk)
+    compileSdk = Apps.compileSdk
 
     defaultConfig {
-        minSdkVersion(Apps.minSdk)
-        targetSdkVersion(Apps.targetSdk)
-        versionCode = Apps.versionCode
-        versionName = Apps.versionName
+        minSdk = Apps.minSdk
+        targetSdk = Apps.targetSdk
         testInstrumentationRunner = Android.TestRunner
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     testOptions {
@@ -185,7 +183,7 @@ tasks {
 
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             languageVersion = "1.5"
             freeCompilerArgs = listOf(
                 "-Xinline-classes",

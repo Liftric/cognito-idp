@@ -1,9 +1,7 @@
 object Apps {
-    const val compileSdk = 28
+    const val compileSdk = 30
     const val minSdk = 21
-    const val targetSdk = 28
-    const val versionCode = 1
-    const val versionName = "1.0.0"
+    const val targetSdk = 30
 }
 
 object Android {
@@ -11,13 +9,13 @@ object Android {
 }
 
 object Versions {
-    const val gradle = "4.2.2"
-    const val kotlin = "1.5.21"
+    const val gradle = "7.0.0"
+    const val kotlin = "1.5.30"
     const val npmPublish = "2.0.3"
     const val definitions = "4.12.4"
-    const val coroutines = "1.5.0-native-mt"
-    const val serialization = "1.2.1"
-    const val ktor = "1.6.1"
+    const val coroutines = "1.5.1-native-mt"
+    const val serialization = "1.2.2"
+    const val ktor = "1.6.3"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
 }
