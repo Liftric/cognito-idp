@@ -108,6 +108,7 @@ kotlin {
             languageSettings {
                 optIn("kotlinx.serialization.ExperimentalSerializationApi")
                 optIn("kotlin.js.ExperimentalJsExport")
+                optIn("kotlin.RequiresOptIn")
             }
         }
     }
