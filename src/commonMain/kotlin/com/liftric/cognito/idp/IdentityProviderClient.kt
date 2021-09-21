@@ -71,6 +71,16 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         )
     )
 
+    override suspend fun resendConfirmationCode(
+        username: String
+    ): Result<Unit> = request(
+        Request.ResendConfirmationCode,
+        ResendConfirmationCode(
+            ClientId = configuration.clientId,
+            Username = username
+        )
+    )
+
     override suspend fun signIn(
         username: String,
         password: String

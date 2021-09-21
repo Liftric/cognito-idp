@@ -23,6 +23,7 @@ internal enum class Request(val value: String) {
     SignIn("AWSCognitoIdentityProviderService.InitiateAuth"),
     SignUp ("AWSCognitoIdentityProviderService.SignUp"),
     ConfirmSignUp( "AWSCognitoIdentityProviderService.ConfirmSignUp"),
+    ResendConfirmationCode( "AWSCognitoIdentityProviderService.ResendConfirmationCode"),
     SignOut("AWSCognitoIdentityProviderService.GlobalSignOut"),
     RevokeToken("AWSCognitoIdentityProviderService.RevokeToken"),
     GetUser("AWSCognitoIdentityProviderService.GetUser"),
