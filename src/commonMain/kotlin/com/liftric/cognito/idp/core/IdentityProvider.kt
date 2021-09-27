@@ -21,9 +21,9 @@ interface IdentityProvider {
     /**
      * Resends the confirmation (for confirmation of registration) to a specific user in the user pool.
      * @param username The username
-     * @return Result object containing Unit on success or an error on failure
+     * @return Result object containing CodeDeliveryDetails on success or an error on failure
      */
-    suspend fun resendConfirmationCode(username: String): Result<Unit>
+    suspend fun resendConfirmationCode(username: String): Result<CodeDeliveryDetails>
 
     /**
      * Signs in the user with the given parameters
