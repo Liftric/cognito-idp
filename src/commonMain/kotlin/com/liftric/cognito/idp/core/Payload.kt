@@ -62,6 +62,12 @@ internal data class ConfirmSignUp(
 )
 
 @Serializable
+internal data class ResendConfirmationCode(
+    val ClientId: String,
+    val Username: String
+)
+
+@Serializable
 internal data class ForgotPassword(
     val ClientId: String,
     val Username: String
