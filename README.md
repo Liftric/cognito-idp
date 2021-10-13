@@ -110,7 +110,7 @@ confirmSignUp("<username>", "<confirmationCode>"): Result<Unit>
 Resends the confirmation code.
 
 ```kotlin
-confirmSignUp("<username>"): Result<CodeDeliveryDetails>
+resendConfirmationCode("<username>"): Result<CodeDeliveryDetails>
 ```
 
 #### Sign In
