@@ -105,6 +105,14 @@ Confirms the sign up (also the delivery medium).
 confirmSignUp("<username>", "<confirmationCode>"): Result<Unit>
 ```
 
+#### Resend Confirmation Code
+
+Resends the confirmation code.
+
+```kotlin
+resendConfirmationCode("<username>"): Result<CodeDeliveryDetails>
+```
+
 #### Sign In
 
 Signs in the users.
