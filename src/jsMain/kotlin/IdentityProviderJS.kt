@@ -24,6 +24,12 @@ class IdentityProviderClientJS(region: String, clientId: String) {
                 .getOrThrow()
         }
 
+    fun resendConfirmationCode(username: String): Promise<CodeDeliveryDetails> =
+        MainScope().promise {
+            provider.resendConfirmationCode(username)
+                .getOrThrow()
+        }
+
     fun signIn(username: String, password: String): Promise<SignInResponseJS> =
         MainScope().promise {
             provider.signIn(username, password)
