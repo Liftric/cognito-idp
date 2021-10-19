@@ -1,7 +1,7 @@
 package com.liftric.cognito.idp
 
 import IdentityProviderClientJS
-import com.liftric.cognito.idp.core.UserAttribute
+import UserAttributeJS
 import env
 import kotlinx.coroutines.await
 import kotlin.test.Test
@@ -28,7 +28,7 @@ class IdentityProviderClientJSTests {
         provider.signUp(
             username, password,
             attributes = arrayOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+                UserAttributeJS(Name = "custom:target_group", Value = "ROLE_USER")
             )
         ).await().also {
             println("signUpResponse=$it")
@@ -52,7 +52,7 @@ class IdentityProviderClientJSTests {
         provider.signUp(
             "Username", buildString { (1..260).forEach { _ -> append("A") } },
             attributes = arrayOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+                UserAttributeJS(Name = "custom:target_group", Value = "ROLE_USER")
             )
         ).then {
             fail("signUp must fail")
