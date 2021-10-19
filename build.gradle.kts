@@ -197,6 +197,43 @@ tasks {
             )
         }
     }
+
+    /**
+     * Ugly atomicfu export hack: Coroutines core needs atomicfu-js, which generates broken d.ts entries. Excluding
+     * atomicfu-js breaks the ktor client and filtering d.ts types in the IR compile is currently not possible... so let's
+     * just rip it out after the fact
+     *
+     * The build/js/packages/cognito-idp/kotlin/cognito-idp.d.ts file should now be without errors and usable from typescript
+     */
+    val cleanTypescriptTypes by creating {
+        fun MutableList<String>.removeFromTill(from: String, till: String) {
+            val fromIndex = indexOfFirst { it == from }
+            val tillIndex = indexOfFirst { it == till }
+            if (fromIndex == -1 || tillIndex == -1) {
+                println("looks like from='$from' till='$till' already scraped")
+                return
+            }
+            println("removeFromTill from='$from' till='$till' fromIndex=$fromIndex")
+            println("removeFromTill from='$from' till='$till' tillIndex=$tillIndex")
+            (fromIndex..tillIndex).forEach {
+                removeAt(fromIndex)
+            }
+        }
+
+        val dTsFile = file("$buildDir/js/packages/cognito-idp/kotlin/cognito-idp.d.ts")
+        inputs.file(dTsFile)
+        outputs.file(dTsFile)
+
+        doLast {
+            val dTs = dTsFile.readLines().toMutableList()
+            dTs.removeFromTill("export namespace kotlinx.atomicfu {", "}")
+            dTs.removeFromTill("export namespace io.ktor.util {", "}")
+            dTsFile.writeText(dTs.joinToString("\n"))
+        }
+    }
+    val jsBrowserProductionLibraryDistribution by existing {
+        finalizedBy(cleanTypescriptTypes)
+    }
 }
 
 val ossrhUsername: String? by project

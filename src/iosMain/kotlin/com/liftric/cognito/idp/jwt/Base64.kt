@@ -14,7 +14,7 @@ internal actual class Base64 {
                 encoded64 = encoded64.padEnd(input.count() + (4 - remainder), '=')
             }
             return NSData.create(encoded64, 0)?.let {
-                (NSString.create(it, NSUTF8StringEncoding) as String?)
+                NSString.create(it, NSUTF8StringEncoding)
             }?: run {
                 null
             }
