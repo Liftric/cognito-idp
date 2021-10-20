@@ -17,7 +17,7 @@ jobs:
       - name: Build testapp and test request (iOS)
         run: |
           cd iostests
-          xcodebuild clean test -project TestApp.xcodeproj -scheme TestApp -destination "platform=iOS Simulator,OS=14.5,name=iPhone 12" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO region=${{ secrets.region }} clientId=${{ secrets.clientid }}
+          xcodebuild clean test -project TestApp.xcodeproj -scheme TestApp -destination "platform=iOS Simulator,OS=15.0,name=iPhone 12" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO region=${{ secrets.region }} clientId=${{ secrets.clientid }}
       - name: Upload test result
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
