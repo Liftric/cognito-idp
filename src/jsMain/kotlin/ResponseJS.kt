@@ -3,13 +3,9 @@
 /**
  * Adapted [Response.kt] classes for Typescript usage (Map and List aren't compatible for [kotlin.js.JsExport])
  */
-package com.liftric.cognito.idp.core
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class SignInResponseJS(
-    val AuthenticationResult: AuthenticationResult,
+    val AuthenticationResult: AuthenticationResultJS,
     val ChallengeParameters: Array<MapEntry> = arrayOf()
 ) {
     override fun equals(other: Any?): Boolean {
@@ -31,11 +27,10 @@ data class SignInResponseJS(
     }
 }
 
-@Serializable
 data class GetUserResponseJS(
-    val MFAOptions: MFAOptions? = null,
+    val MFAOptions: MFAOptionsJS? = null,
     val PreferredMfaSetting: String? = null,
-    val UserAttributes : Array<UserAttribute> = arrayOf(),
+    val UserAttributes : Array<UserAttributeJS> = arrayOf(),
     val UserMFASettingList: Array<String> = arrayOf(),
     val Username: String
 ) {
@@ -64,9 +59,8 @@ data class GetUserResponseJS(
     }
 }
 
-@Serializable
 data class UpdateUserAttributesResponseJS(
-    val CodeDeliveryDetailsList: Array<CodeDeliveryDetails> = arrayOf()
+    val CodeDeliveryDetailsList: Array<CodeDeliveryDetailsJS> = arrayOf()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -84,5 +78,27 @@ data class UpdateUserAttributesResponseJS(
     }
 }
 
-@Serializable
 data class MapEntry(val key: String, val value: String)
+
+data class CodeDeliveryDetailsJS(
+    val AttributeName: String,
+    val DeliveryMedium: String,
+    val Destination: String
+)
+data class ForgotPasswordResponseJS(
+    val CodeDeliveryDetails: CodeDeliveryDetailsJS
+)
+data class GetAttributeVerificationCodeResponseJS(
+    val CodeDeliveryDetails: CodeDeliveryDetailsJS
+)
+data class AuthenticationResultJS(
+    val AccessToken: String,
+    val ExpiresIn: Int,
+    val IdToken: String,
+    val RefreshToken: String? = null,
+    val TokenType: String
+)
+data class MFAOptionsJS(
+    val AttributeName: String,
+    val DeliveryMedium: String
+)
