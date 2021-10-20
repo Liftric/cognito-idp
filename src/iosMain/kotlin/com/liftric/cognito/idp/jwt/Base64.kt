@@ -14,7 +14,8 @@ internal actual class Base64 {
                 encoded64 = encoded64.padEnd(input.count() + (4 - remainder), '=')
             }
             return NSData.create(encoded64, 0)?.let {
-                NSString.create(it, NSUTF8StringEncoding)
+                @Suppress("USELESS_CAST") // false positive inspection: konan fails if the cast is removed
+                (NSString.create(it, NSUTF8StringEncoding) as String?)
             }?: run {
                 null
             }
