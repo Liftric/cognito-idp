@@ -10,7 +10,7 @@ object Android {
 
 object Versions {
     const val gradle = "7.0.0"
-    const val kotlin = "1.5.30"
+    const val kotlin = "1.5.31"
     const val npmPublish = "2.0.3"
     const val definitions = "4.40.0"
     const val coroutines = "1.5.1-native-mt"
