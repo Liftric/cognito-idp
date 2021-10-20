@@ -234,6 +234,9 @@ tasks {
     val jsBrowserProductionLibraryDistribution by existing {
         finalizedBy(cleanTypescriptTypes)
     }
+    val jsProductionLibraryCompileSync by existing {
+        finalizedBy(cleanTypescriptTypes)
+    }
 }
 
 val ossrhUsername: String? by project
