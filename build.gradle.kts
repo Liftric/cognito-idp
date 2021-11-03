@@ -30,6 +30,9 @@ kotlin {
     ios {
         binaries.framework()
     }
+
+    iosSimulatorArm64()
+
     android {
         publishLibraryVariants("debug", "release")
     }
@@ -93,6 +96,13 @@ kotlin {
             dependencies {
                 implementation(Libs.ktorIOS)
             }
+        }
+        val iosTest by getting
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Test by getting {
+            dependsOn(iosTest)
         }
         val jsMain by getting {
             dependencies {
