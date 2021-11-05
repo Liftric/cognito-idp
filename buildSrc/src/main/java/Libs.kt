@@ -15,7 +15,7 @@ object Versions {
     const val definitions = "4.41.0"
     const val coroutines = "1.5.2-native-mt"
     const val serialization = "1.3.0"
-    const val ktor = "1.6.4"
+    const val ktor = "1.6.5"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
 }
