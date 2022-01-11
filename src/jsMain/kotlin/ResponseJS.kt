@@ -102,3 +102,6 @@ data class MFAOptionsJS(
     val AttributeName: String,
     val DeliveryMedium: String
 )
+data class ResendConfirmationCodeResponseJS(
+    val CodeDeliveryDetails: CodeDeliveryDetailsJS
+)

@@ -28,10 +28,10 @@ class IdentityProviderClientJS(region: String, clientId: String) {
                 .getOrThrow()
         }
 
-    fun resendConfirmationCode(username: String): Promise<CodeDeliveryDetailsJS> =
+    fun resendConfirmationCode(username: String): Promise<ResendConfirmationCodeResponseJS> =
         MainScope().promise {
-            provider.resendConfirmationCode(username)
-                .getOrThrow().let { it.toJs() }
+            provider.forgotPassword(username)
+                .getOrThrow().let { ResendConfirmationCodeResponseJS(it.CodeDeliveryDetails.toJs()) }
         }
 
     fun signIn(username: String, password: String): Promise<SignInResponseJS> =

@@ -36,7 +36,7 @@ data class SignUpResponse(
 
 @Serializable
 data class ResendConfirmationCodeResponse(
-    val CodeDeliveryDetails: CodeDeliveryDetails? = null,
+    val CodeDeliveryDetails: CodeDeliveryDetails
 )
 
 @Serializable
