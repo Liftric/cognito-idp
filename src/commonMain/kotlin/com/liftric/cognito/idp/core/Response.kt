@@ -35,6 +35,11 @@ data class SignUpResponse(
 )
 
 @Serializable
+data class ResendConfirmationCodeResponse(
+    val CodeDeliveryDetails: CodeDeliveryDetails? = null,
+)
+
+@Serializable
 data class CodeDeliveryDetails(
     val AttributeName: String,
     val DeliveryMedium: String,
