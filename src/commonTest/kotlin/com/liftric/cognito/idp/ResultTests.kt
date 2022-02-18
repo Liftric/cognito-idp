@@ -66,6 +66,52 @@ class ResultTests {
     }
 
     @Test
+    fun testDoTryAndFold() {
+        Result.doTry { "1" }
+            .andThen { "${it}2" }
+            .andThen { it.toInt() }
+            .andThen { it * 2 }
+            .fold(onFailure = {fail("shouldn't fail!")}, onSuccess = { assertEquals(24, it) })
+    }
+
+    @Test
+    fun testAndThenOnSuccess() {
+        var result: String? = null
+        Result.success("Hans")
+            .andThen { "$it Wurst" }
+            .fold(
+                onSuccess = {
+                    result = it
+                },
+                onFailure = {
+                    fail("onFailure() should not get called")
+                }
+            )
+        assertEquals("Hans Wurst", result)
+    }
+
+    @Test
+    fun testAndThenOnFailure() {
+        val exception = Exception("firstException")
+        val failedAndThen = Result.failure<String>(exception)
+            .andThen {
+                Result.success("won't happen")
+            }
+
+        assertEquals(true, failedAndThen.isFailure)
+        assertEquals(exception, failedAndThen.exceptionOrNull())
+
+        Result.success("Test")
+            .andThen {
+                error("sad")
+            }.fold(onSuccess = {
+                fail("onSuccess() should not get called")
+            }, onFailure = {
+                assertEquals("sad" ,it.message)
+            })
+    }
+
+    @Test
     fun testFoldOnFailure() {
         val expected = IOException("No connectivity")
         var result: Throwable? = null

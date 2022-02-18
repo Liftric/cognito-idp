@@ -13,6 +13,16 @@ class Result<out T> constructor(val value: Any?) {
     companion object {
         fun <T> success(value: T): Result<T> = Result(value)
         fun <T> failure(exception: Throwable): Result<T> = Result(Failure(exception))
+
+        /**
+         * [Result] builder function. Returns Success if [mightFail] doesn't, otherwise returns
+         * [mightFail] exception as [Failure]
+         */
+        fun <T> doTry(mightFail: () -> T) : Result<T> = try {
+             success(mightFail())
+         } catch (e: Throwable){
+             failure(e)
+         }
     }
 
     class Failure(val exception: Throwable) {
@@ -52,6 +62,19 @@ class Result<out T> constructor(val value: Any?) {
             is Failure -> exceptionOrNull()?.let { onFailure(it) }
             else -> onSuccess(value as T)
         }
+    }
+
+    /**
+     * Executes the [onSuccess] mapping if Success, or re-wraps the Failure doing nothing
+     *
+     * This can be used to pipe transform the result only if it is successful.
+     * A happy path of results can be modelled with this.
+     *
+     * Would be called foldRight if [Result] would be called Either<Throwable,T> ;)
+     */
+    fun <R> andThen(onSuccess: (value: T) -> R): Result<R> = when(value) {
+        is Failure -> failure(value.exception)
+        else -> doTry { onSuccess(value as T) }
     }
 
     override fun toString(): String =
