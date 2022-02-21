@@ -14,7 +14,7 @@ object Versions {
     const val npmPublish = "2.1.1"
     const val definitions = "4.41.0"
     const val coroutines = "1.6.0-native-mt"
-    const val serialization = "1.3.2"
+    const val serialization = "1.3.1"
     const val ktor = "1.6.7"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
