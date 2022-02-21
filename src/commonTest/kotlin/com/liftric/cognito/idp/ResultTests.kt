@@ -125,7 +125,7 @@ class ResultTests {
     fun testOnResultChainingSuccess() {
         val expected = "Test"
         val result = Result.success(expected)
-            .onSuccess {
+            .onResult {
                 Result.success(expected.repeat(2))
             }.onResult {
                 Result.success(expected.repeat(3))
