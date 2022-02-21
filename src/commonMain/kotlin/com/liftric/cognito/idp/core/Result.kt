@@ -13,11 +13,10 @@ class Result<out T> constructor(val value: Any?) {
         fun <T> failure(exception: Throwable): Result<T> = Result(Failure(exception))
 
         /**
-         * [Result] builder function. Returns Success if [mightFail] doesn't, otherwise returns
-         * [mightFail] exception as [Failure]
+         * Wraps value on success or exception on [Failure].
          */
-        fun <T> doTry(mightFail: () -> T) : Result<T> = try {
-             success(mightFail())
+        fun <T> doTry(block: () -> T) : Result<T> = try {
+             success(block())
          } catch (e: Throwable){
              failure(e)
          }
@@ -45,21 +44,36 @@ class Result<out T> constructor(val value: Any?) {
         else -> null
     }
 
+    /**
+     * Applies the transformation on success, otherwise re-wraps the [Failure].
+     */
     fun <R> map(transform: (value: T) -> R): Result<R> = when (value) {
         is Failure -> failure(value.exception)
         else -> success(transform(value as T))
     }
+
+    /**
+     * Applies the transformation on success, otherwise re-wraps the [Failure].
+     * Catches exception and wraps it as [Failure].
+     */
     fun <R> mapCatching(transform: (value: T) -> R): Result<R> = when (value) {
         is Failure -> failure(value.exception)
         else -> doTry { transform(value as T) }
     }
 
+    /**
+     * Applies the transformation on success, otherwise re-wraps the [Failure].
+     * Catches exception and wraps it as [Failure].
+     */
     @Deprecated("Use mapCatching.", ReplaceWith("mapCatching(onSuccess)"))
     fun <R> andThen(onSuccess: (value: T) -> R): Result<R> = when(value) {
         is Failure -> failure(value.exception)
         else -> doTry { onSuccess(value as T) }
     }
 
+    /**
+     * Provides value [onSuccess] or exception [onFailure].
+     */
     fun fold(onSuccess: (value: T) -> Unit, onFailure: (exception: Throwable) -> Unit) = when(value) {
         is Failure -> exceptionOrNull()?.let { onFailure(it) }
         else -> onSuccess(value as T)
