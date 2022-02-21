@@ -1,7 +1,5 @@
 package com.liftric.cognito.idp.core
 
-import kotlinx.serialization.SerializationException
-
 /**
  * Since it is not possible to export [kotlin.Result] to iOS
  * we recreated the class with some of its methods and properties.
@@ -31,88 +29,75 @@ class Result<out T> constructor(val value: Any?) {
         override fun toString(): String = "Failure($exception)"
     }
 
-    fun getOrNull(): T? =
-        when {
-            isFailure -> null
-            else -> value as T
-        }
-
-    @Throws(
-        IdentityProviderException::class,
-        SerializationException::class,
-        Throwable::class
-    )
-    fun getOrThrow(): T {
-        throwOnFailure()
-        return value as T
+    fun getOrNull(): T? = when (value) {
+        is Failure -> null
+        else -> value as T
     }
 
-    fun exceptionOrNull(): Throwable? =
-        when (value) {
-            is Failure -> value.exception
-            else -> null
-        }
-
-    private fun throwOnFailure() {
-        if (value is Failure) throw value.exception
+    @Throws(Throwable::class)
+    fun getOrThrow(): T = when (value) {
+        is Failure -> throw value.exception
+        else -> value as T
     }
 
-    fun fold(onSuccess: (value: T) -> Unit, onFailure: (exception: Throwable) -> Unit) {
-        when(value) {
-            is Failure -> exceptionOrNull()?.let { onFailure(it) }
-            else -> onSuccess(value as T)
-        }
+    fun exceptionOrNull(): Throwable? = when (value) {
+        is Failure -> value.exception
+        else -> null
     }
 
-    /**
-     * Executes the [onSuccess] mapping if Success, or re-wraps the Failure doing nothing
-     *
-     * This can be used to pipe transform the result only if it is successful.
-     * A happy path of results can be modelled with this.
-     *
-     * Would be called foldRight if [Result] would be called Either<Throwable,T> ;)
-     */
+    fun <R> map(transform: (value: T) -> R): Result<R> = when (value) {
+        is Failure -> failure(value.exception)
+        else -> success(transform(value as T))
+    }
+    fun <R> mapCatching(transform: (value: T) -> R): Result<R> = when (value) {
+        is Failure -> failure(value.exception)
+        else -> doTry { transform(value as T) }
+    }
+
+    @Deprecated("Use mapCatching.", ReplaceWith("mapCatching(onSuccess)"))
     fun <R> andThen(onSuccess: (value: T) -> R): Result<R> = when(value) {
         is Failure -> failure(value.exception)
         else -> doTry { onSuccess(value as T) }
     }
 
-    override fun toString(): String =
-        when (value) {
-            is Failure -> value.toString()
-            else -> "Success($value)"
-        }
-}
+    fun fold(onSuccess: (value: T) -> Unit, onFailure: (exception: Throwable) -> Unit) = when(value) {
+        is Failure -> exceptionOrNull()?.let { onFailure(it) }
+        else -> onSuccess(value as T)
+    }
 
-inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> {
-    return when (value) {
-        is Result.Failure -> Result.failure(value.exception)
-        else -> action(value as T)
+    override fun toString(): String = when (value) {
+        is Failure -> value.toString()
+        else -> "Success($value)"
     }
 }
 
-inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> {
+@Deprecated("Use map or mapCatching. Not needed to wrap into new Result anymore.", ReplaceWith("map(action)"))
+inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> = when (value) {
+    is Result.Failure -> Result.failure(value.exception)
+    else -> action(value as T)
+}
+
+@Deprecated("Use fold.", ReplaceWith("fold(onSuccess = {}, onFailure = action)"))
+inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> = apply {
     exceptionOrNull()?.let { action(it) }
-    return this
 }
 
-inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
-    if (isSuccess) action(value as T)
-    return this
+@Deprecated("Use fold.", ReplaceWith("fold(onSuccess = action, onFailure = {})"))
+inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> = apply {
+    if (value !is Result.Failure) action(value as T)
 }
 
-inline fun <R> runCatching(block: () -> R): Result<R> {
-    return try {
-        Result.success(block())
-    } catch (e: Throwable) {
-        Result.failure(e)
-    }
+@Deprecated("Use doTry.", ReplaceWith("doTry(block)"))
+inline fun <R> runCatching(block: () -> R): Result<R> = try {
+    Result.success(block())
+} catch (e: Throwable) {
+    Result.failure(e)
 }
 
-inline fun <T, R> T.runCatching(block: T.() -> R): Result<R> {
-    return try {
-        Result.success(block())
-    } catch (e: Throwable) {
-        Result.failure(e)
-    }
+@Deprecated("Use doTry.", ReplaceWith("doTry(block)"))
+inline fun <T, R> T.runCatching(block: T.() -> R): Result<R> = try {
+    Result.success(block())
+} catch (e: Throwable) {
+    Result.failure(e)
 }
+
