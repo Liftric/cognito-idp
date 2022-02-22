@@ -1,10 +1,7 @@
 package com.liftric.cognito.idp
 
+import com.liftric.cognito.idp.core.*
 import io.ktor.utils.io.errors.*
-import com.liftric.cognito.idp.core.Result
-import com.liftric.cognito.idp.core.onFailure
-import com.liftric.cognito.idp.core.onResult
-import com.liftric.cognito.idp.core.onSuccess
 import kotlin.test.*
 
 class ResultTests {
@@ -68,9 +65,9 @@ class ResultTests {
     @Test
     fun testDoTryAndFold() {
         Result.doTry { "1" }
-            .andThen { "${it}2" }
-            .andThen { it.toInt() }
-            .andThen { it * 2 }
+            .map { "${it}2" }
+            .mapCatching { it.toInt() }
+            .map { it * 2 }
             .fold(onFailure = {fail("shouldn't fail!")}, onSuccess = { assertEquals(24, it) })
     }
 
@@ -78,7 +75,7 @@ class ResultTests {
     fun testAndThenOnSuccess() {
         var result: String? = null
         Result.success("Hans")
-            .andThen { "$it Wurst" }
+            .map { "$it Wurst" }
             .fold(
                 onSuccess = {
                     result = it
@@ -94,15 +91,13 @@ class ResultTests {
     fun testAndThenOnFailure() {
         val exception = Exception("firstException")
         val failedAndThen = Result.failure<String>(exception)
-            .andThen {
-                Result.success("won't happen")
-            }
+            .map { "won't happen" }
 
         assertEquals(true, failedAndThen.isFailure)
         assertEquals(exception, failedAndThen.exceptionOrNull())
 
         Result.success("Test")
-            .andThen {
+            .mapCatching {
                 error("sad")
             }.fold(onSuccess = {
                 fail("onSuccess() should not get called")
