@@ -2,12 +2,13 @@ package com.liftric.cognito.idp
 
 import com.liftric.cognito.idp.core.*
 import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -32,16 +33,13 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
          */
         val configuration = configuration
         val json = json
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(json)
-            acceptContentTypes = listOf(
-                ContentType.parse(Header.AmzJson),
-                ContentType.Application.Json
-            )
+        install(ContentNegotiation) {
+            json(json)
         }
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))
+            header("accept", "${ContentType.Application.Json}, ${ContentType.parse(Header.AmzJson)}")
         }
     }
 
@@ -201,13 +199,13 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
 
     private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
         // println("request: type=$type payload=$payload")
-        client.post<HttpResponse>(configuration.requestUrl) {
+        client.post(configuration.requestUrl) {
             header(Header.AmzTarget, type.value)
-            body = payload
+            setBody(payload)
         }.run {
             when(T::class) {
                 Unit::class -> Result.success(Unit as T)
-                else -> Result.success(json.decodeFromString(readText()))
+                else -> Result.success(json.decodeFromString(body()))
             }
         }
     } catch (e: ResponseException) {
@@ -217,7 +215,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     }
 
     private suspend inline fun <reified T> ResponseException.toIdentityProviderException(): Result<T> = try {
-        json.decodeFromString<RequestError>(response.readText()).run {
+        json.decodeFromString<RequestError>(response.body()).run {
             Result.failure(
                 when(type) {
                     AWSException.CodeMismatch -> IdentityProviderException.CodeMismatch(response.status, message)
