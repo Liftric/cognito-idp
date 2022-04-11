@@ -39,7 +39,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))
-            header("accept", "${ContentType.Application.Json}, ${ContentType.parse(Header.AmzJson)}")
+            accept(ContentType.Application.Json)
         }
     }
 
