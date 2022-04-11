@@ -1,5 +1,6 @@
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
@@ -54,6 +55,7 @@ kotlin {
                 implementation(Libs.ktorCore)
                 implementation(Libs.coroutinesCore)
                 implementation(Libs.serializationCore)
+                implementation(Libs.ktorContentNegotiation)
                 implementation(Libs.ktorSerializationCore)
             }
         }
@@ -121,6 +123,12 @@ kotlin {
                 optIn("kotlin.RequiresOptIn")
             }
         }
+    }
+}
+
+kotlin.targets.withType(KotlinNativeTarget::class.java) {
+    binaries.all {
+        binaryOptions["memoryModel"] = "experimental"
     }
 }
 

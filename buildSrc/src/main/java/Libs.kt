@@ -9,13 +9,13 @@ object Android {
 }
 
 object Versions {
-    const val gradle = "7.0.0"
-    const val kotlin = "1.6.10"
+    const val gradle = "7.1.2"
+    const val kotlin = "1.6.20"
     const val npmPublish = "2.1.1"
     const val definitions = "4.41.0"
-    const val coroutines = "1.6.0-native-mt"
-    const val serialization = "1.3.1"
-    const val ktor = "1.6.7"
+    const val coroutines = "1.6.1"
+    const val serialization = "1.3.2"
+    const val ktor = "2.0.0"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
 }
@@ -27,7 +27,8 @@ object Libs {
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.serialization}"
-    const val ktorSerializationCore = "io.ktor:ktor-client-serialization:${Versions.ktor}"
+    const val ktorSerializationCore = "io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}"
+    const val ktorContentNegotiation = "io.ktor:ktor-client-content-negotiation:${Versions.ktor}"
 
     /* Android */
     const val ktorAndroid = "io.ktor:ktor-client-android:${Versions.ktor}"
