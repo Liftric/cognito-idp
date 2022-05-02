@@ -96,7 +96,12 @@ data class AuthenticationResultJS(
     val ExpiresIn: Int,
     val IdToken: String,
     val RefreshToken: String? = null,
-    val TokenType: String
+    val TokenType: String,
+    val NewDeviceMetadata: NewDeviceMetadataJS? = null
+)
+data class NewDeviceMetadatatJS(
+    val DeviceGroupKey: String? = null,
+    val DeviceKey: String? = null,
 )
 data class MFAOptionsJS(
     val AttributeName: String,
