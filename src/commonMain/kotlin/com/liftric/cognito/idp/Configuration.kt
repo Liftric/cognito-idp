@@ -2,8 +2,6 @@ package com.liftric.cognito.idp
 
 import com.liftric.cognito.idp.core.Header
 import io.ktor.http.HeadersBuilder
-import kotlin.native.concurrent.SharedImmutable
-import kotlin.native.concurrent.ThreadLocal
 
 /**
  * Configuration object for the Identity Provider client.
