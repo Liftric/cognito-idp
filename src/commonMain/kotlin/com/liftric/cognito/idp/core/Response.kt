@@ -14,8 +14,9 @@ data class RequestError(
 
 @Serializable
 data class SignInResponse(
-    val AuthenticationResult: AuthenticationResult,
-    val ChallengeParameters: Map<String, String> = mapOf()
+    val AuthenticationResult: AuthenticationResult? = null,
+    val ChallengeParameters: Map<String, String> = mapOf(),
+    val Session: String = ""
 )
 
 @Serializable

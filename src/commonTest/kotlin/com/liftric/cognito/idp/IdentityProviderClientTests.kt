@@ -48,7 +48,7 @@ abstract class AbstractIdentityProviderClientTests {
         val signInResponse = provider.signIn(credential.username, credential.password)
         assertNotNull(signInResponse.getOrNull())
 
-        return Pair(signInResponse.getOrNull()!!.AuthenticationResult, credential)
+        return Pair(signInResponse.getOrNull()!!.AuthenticationResult!!, credential)
     }
 
     private suspend fun deleteUser(token: String) {
@@ -75,7 +75,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        val deleteUserResponse = provider.deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+        val deleteUserResponse = provider.deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
         assertNull(deleteUserResponse.exceptionOrNull())
     }
 
@@ -137,7 +137,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
     }
 
     @JsName("SignOutSignInTest")
@@ -156,7 +156,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
     }
 
     @JsName("SignOutSignInRefreshTest")
@@ -175,13 +175,13 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        val refreshToken = signInResponse.getOrThrow().AuthenticationResult.RefreshToken
+        val refreshToken = signInResponse.getOrThrow().AuthenticationResult!!.RefreshToken
 
         val refreshResponse = provider.refresh(refreshToken!!)
         assertNull(refreshResponse.exceptionOrNull())
         assertNotNull(refreshResponse.getOrNull())
 
-        deleteUser(refreshResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+        deleteUser(refreshResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
     }
 
     @JsName("RevokeTokenAndValidateExpiration")
@@ -205,7 +205,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult.AccessToken)
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
     }
 
     @JsName("SignUpFailPasswordTooShortTest")

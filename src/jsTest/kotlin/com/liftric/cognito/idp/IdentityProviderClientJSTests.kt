@@ -39,7 +39,7 @@ class IdentityProviderClientJSTests {
             println("signInResponse=$it")
             assertNotNull(it)
 
-            provider.deleteUser(it.AuthenticationResult.AccessToken).await().also {
+            provider.deleteUser(it.AuthenticationResult!!.AccessToken).await().also {
                 println("deleteUser=$it")
                 assertNotNull(it)
             }

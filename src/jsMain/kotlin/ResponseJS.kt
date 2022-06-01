@@ -5,7 +5,7 @@
  */
 
 data class SignInResponseJS(
-    val AuthenticationResult: AuthenticationResultJS,
+    val AuthenticationResult: AuthenticationResultJS?,
     val ChallengeParameters: Array<MapEntry> = arrayOf()
 ) {
     override fun equals(other: Any?): Boolean {
