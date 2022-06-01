@@ -99,7 +99,7 @@ data class AuthenticationResultJS(
     val TokenType: String,
     val NewDeviceMetadata: NewDeviceMetadataJS? = null
 )
-data class NewDeviceMetadatatJS(
+data class NewDeviceMetadataJS(
     val DeviceGroupKey: String? = null,
     val DeviceKey: String? = null,
 )

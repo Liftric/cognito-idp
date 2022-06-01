@@ -22,6 +22,7 @@ import kotlinx.serialization.json.Json
 open class IdentityProviderClient(region: String, clientId: String, httpClient: HttpClient? = null) : IdentityProvider {
     private val json = Json {
         allowStructuredMapKeys = true
+        ignoreUnknownKeys = true
     }
     private val configuration = Configuration(region, clientId)
     private val client = httpClient ?: HttpClient {
