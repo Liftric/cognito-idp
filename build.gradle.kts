@@ -126,12 +126,6 @@ kotlin {
     }
 }
 
-kotlin.targets.withType(KotlinNativeTarget::class.java) {
-    binaries.all {
-        binaryOptions["memoryModel"] = "experimental"
-    }
-}
-
 android {
     compileSdk = Apps.compileSdk
 
