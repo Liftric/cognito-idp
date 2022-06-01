@@ -20,13 +20,14 @@ import kotlin.native.concurrent.SharedImmutable
  * AWS Cognito Identity Provider client.
  * Provides common request methods.
  */
-open class IdentityProviderClient(region: String, clientId: String, httpClient: HttpClient? = null) : IdentityProvider {
+open class IdentityProviderClient(region: String, clientId: String) : IdentityProvider {
     private val json = Json {
         allowStructuredMapKeys = true
         ignoreUnknownKeys = true
     }
     private val configuration = Configuration(region, clientId)
-    private val client = httpClient ?: HttpClient {
+    private val client = HttpClient {
+        expectSuccess = true
         /**
          * When referencing members that are in the
          * IdentityProvider's scope, assign them to
