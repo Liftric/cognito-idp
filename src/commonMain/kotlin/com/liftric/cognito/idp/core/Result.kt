@@ -85,7 +85,6 @@ class Result<out T> constructor(val value: Any?) {
     }
 }
 
-@Deprecated("Use map or mapCatching. Not needed to wrap into new Result anymore.", ReplaceWith("map(action)"))
 inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R> = when (value) {
     is Result.Failure -> Result.failure(value.exception)
     else -> action(value as T)

@@ -19,12 +19,12 @@ import kotlinx.serialization.json.Json
  * AWS Cognito Identity Provider client.
  * Provides common request methods.
  */
-open class IdentityProviderClient(region: String, clientId: String) : IdentityProvider {
+open class IdentityProviderClient(region: String, clientId: String, httpClient: HttpClient? = null) : IdentityProvider {
     private val json = Json {
         allowStructuredMapKeys = true
     }
     private val configuration = Configuration(region, clientId)
-    private val client = HttpClient {
+    private val client = httpClient ?: HttpClient {
         /**
          * When referencing members that are in the
          * IdentityProvider's scope, assign them to

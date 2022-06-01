@@ -7,11 +7,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 plugins {
     id("com.android.library") version Versions.gradle
     kotlin("multiplatform") version Versions.kotlin
-    id("com.github.turansky.kfc.definitions") version Versions.definitions // fixes Promise in generated typescript files
+    id("io.github.turansky.kfc.definitions") version Versions.definitions // fixes Promise in generated typescript files
     id("maven-publish")
     id("dev.petuska.npm.publish") version Versions.npmPublish
     id("org.jetbrains.kotlin.plugin.serialization") version Versions.kotlin
-    id("net.nemerosa.versioning") version "2.14.0"
+    id("net.nemerosa.versioning") version "3.0.0"
     id("signing")
     id("com.liftric.vault-client-plugin") version "2.0.0"
 }
@@ -316,36 +316,33 @@ publishing {
 
 val npmAccessKey: String? by project
 
-npmPublishing {
-    organization = "liftric"
-    access = PUBLIC
-    readme = rootProject.file("README.md")
+npmPublish {
+    organization.set("liftric")
+    access.set(PUBLIC)
+    readme.set(rootProject.file("README.md"))
 
-    publications {
-        val js by getting {
-            moduleName = project.name
+    packages {
+        named("js") {
+            packageName.set(project.name)
             packageJson {
-                keywords = jsonArray(
+                keywords.set(listOf(
                     "kotlin",
                     "cognito",
                     "identity-provider",
                     "liftric",
                     "aws"
-                )
-                license = "MIT"
-                description = "Lightweight AWS Cognito Identity Provider client."
-                homepage = "https://github.com/liftric/cognito-idp"
-                bugs = mutableMapOf<String, Any?>().apply {
-                    put("url", "https://github.com/liftric/cognito-idp/issues")
-                }
+                ))
+                license.set("MIT")
+                description.set("Lightweight AWS Cognito Identity Provider client.")
+                homepage.set("https://github.com/liftric/cognito-idp")
             }
         }
     }
 
-    repositories {
-        repository("npmjs") {
-            registry = uri("https://registry.npmjs.org")
-            authToken = npmAccessKey
+    registries {
+        npmjs {
+            uri.set(uri("https://registry.npmjs.org"))
+            authToken.set(npmAccessKey)
         }
     }
 }
