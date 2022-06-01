@@ -13,7 +13,7 @@ object Versions {
     const val kotlin = "1.6.21"
     const val npmPublish = "3.0.0"
     const val definitions = "5.23.0"
-    const val coroutines = "1.6.1-native-mt"
+    const val coroutines = "1.6.1"
     const val serialization = "1.3.3"
     const val ktor = "2.0.2"
     const val TestCore = "1.2.0"
@@ -28,7 +28,6 @@ object Libs {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val serializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.serialization}"
     const val ktorSerializationCore = "io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}"
-    const val ktorContentNegotiation = "io.ktor:ktor-client-content-negotiation:${Versions.ktor}"
 
     /* Android */
     const val ktorAndroid = "io.ktor:ktor-client-android:${Versions.ktor}"

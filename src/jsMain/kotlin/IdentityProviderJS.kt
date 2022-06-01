@@ -39,7 +39,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             provider.signIn(username, password)
                 .getOrThrow().let {
                     SignInResponseJS(
-                        it.AuthenticationResult.toJs(),
+                        it.AuthenticationResult?.toJs(),
                         it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
                     )
                 }
@@ -50,7 +50,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             provider.refresh(refreshToken)
                 .getOrThrow().let {
                     SignInResponseJS(
-                        it.AuthenticationResult.toJs(),
+                        it.AuthenticationResult?.toJs(),
                         it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
                     )
                 }

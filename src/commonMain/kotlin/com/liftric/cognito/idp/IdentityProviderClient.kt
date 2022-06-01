@@ -4,14 +4,15 @@ import com.liftric.cognito.idp.core.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.native.concurrent.SharedImmutable
 
 /** Don't forget [IdentityProviderClientJS] when doing changes here :) */
 
@@ -33,10 +34,6 @@ open class IdentityProviderClient(region: String, clientId: String, httpClient: 
          * avoid [InvalidMutabilityException] in iOS.
          */
         val configuration = configuration
-        val json = json
-        install(ContentNegotiation) {
-            json(json)
-        }
         defaultRequest {
             configuration.setupDefaultRequest(headers)
             contentType(ContentType.parse(Header.AmzJson))
@@ -198,11 +195,10 @@ open class IdentityProviderClient(region: String, clientId: String, httpClient: 
         AccessToken(accessToken)
     )
 
-    private suspend inline fun <reified T> request(type: Request, payload: Any): Result<T> = try {
-        // println("request: type=$type payload=$payload")
+    private suspend inline fun <reified T, reified R> request(type: Request, payload: R): Result<T> = try {
         client.post(configuration.requestUrl) {
             header(Header.AmzTarget, type.value)
-            setBody(payload)
+            setBody(json.encodeToString(payload))
         }.run {
             when(T::class) {
                 Unit::class -> Result.success(Unit as T)

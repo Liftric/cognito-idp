@@ -55,7 +55,6 @@ kotlin {
                 implementation(Libs.ktorCore)
                 implementation(Libs.coroutinesCore)
                 implementation(Libs.serializationCore)
-                implementation(Libs.ktorContentNegotiation)
                 implementation(Libs.ktorSerializationCore)
             }
         }
