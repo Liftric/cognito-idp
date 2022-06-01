@@ -25,7 +25,14 @@ data class AuthenticationResult(
     val ExpiresIn: Int,
     val IdToken: String,
     val RefreshToken: String? = null,
-    val TokenType: String
+    val TokenType: String,
+    val NewDeviceMetadata: NewDeviceMetadata? = null,
+)
+
+@Serializable
+data class NewDeviceMetadata(
+    val DeviceGroupKey: String? = null,
+    val DeviceKey: String? = null,
 )
 
 @Serializable
