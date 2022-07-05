@@ -10,12 +10,12 @@ object Android {
 
 object Versions {
     const val gradle = "7.2.0"
-    const val kotlin = "1.6.21"
+    const val kotlin = "1.7.0"
     const val npmPublish = "3.0.0"
-    const val definitions = "5.23.0"
-    const val coroutines = "1.6.1"
+    const val definitions = "5.50.0"
+    const val coroutines = "1.6.3"
     const val serialization = "1.3.3"
-    const val ktor = "2.0.2"
+    const val ktor = "2.0.3"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
 }
