@@ -18,6 +18,7 @@ object Versions {
     const val ktor = "2.0.2"
     const val TestCore = "1.2.0"
     const val RoboElectric = "4.5.1"
+    const val OtpJava = "1.3.2"
 }
 
 object Libs {
@@ -45,6 +46,7 @@ object Libs {
 object TestLibs {
     const val TestCore = "androidx.test:core:${Versions.TestCore}"
     const val RoboElectrics = "org.robolectric:robolectric:${Versions.RoboElectric}"
+    const val OtpJava = "com.github.bastiaanjansen:otp-java:${Versions.OtpJava}"
 }
 
 object Exclude {

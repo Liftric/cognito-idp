@@ -56,6 +56,10 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(deleteUserResponse.exceptionOrNull())
     }
 
+    open fun generateTotpCode(secret: String): String {
+        return ""
+    }
+
     @JsName("SignUpSignInDeleteUserTest")
     @JvmName("SignUpSignInDeleteUserTest")
     @Test
@@ -425,5 +429,36 @@ abstract class AbstractIdentityProviderClientTests {
             val accessToken = CognitoAccessToken(token)
             accessToken.claims
         }
+    }
+
+    @JsName("SoftwareTokenTest")
+    @JvmName("SoftwareTokenTest")
+    @Test
+    fun `Associate software token`() = runTest {
+        val (result, _) = createUser()
+
+        var user = provider.getUser(result.AccessToken)
+        assertTrue(user.getOrThrow().UserMFASettingList.isEmpty(), "MFA is already set up")
+
+        val associateSoftwareTokenResponse = provider.associateSoftwareToken(result.AccessToken, null)
+        assertTrue(associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(), "SecretCode is missing in Cognito response")
+
+        val code = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)
+
+        // only check verification for targets that provide a totp token
+        if (code.isNotBlank()) {
+            val verificationCodeResponse = provider.verifySoftwareToken(
+                accessToken = result.AccessToken,
+                friendlyDeviceName = "Association test device",
+                session = associateSoftwareTokenResponse.getOrThrow().Session,
+                userCode = code
+            )
+            assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
+
+            user = provider.getUser(result.AccessToken)
+            assertTrue(user.getOrThrow().UserMFASettingList.isNotEmpty(), "MFA is not set up")
+        }
+
+        deleteUser(result.AccessToken)
     }
 }

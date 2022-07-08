@@ -108,3 +108,17 @@ internal data class VerifyUserAttribute(
     val AttributeName: String,
     val Code: String
 )
+
+@Serializable
+internal data class AssociateSoftwareToken(
+    val AccessToken: String?,
+    val Session: String?
+)
+
+@Serializable
+internal data class VerifySoftwareToken(
+    val AccessToken: String?,
+    val FriendlyDeviceName: String?,
+    val Session: String?,
+    val UserCode: String
+)
