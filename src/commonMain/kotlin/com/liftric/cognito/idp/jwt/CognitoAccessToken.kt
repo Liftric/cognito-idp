@@ -22,7 +22,7 @@ data class CognitoAccessTokenClaims(
     @SerialName("client_id")
     override val clientId: String,
     @SerialName("cognito:groups")
-    override val cognitoGroups: List<String>,
+    override val cognitoGroups: List<String> = listOf(),
     @SerialName("device_key")
     override val deviceKey: String? = null,
     @SerialName("event_id")
