@@ -29,7 +29,7 @@ data class CognitoIdTokenClaims(
     override val updatedAt: Long? = null,
     override val aud: String,
     override val authTime: Long,
-    override val cognitoGroups: List<String>,
+    override val cognitoGroups: List<String> = listOf(),
     override val cognitoUsername: String,
     override val exp: Long,
     override val eventId: String,

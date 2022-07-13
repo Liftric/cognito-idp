@@ -59,7 +59,7 @@ abstract class AbstractIdentityProviderClientTests {
     @JsName("SignUpSignInDeleteUserTest")
     @JvmName("SignUpSignInDeleteUserTest")
     @Test
-    fun `Sign up, sign in, delete user should succeed`() = runTest {
+    fun `Sign up sign in delete user should succeed`() = runTest {
         val credentials = randomUser()
         val signUpResponse = provider.signUp(
             credentials.username, credentials.password,
@@ -162,7 +162,7 @@ abstract class AbstractIdentityProviderClientTests {
     @JsName("SignOutSignInRefreshTest")
     @JvmName("SignOutSignInRefreshTest")
     @Test
-    fun `Sign out, sign in and refresh should succeed`() = runTest {
+    fun `Sign out sign in and refresh should succeed`() = runTest {
         val (result, credentials) = createUser()
 
         val signOutResponse = provider.signOut(result.AccessToken)
@@ -187,7 +187,7 @@ abstract class AbstractIdentityProviderClientTests {
     @JsName("RevokeTokenAndValidateExpiration")
     @JvmName("RevokeTokenAndValidateExpiration")
     @Test
-    fun `Sign in, revoke token, validate`() = runTest {
+    fun `Sign in revoke token validate`() = runTest {
         val (result, credentials) = createUser()
 
         val revokeTokenResponse = provider.revokeToken(result.RefreshToken!!)
