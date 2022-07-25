@@ -123,7 +123,7 @@ signIn("<username>", "<password>"): Result<SignInResponse>
 
 #### Respond To Auth Challenge
 
-Responds to the auth token response of the sign in response.
+Responds to the auth challenge of the sign in response.
 
 ```kotlin
 val challengeResponses = mapOf<String, String>()
@@ -249,7 +249,7 @@ associateSoftwareToken("<accessToken>", "<session"): Result<AssociateSoftwareTok
 Verifies software token. Either with access token or session (not both).
 
 ```kotlin
-verifySoftwareToken("<accessToken>", "<friendlyDeviceName>","<session", "<userCode>"): Result<VerifySoftwareTokenResponse>
+verifySoftwareToken("<accessToken>", "<friendlyDeviceName>", "<session", "<userCode>"): Result<VerifySoftwareTokenResponse>
 ```
 
 #### Set User MFA Preference
