@@ -4,15 +4,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 plugins {
-    id("com.android.library") version Versions.gradle
-    kotlin("multiplatform") version Versions.kotlin
-    id("io.github.turansky.kfc.definitions") version Versions.definitions // fixes Promise in generated typescript files
+    id("com.android.library") version libs.versions.android.tools.gradle
+    kotlin("multiplatform") version libs.versions.kotlin
+    alias(libs.plugins.definitions)
+    alias(libs.plugins.npm.publishing)
+    alias(libs.plugins.versioning)
+    alias(libs.plugins.vault.client)
+    alias(libs.plugins.kotlin.serialization)
     id("maven-publish")
-    id("dev.petuska.npm.publish") version Versions.npmPublish
-    id("org.jetbrains.kotlin.plugin.serialization") version Versions.kotlin
-    id("net.nemerosa.versioning") version "3.0.0"
     id("signing")
-    id("com.liftric.vault-client-plugin") version "2.0.0"
 }
 
 repositories {
@@ -51,10 +51,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(Libs.ktorCore)
-                implementation(Libs.coroutinesCore)
-                implementation(Libs.serializationCore)
-                implementation(Libs.ktorSerializationCore)
+                implementation(libs.ktor.client.core)
+                implementation(libs.kotlinx.coroutines)
+                implementation(libs.kotlinx.serialization)
             }
         }
         val commonTest by getting {
@@ -63,40 +62,37 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation(Libs.coroutinesCore)
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation(Libs.ktorAndroid)
+                implementation(libs.ktor.client.android)
             }
         }
         val jvmMain by getting {
             dependencies {
-                implementation(Libs.ktorJvm)
+                implementation(libs.ktor.client.jvm)
             }
         }
         val androidTest by getting {
             dependencies {
-                implementation(TestLibs.RoboElectrics) {
-                    exclude(Exclude.GoogleAutoService, Exclude.AutoService)
-                }
+                implementation(libs.roboelectric)
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation(TestLibs.TestCore)
-                implementation(TestLibs.OtpJava)
+                implementation(libs.androidx.test.core)
+                implementation(libs.opt.java)
             }
         }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation(TestLibs.OtpJava)
+                implementation(libs.opt.java)
             }
         }
         val iosMain by getting {
             dependencies {
-                implementation(Libs.ktorIOS)
+                implementation(libs.ktor.client.darwin)
             }
         }
         val iosTest by getting
@@ -108,7 +104,7 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation(Libs.ktorJS)
+                implementation(libs.ktor.client.js)
             }
         }
         val jsTest by getting {
@@ -127,12 +123,12 @@ kotlin {
 }
 
 android {
-    compileSdk = Apps.compileSdk
+    compileSdk = 30
 
     defaultConfig {
-        minSdk = Apps.minSdk
-        targetSdk = Apps.targetSdk
-        testInstrumentationRunner = Android.TestRunner
+        minSdk = 21
+        targetSdk = 30
+        testInstrumentationRunner = "androidx.test.runner"
     }
 
     compileOptions {

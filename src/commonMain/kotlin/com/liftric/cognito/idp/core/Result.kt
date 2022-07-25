@@ -90,7 +90,6 @@ inline fun <T, R> Result<T>.onResult(action: (value: T) -> Result<R>): Result<R>
     else -> action(value as T)
 }
 
-@Deprecated("Use fold.", ReplaceWith("fold(onSuccess = {}, onFailure = action)"))
 inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> = apply {
     exceptionOrNull()?.let { action(it) }
 }
