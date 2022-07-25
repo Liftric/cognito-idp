@@ -9,7 +9,7 @@ import java.time.Duration
 
 
 actual class IdentityProviderClientTests: AbstractIdentityProviderClientTests() {
-    override fun generateTotpCode(secret: String): String {
+    override fun generateTotpCode(secret: String): String? {
         val builder = TOTP.Builder(secret.toByteArray())
         builder
             .withPasswordLength(6)

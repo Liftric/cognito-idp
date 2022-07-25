@@ -58,8 +58,8 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(deleteUserResponse.exceptionOrNull())
     }
 
-    open fun generateTotpCode(secret: String): String {
-        return ""
+    open fun generateTotpCode(secret: String): String? {
+        return null
     }
 
     @JsName("SignUpSignInDeleteUserTest")
@@ -439,52 +439,56 @@ abstract class AbstractIdentityProviderClientTests {
     fun `Associate software token`() = runTest {
         val (result, credentials) = createUser()
 
-        val associateSoftwareTokenResponse = provider.associateSoftwareToken(result.AccessToken, null)
-        assertTrue(associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(), "SecretCode is missing in Cognito response")
-
-        val code = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)
-
-        val verificationCodeResponse = provider.verifySoftwareToken(
-            accessToken = result.AccessToken,
-            session = null,
-            friendlyDeviceName = "Association test device",
-            userCode = code
+        val associateSoftwareTokenResponse =
+            provider.associateSoftwareToken(result.AccessToken, null)
+        assertTrue(
+            associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(),
+            "SecretCode is missing in Cognito response"
         )
-        assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
 
-        val setupMfa = provider.setUserMFAPreference(
-            accessToken = result.AccessToken,
-            smsMfaSettings = null,
-            softwareTokenMfaSettings = MfaSettings(
-                Enabled = true,
-                PreferredMfa = true
+        generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)?.let { code ->
+            val verificationCodeResponse = provider.verifySoftwareToken(
+                accessToken = result.AccessToken,
+                session = null,
+                friendlyDeviceName = "Association test device",
+                userCode = code
             )
-        )
-        assertNull(setupMfa.exceptionOrNull(), "Enabling token mfa not possible")
+            assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
 
-        provider.signOut(result.AccessToken)
+            val setupMfa = provider.setUserMFAPreference(
+                accessToken = result.AccessToken,
+                smsMfaSettings = null,
+                softwareTokenMfaSettings = MfaSettings(
+                    Enabled = true,
+                    PreferredMfa = true
+                )
+            )
+            assertNull(setupMfa.exceptionOrNull(), "Enabling token mfa not possible")
 
-        val signInResponse = provider.signIn(credentials.username, credentials.password).getOrThrow()
+            provider.signOut(result.AccessToken)
 
-        assertNull(signInResponse.AuthenticationResult, "Should need to respond to challenge")
+            val signInResponse = provider.signIn(credentials.username, credentials.password).getOrThrow()
 
-        delay(30000) // Wait until new code gets issued
+            assertNull(signInResponse.AuthenticationResult, "Should need to respond to challenge")
 
-        val newCode = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)
+            delay(30000) // Wait until new code gets issued
 
-        val challengeResponse = provider.respondToAuthChallenge(
-            "SOFTWARE_TOKEN_MFA",
-            mapOf(
-                "USERNAME" to credentials.username,
-                "SOFTWARE_TOKEN_MFA_CODE" to newCode
-            ),
-            signInResponse.Session
-        )
+            val newCode = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)!!
 
-        assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")
+            val challengeResponse = provider.respondToAuthChallenge(
+                "SOFTWARE_TOKEN_MFA",
+                mapOf(
+                    "USERNAME" to credentials.username,
+                    "SOFTWARE_TOKEN_MFA_CODE" to newCode
+                ),
+                signInResponse.Session
+            )
 
-        deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken)
+            assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")
 
-        delay(30000) // Wait until new code gets issued before next test run
+            deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken)
+
+            delay(30000) // Wait until new code gets issued before next test run
+        }
     }
 }
