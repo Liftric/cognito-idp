@@ -33,6 +33,18 @@ interface IdentityProvider {
      */
     suspend fun signIn(username: String, password: String): Result<SignInResponse>
 
+    /**
+     * Responds to the auth challenge of the sign in response
+     * @param challengeName The challenge name
+     * @param challengeResponses The challenge responses (needed to answer the challenge)
+     * @param session The session from the sign in request
+     * @return Result object containing SignInResponse on success or an error on failure
+     */
+    suspend fun respondToAuthChallenge(
+        challengeName: String,
+        challengeResponses: Map<String, String>,
+        session: String
+    ): Result<SignInResponse>
 
     /**
      * Signs in the user with the given parameters
@@ -120,6 +132,19 @@ interface IdentityProvider {
      * @return Result object containing Unit on success or an error on failure
      */
     suspend fun deleteUser(accessToken: String): Result<Unit>
+
+    /**
+     * Setups MFA preferences
+     * @param accessToken The access token from the sign in request
+     * @param smsMfaSettings SMS MFA prefrence settings
+     * @param softwareTokenMfaSettings software token MFA prefrence settings
+     * @return Result object containing Unit on success or an error on failure
+     */
+    suspend fun setUserMFAPreference(
+        accessToken: String,
+        smsMfaSettings: MfaSettings?,
+        softwareTokenMfaSettings: MfaSettings?
+    ): Result<Unit>
 
     /**
      * Associate a TOTP device with the user account

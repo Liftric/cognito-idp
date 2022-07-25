@@ -89,6 +89,20 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         )
     )
 
+    override suspend fun respondToAuthChallenge(
+        challengeName: String,
+        challengeResponses: Map<String, String>,
+        session: String
+    ): Result<SignInResponse> = request(
+        Request.RespondToAuthChallenge,
+        RespondToAuthChallenge(
+            ChallengeName =  challengeName,
+            ChallengeResponses = challengeResponses,
+            ClientId = configuration.clientId,
+            Session = session
+        )
+    )
+
     override suspend fun refresh(refreshToken: String): Result<SignInResponse> = request(
         Request.SignIn,
         Refresh(
@@ -218,6 +232,19 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
             FriendlyDeviceName = friendlyDeviceName,
             Session = session,
             UserCode = userCode
+        )
+    )
+
+    override suspend fun setUserMFAPreference(
+        accessToken: String,
+        smsMfaSettings: MfaSettings?,
+        softwareTokenMfaSettings: MfaSettings?
+    ): Result<Unit> = request(
+        Request.SetUserMFAPreference,
+        SetUserMFAPreference(
+            AccessToken = accessToken,
+            SMSMfaSettings = smsMfaSettings,
+            SoftwareTokenMfaSettings = softwareTokenMfaSettings
         )
     )
 

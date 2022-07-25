@@ -1,9 +1,7 @@
 @file:JsExport
 
 import com.liftric.cognito.idp.IdentityProviderClient
-import com.liftric.cognito.idp.core.AuthenticationResult
-import com.liftric.cognito.idp.core.CodeDeliveryDetails
-import com.liftric.cognito.idp.core.UserAttribute
+import com.liftric.cognito.idp.core.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.promise
 import kotlin.js.Promise
@@ -135,6 +133,56 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             provider.deleteUser(accessToken)
                 .getOrThrow()
         }
+
+    fun setUserMFAPreference(
+        accessToken: String,
+        smsMfaSettings: MfaSettings?,
+        softwareTokenMfaSettings: MfaSettings?
+    ): Promise<Unit> = MainScope().promise {
+        provider.setUserMFAPreference(
+            accessToken,
+            smsMfaSettings,
+            softwareTokenMfaSettings
+        ).getOrThrow()
+    }
+
+    fun respondToAuthChallenge(
+        challengeName: String,
+        challengeResponses: Map<String, String>,
+        session: String
+    ): Promise<SignInResponseJS> = MainScope().promise {
+        provider.respondToAuthChallenge(
+            challengeName,
+            challengeResponses,
+            session
+        ).getOrThrow().let {
+            SignInResponseJS(
+                it.AuthenticationResult?.toJs(),
+                it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
+            )
+        }
+    }
+
+    fun associateSoftwareToken(
+        accessToken: String?,
+        session: String?
+    ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
+        provider.associateSoftwareToken(accessToken, session).getOrThrow()
+    }
+
+    fun verifySoftwareToken(
+        accessToken: String?,
+        friendlyDeviceName: String?,
+        session: String?,
+        userCode: String
+    ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
+        provider.verifySoftwareToken(
+            accessToken,
+            friendlyDeviceName,
+            session,
+            userCode
+        ).getOrThrow()
+    }
 }
 
 private fun AuthenticationResult.toJs(): AuthenticationResultJS =

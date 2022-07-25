@@ -159,7 +159,7 @@ afterEvaluate {
 }
 
 tasks {
-    val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
+    withType(KotlinNativeSimulatorTest::class) {
         filter.excludeTestsMatching("com.liftric.cognito.idp.IdentityProviderClientTests")
     }
 

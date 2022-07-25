@@ -4,7 +4,9 @@ import com.liftric.cognito.idp.core.*
 import com.liftric.cognito.idp.jwt.*
 import env
 import io.ktor.http.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.test.*
@@ -435,30 +437,54 @@ abstract class AbstractIdentityProviderClientTests {
     @JvmName("SoftwareTokenTest")
     @Test
     fun `Associate software token`() = runTest {
-        val (result, _) = createUser()
-
-        var user = provider.getUser(result.AccessToken)
-        assertTrue(user.getOrThrow().UserMFASettingList.isEmpty(), "MFA is already set up")
+        val (result, credentials) = createUser()
 
         val associateSoftwareTokenResponse = provider.associateSoftwareToken(result.AccessToken, null)
         assertTrue(associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(), "SecretCode is missing in Cognito response")
 
         val code = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)
 
-        // only check verification for targets that provide a totp token
-        if (code.isNotBlank()) {
-            val verificationCodeResponse = provider.verifySoftwareToken(
-                accessToken = result.AccessToken,
-                friendlyDeviceName = "Association test device",
-                session = associateSoftwareTokenResponse.getOrThrow().Session,
-                userCode = code
+        val verificationCodeResponse = provider.verifySoftwareToken(
+            accessToken = result.AccessToken,
+            session = null,
+            friendlyDeviceName = "Association test device",
+            userCode = code
+        )
+        assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
+
+        val setupMfa = provider.setUserMFAPreference(
+            accessToken = result.AccessToken,
+            smsMfaSettings = null,
+            softwareTokenMfaSettings = MfaSettings(
+                Enabled = true,
+                PreferredMfa = true
             )
-            assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
+        )
+        assertNull(setupMfa.exceptionOrNull(), "Enabling token mfa not possible")
 
-            user = provider.getUser(result.AccessToken)
-            assertTrue(user.getOrThrow().UserMFASettingList.isNotEmpty(), "MFA is not set up")
-        }
+        provider.signOut(result.AccessToken)
 
-        deleteUser(result.AccessToken)
+        val signInResponse = provider.signIn(credentials.username, credentials.password).getOrThrow()
+
+        assertNull(signInResponse.AuthenticationResult, "Should need to respond to challenge")
+
+        delay(30000) // Wait until new code gets issued
+
+        val newCode = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)
+
+        val challengeResponse = provider.respondToAuthChallenge(
+            "SOFTWARE_TOKEN_MFA",
+            mapOf(
+                "USERNAME" to credentials.username,
+                "SOFTWARE_TOKEN_MFA_CODE" to newCode
+            ),
+            signInResponse.Session
+        )
+
+        assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")
+
+        deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken)
+
+        delay(30000) // Wait until new code gets issued before next test run
     }
 }

@@ -34,8 +34,10 @@ internal enum class Request(val value: String) {
     ConfirmForgotPassword("AWSCognitoIdentityProviderService.ConfirmForgotPassword"),
     GetUserAttributeVerificationCode("AWSCognitoIdentityProviderService.GetUserAttributeVerificationCode"),
     VerifyUserAttribute("AWSCognitoIdentityProviderService.VerifyUserAttribute"),
+    SetUserMFAPreference("AWSCognitoIdentityProviderService.SetUserMFAPreference"),
     AssociateSoftwareToken("AWSCognitoIdentityProviderService.AssociateSoftwareToken"),
-    VerifySoftwareToken("AWSCognitoIdentityProviderService.VerifySoftwareToken")
+    VerifySoftwareToken("AWSCognitoIdentityProviderService.VerifySoftwareToken"),
+    RespondToAuthChallenge("AWSCognitoIdentityProviderService.RespondToAuthChallenge")
 }
 
 internal object AWSException {

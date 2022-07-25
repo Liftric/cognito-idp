@@ -122,3 +122,24 @@ internal data class VerifySoftwareToken(
     val Session: String?,
     val UserCode: String
 )
+
+@Serializable
+internal data class SetUserMFAPreference(
+    val AccessToken: String,
+    val SMSMfaSettings: MfaSettings?,
+    val SoftwareTokenMfaSettings: MfaSettings?
+)
+
+@Serializable
+data class MfaSettings(
+    val Enabled: Boolean,
+    val PreferredMfa: Boolean
+)
+
+@Serializable
+data class RespondToAuthChallenge(
+    val ChallengeName: String,
+    val ChallengeResponses: Map<String, String> = mapOf(),
+    val ClientId: String,
+    val Session: String?,
+)
