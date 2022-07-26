@@ -1,4 +1,4 @@
-name: Publish to Sonatype
+name: Publish to OSSRH
 on:
   release:
     types: [published]
