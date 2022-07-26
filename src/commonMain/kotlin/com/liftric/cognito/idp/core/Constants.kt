@@ -21,9 +21,9 @@ internal enum class Authentication(val flow: String) {
 
 internal enum class Request(val value: String) {
     SignIn("AWSCognitoIdentityProviderService.InitiateAuth"),
-    SignUp ("AWSCognitoIdentityProviderService.SignUp"),
-    ConfirmSignUp( "AWSCognitoIdentityProviderService.ConfirmSignUp"),
-    ResendConfirmationCode( "AWSCognitoIdentityProviderService.ResendConfirmationCode"),
+    SignUp("AWSCognitoIdentityProviderService.SignUp"),
+    ConfirmSignUp("AWSCognitoIdentityProviderService.ConfirmSignUp"),
+    ResendConfirmationCode("AWSCognitoIdentityProviderService.ResendConfirmationCode"),
     SignOut("AWSCognitoIdentityProviderService.GlobalSignOut"),
     RevokeToken("AWSCognitoIdentityProviderService.RevokeToken"),
     GetUser("AWSCognitoIdentityProviderService.GetUser"),
@@ -33,19 +33,28 @@ internal enum class Request(val value: String) {
     ForgotPassword("AWSCognitoIdentityProviderService.ForgotPassword"),
     ConfirmForgotPassword("AWSCognitoIdentityProviderService.ConfirmForgotPassword"),
     GetUserAttributeVerificationCode("AWSCognitoIdentityProviderService.GetUserAttributeVerificationCode"),
-    VerifyUserAttribute("AWSCognitoIdentityProviderService.VerifyUserAttribute")
+    VerifyUserAttribute("AWSCognitoIdentityProviderService.VerifyUserAttribute"),
+    SetUserMFAPreference("AWSCognitoIdentityProviderService.SetUserMFAPreference"),
+    AssociateSoftwareToken("AWSCognitoIdentityProviderService.AssociateSoftwareToken"),
+    VerifySoftwareToken("AWSCognitoIdentityProviderService.VerifySoftwareToken"),
+    RespondToAuthChallenge("AWSCognitoIdentityProviderService.RespondToAuthChallenge")
 }
 
 internal object AWSException {
     const val CodeMismatch = "CodeMismatchException"
+    const val ConcurrentModification = "ConcurrentModificationException"
+    const val EnableSoftwareTokenMFA = " EnableSoftwareTokenMFAException"
     const val ExpiredCode = "ExpiredCodeException"
     const val InternalError = "InternalErrorException"
     const val InvalidLambdaResponse = "InvalidLambdaResponseException"
     const val InvalidParameter = "InvalidParameterException"
     const val InvalidPassword = "InvalidPasswordException"
+    const val InvalidUserPoolConfiguration = "InvalidUserPoolConfigurationException"
     const val LimitExceeded = "LimitExceededException"
     const val NotAuthorized = "NotAuthorizedException"
+    const val PasswordResetRequired = "PasswordResetRequiredException"
     const val ResourceNotFound = "ResourceNotFoundException"
+    const val SoftwareTokenMFANotFound = "SoftwareTokenMFANotFoundException"
     const val TooManyFailedAttempts = "TooManyFailedAttemptsException"
     const val TooManyRequests = "TooManyRequestsException"
     const val UnexpectedLambda = "UnexpectedLambdaException"

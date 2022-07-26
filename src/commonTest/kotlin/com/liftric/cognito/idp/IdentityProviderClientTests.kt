@@ -4,7 +4,9 @@ import com.liftric.cognito.idp.core.*
 import com.liftric.cognito.idp.jwt.*
 import env
 import io.ktor.http.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.test.*
@@ -54,6 +56,10 @@ abstract class AbstractIdentityProviderClientTests {
     private suspend fun deleteUser(token: String) {
         val deleteUserResponse = provider.deleteUser(token)
         assertNull(deleteUserResponse.exceptionOrNull())
+    }
+
+    open fun generateTotpCode(secret: String): String? {
+        return null
     }
 
     @JsName("SignUpSignInDeleteUserTest")
@@ -424,6 +430,65 @@ abstract class AbstractIdentityProviderClientTests {
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzdjRzNm9lMmRobjZua2hydTU3OWc2bTZnMSIsImNvZ25pdG86Z3JvdXBzIjpbIlJPTEVfUEFUSUVOVCJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImV2ZW50X2lkIjoiZmMxNTM3NTQtNDY5ZS00YzZiLTlhMzktODVhM2M3MDAxZTMwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1OTk1NjY5MjMsImNvZ25pdG86dXNlcm5hbWUiOiI2YTg0MzYzNS1kZWM2LTQxMmYtYjI0MS1iNGRmYmI2NTVkM2YiLCJleHAiOjE2MDEyOTQ1NDQsImlhdCI6MTU5OTU2NjkyMywiZW1haWxfd2l0aF90eXBvIjoiZ2FlYmVsQGxpZnRyaWMuY29tIiwianRpIjoiYWNkNjg1MTUtZmExZi00ZTNmLWI3ZmUtODEwYzY2NmRhODYwIn0.zuqwEPXiLzbmxSdNQGjr3m4X5cXqdQf4aw_-7BUbvZk"
             val accessToken = CognitoAccessToken(token)
             accessToken.claims
+        }
+    }
+
+    @JsName("SoftwareTokenTest")
+    @JvmName("SoftwareTokenTest")
+    @Test
+    fun `Associate software token`() = runTest {
+        val (result, credentials) = createUser()
+
+        val associateSoftwareTokenResponse =
+            provider.associateSoftwareToken(result.AccessToken, null)
+        assertTrue(
+            associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(),
+            "SecretCode is missing in Cognito response"
+        )
+
+        generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)?.let { code ->
+            val verificationCodeResponse = provider.verifySoftwareToken(
+                accessToken = result.AccessToken,
+                session = null,
+                friendlyDeviceName = "Association test device",
+                userCode = code
+            )
+            assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
+
+            val setupMfa = provider.setUserMFAPreference(
+                accessToken = result.AccessToken,
+                smsMfaSettings = null,
+                softwareTokenMfaSettings = MfaSettings(
+                    Enabled = true,
+                    PreferredMfa = true
+                )
+            )
+            assertNull(setupMfa.exceptionOrNull(), "Enabling token mfa not possible")
+
+            provider.signOut(result.AccessToken)
+
+            val signInResponse = provider.signIn(credentials.username, credentials.password).getOrThrow()
+
+            assertNull(signInResponse.AuthenticationResult, "Should need to respond to challenge")
+
+            delay(30000) // Wait until new code gets issued
+
+            val newCode = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)!!
+
+            val challengeResponse = provider.respondToAuthChallenge(
+                "SOFTWARE_TOKEN_MFA",
+                mapOf(
+                    "USERNAME" to credentials.username,
+                    "SOFTWARE_TOKEN_MFA_CODE" to newCode
+                ),
+                signInResponse.Session
+            )
+
+            assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")
+
+            deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken)
+
+            delay(30000) // Wait until new code gets issued before next test run
         }
     }
 }

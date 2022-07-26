@@ -16,6 +16,7 @@ data class RequestError(
 data class SignInResponse(
     val AuthenticationResult: AuthenticationResult? = null,
     val ChallengeParameters: Map<String, String> = mapOf(),
+    val ChallengeName: String? = null,
     val Session: String = ""
 )
 
@@ -82,4 +83,16 @@ data class GetAttributeVerificationCodeResponse(
 @Serializable
 data class ForgotPasswordResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails
+)
+
+@Serializable
+data class AssociateSoftwareTokenResponse(
+    val SecretCode: String,
+    val Session: String? = null
+)
+
+@Serializable
+data class VerifySoftwareTokenResponse(
+    val Session: String? = null,
+    val Status: String
 )

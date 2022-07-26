@@ -1,6 +1,5 @@
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
@@ -85,12 +84,14 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(TestLibs.TestCore)
+                implementation(TestLibs.OtpJava)
             }
         }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
+                implementation(TestLibs.OtpJava)
             }
         }
         val iosMain by getting {
@@ -158,7 +159,7 @@ afterEvaluate {
 }
 
 tasks {
-    val iosX64Test by existing(KotlinNativeSimulatorTest::class) {
+    withType(KotlinNativeSimulatorTest::class) {
         filter.excludeTestsMatching("com.liftric.cognito.idp.IdentityProviderClientTests")
     }
 

@@ -33,6 +33,18 @@ interface IdentityProvider {
      */
     suspend fun signIn(username: String, password: String): Result<SignInResponse>
 
+    /**
+     * Responds to the auth challenge of the sign in response
+     * @param challengeName The challenge name
+     * @param challengeResponses The challenge responses (needed to answer the challenge)
+     * @param session The session from the sign in request
+     * @return Result object containing SignInResponse on success or an error on failure
+     */
+    suspend fun respondToAuthChallenge(
+        challengeName: String,
+        challengeResponses: Map<String, String>,
+        session: String
+    ): Result<SignInResponse>
 
     /**
      * Signs in the user with the given parameters
@@ -120,4 +132,43 @@ interface IdentityProvider {
      * @return Result object containing Unit on success or an error on failure
      */
     suspend fun deleteUser(accessToken: String): Result<Unit>
+
+    /**
+     * Setups MFA preferences
+     * @param accessToken The access token from the sign in request
+     * @param smsMfaSettings SMS MFA prefrence settings
+     * @param softwareTokenMfaSettings software token MFA prefrence settings
+     * @return Result object containing Unit on success or an error on failure
+     */
+    suspend fun setUserMFAPreference(
+        accessToken: String,
+        smsMfaSettings: MfaSettings?,
+        softwareTokenMfaSettings: MfaSettings?
+    ): Result<Unit>
+
+    /**
+     * Associate a TOTP device with the user account
+     * @param accessToken The access token from the sign in request
+     * @param session The session that should be passed both ways in challenge-response calls to the service. This allows authentication of the user as part of the MFA setup process.
+     * @return Result object containing AssociateSoftwareTokenResponse object on success or an error on failure
+     */
+    suspend fun associateSoftwareToken(
+        accessToken: String?,
+        session: String?
+    ): Result<AssociateSoftwareTokenResponse>
+
+    /**
+     * Verifies TOTP code and mark the user's software token MFA status as "verified"
+     * @param accessToken The access token from the sign in request
+     * @param friendlyDeviceName Name of the device the token was generated on
+     * @param session The session that should be passed both ways in challenge-response calls to the service. This allows authentication of the user as part of the MFA setup process.
+     * @param userCode One-time password computed using the secret code returned by associateSoftwareToken
+     * @return Result object containing VerifySoftwareTokenResponse object on success or an error on failure
+     */
+    suspend fun verifySoftwareToken(
+        accessToken: String?,
+        friendlyDeviceName: String?,
+        session: String?,
+        userCode: String
+    ): Result<VerifySoftwareTokenResponse>
 }

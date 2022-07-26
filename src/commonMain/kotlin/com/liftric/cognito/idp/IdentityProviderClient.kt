@@ -12,7 +12,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.native.concurrent.SharedImmutable
 
 /** Don't forget [IdentityProviderClientJS] when doing changes here :) */
 
@@ -52,7 +51,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
             ClientId = configuration.clientId,
             Username = username,
             Password = password,
-            UserAttributes = attributes?: listOf()
+            UserAttributes = attributes ?: listOf()
         )
     )
 
@@ -87,6 +86,20 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
             AuthFlow = Authentication.UserPasswordAuth.flow,
             ClientId = configuration.clientId,
             AuthParameters = SignIn.Parameters(username, password)
+        )
+    )
+
+    override suspend fun respondToAuthChallenge(
+        challengeName: String,
+        challengeResponses: Map<String, String>,
+        session: String
+    ): Result<SignInResponse> = request(
+        Request.RespondToAuthChallenge,
+        RespondToAuthChallenge(
+            ChallengeName =  challengeName,
+            ChallengeResponses = challengeResponses,
+            ClientId = configuration.clientId,
+            Session = session
         )
     )
 
@@ -196,12 +209,54 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
         AccessToken(accessToken)
     )
 
-    private suspend inline fun <reified T, reified R> request(type: Request, payload: R): Result<T> = try {
+    override suspend fun associateSoftwareToken(
+        accessToken: String?,
+        session: String?
+    ): Result<AssociateSoftwareTokenResponse> = request(
+        Request.AssociateSoftwareToken,
+        AssociateSoftwareToken(
+            AccessToken = accessToken,
+            Session = session
+        )
+    )
+
+    override suspend fun verifySoftwareToken(
+        accessToken: String?,
+        friendlyDeviceName: String?,
+        session: String?,
+        userCode: String
+    ): Result<VerifySoftwareTokenResponse> = request(
+        Request.VerifySoftwareToken,
+        VerifySoftwareToken(
+            AccessToken = accessToken,
+            FriendlyDeviceName = friendlyDeviceName,
+            Session = session,
+            UserCode = userCode
+        )
+    )
+
+    override suspend fun setUserMFAPreference(
+        accessToken: String,
+        smsMfaSettings: MfaSettings?,
+        softwareTokenMfaSettings: MfaSettings?
+    ): Result<Unit> = request(
+        Request.SetUserMFAPreference,
+        SetUserMFAPreference(
+            AccessToken = accessToken,
+            SMSMfaSettings = smsMfaSettings,
+            SoftwareTokenMfaSettings = softwareTokenMfaSettings
+        )
+    )
+
+    private suspend inline fun <reified T, reified R> request(
+        type: Request,
+        payload: R
+    ): Result<T> = try {
         client.post(configuration.requestUrl) {
             header(Header.AmzTarget, type.value)
             setBody(json.encodeToString(payload))
         }.run {
-            when(T::class) {
+            when (T::class) {
                 Unit::class -> Result.success(Unit as T)
                 else -> Result.success(json.decodeFromString(body()))
             }
@@ -217,14 +272,19 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
             Result.failure(
                 when(type) {
                     AWSException.CodeMismatch -> IdentityProviderException.CodeMismatch(response.status, message)
+                    AWSException.ConcurrentModification -> IdentityProviderException.ConcurrentModification(response.status, message)
+                    AWSException.EnableSoftwareTokenMFA -> IdentityProviderException.EnableSoftwareTokenMFA(response.status, message)
                     AWSException.ExpiredCode -> IdentityProviderException.ExpiredCode(response.status, message)
                     AWSException.InternalError -> IdentityProviderException.InternalError(response.status, message)
                     AWSException.InvalidLambdaResponse -> IdentityProviderException.InvalidLambdaResponse(response.status, message)
                     AWSException.InvalidParameter -> IdentityProviderException.InvalidParameter(response.status, message)
                     AWSException.InvalidPassword -> IdentityProviderException.InvalidPassword(response.status, message)
+                    AWSException.InvalidUserPoolConfiguration -> IdentityProviderException.InvalidUserPoolConfiguration(response.status, message)
                     AWSException.LimitExceeded -> IdentityProviderException.LimitExceeded(response.status, message)
                     AWSException.NotAuthorized -> IdentityProviderException.NotAuthorized(response.status, message)
+                    AWSException.PasswordResetRequired -> IdentityProviderException.PasswordResetRequired(response.status, message)
                     AWSException.ResourceNotFound -> IdentityProviderException.ResourceNotFound(response.status, message)
+                    AWSException.SoftwareTokenMFANotFound -> IdentityProviderException.SoftwareTokenMFANotFound(response.status, message)
                     AWSException.TooManyFailedAttempts -> IdentityProviderException.TooManyFailedAttempts(response.status, message)
                     AWSException.TooManyRequests -> IdentityProviderException.TooManyRequests(response.status, message)
                     AWSException.UnexpectedLambda -> IdentityProviderException.UnexpectedLambda(response.status, message)
