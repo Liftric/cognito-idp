@@ -136,24 +136,24 @@ class IdentityProviderClientJS(region: String, clientId: String) {
 
     fun setUserMFAPreference(
         accessToken: String,
-        smsMfaSettings: MfaSettings?,
-        softwareTokenMfaSettings: MfaSettings?
+        smsMfaSettings: MfaSettingJS?,
+        softwareTokenMfaSettings: MfaSettingJS?
     ): Promise<Unit> = MainScope().promise {
         provider.setUserMFAPreference(
             accessToken,
-            smsMfaSettings,
-            softwareTokenMfaSettings
+            smsMfaSettings?.let { MfaSettings(it.Enabled, it.PreferredMfa) },
+            softwareTokenMfaSettings?.let { MfaSettings(it.Enabled, it.PreferredMfa) }
         ).getOrThrow()
     }
 
     fun respondToAuthChallenge(
         challengeName: String,
-        challengeResponses: Map<String, String>,
+        challengeResponses: Array<MapEntry>,
         session: String
     ): Promise<SignInResponseJS> = MainScope().promise {
         provider.respondToAuthChallenge(
             challengeName,
-            challengeResponses,
+            challengeResponses.associate { it.key to it.value },
             session
         ).getOrThrow().let {
             SignInResponseJS(
@@ -166,8 +166,10 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun associateSoftwareToken(
         accessToken: String?,
         session: String?
-    ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
-        provider.associateSoftwareToken(accessToken, session).getOrThrow()
+    ): Promise<AssociateSoftwareTokenResponseJS> = MainScope().promise {
+        provider.associateSoftwareToken(accessToken, session).getOrThrow().run {
+            AssociateSoftwareTokenResponseJS(SecretCode, Session)
+        }
     }
 
     fun verifySoftwareToken(
@@ -175,13 +177,15 @@ class IdentityProviderClientJS(region: String, clientId: String) {
         friendlyDeviceName: String?,
         session: String?,
         userCode: String
-    ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
+    ): Promise<VerifySoftwareTokenResponseJS> = MainScope().promise {
         provider.verifySoftwareToken(
             accessToken,
             friendlyDeviceName,
             session,
             userCode
-        ).getOrThrow()
+        ).getOrThrow().run {
+            VerifySoftwareTokenResponseJS(Session, Status)
+        }
     }
 }
 
