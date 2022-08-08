@@ -141,8 +141,8 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     ): Promise<Unit> = MainScope().promise {
         provider.setUserMFAPreference(
             accessToken,
-            smsMfaSettings?.let { MfaSettings(it.Enabled, it.PreferredMfa) },
-            softwareTokenMfaSettings?.let { MfaSettings(it.Enabled, it.PreferredMfa) }
+            smsMfaSettings?.toCommon(),
+            softwareTokenMfaSettings?.toCommon()
         ).getOrThrow()
     }
 
@@ -167,8 +167,8 @@ class IdentityProviderClientJS(region: String, clientId: String) {
         accessToken: String?,
         session: String?
     ): Promise<AssociateSoftwareTokenResponseJS> = MainScope().promise {
-        provider.associateSoftwareToken(accessToken, session).getOrThrow().run {
-            AssociateSoftwareTokenResponseJS(SecretCode, Session)
+        provider.associateSoftwareToken(accessToken, session).getOrThrow().let {
+            AssociateSoftwareTokenResponseJS(it.SecretCode, it.Session)
         }
     }
 
@@ -183,8 +183,8 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             friendlyDeviceName,
             session,
             userCode
-        ).getOrThrow().run {
-            VerifySoftwareTokenResponseJS(Session, Status)
+        ).getOrThrow().let {
+            VerifySoftwareTokenResponseJS(it.Session, it.Status)
         }
     }
 }
@@ -201,3 +201,5 @@ private fun AuthenticationResult.toJs(): AuthenticationResultJS =
 private fun CodeDeliveryDetails.toJs(): CodeDeliveryDetailsJS =
     CodeDeliveryDetailsJS(AttributeName = AttributeName, DeliveryMedium = DeliveryMedium, Destination = Destination)
 
+private fun MfaSettingJS.toCommon(): MfaSettings =
+    MfaSettings(Enabled = Enabled, PreferredMfa = PreferredMfa)

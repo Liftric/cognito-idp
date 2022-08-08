@@ -1,7 +1,5 @@
 @file:JsExport
 
-import kotlinx.serialization.Serializable
-
 data class UserAttributeJS(
     val Name: String,
     val Value: String
