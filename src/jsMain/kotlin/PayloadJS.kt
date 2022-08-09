@@ -9,8 +9,3 @@ data class SignUpResponseJS(
     val UserConfirmed: Boolean = false,
     val UserSub: String
 )
-
-data class HeaderKeyValuePair(
-    val key: String,
-    val `value`: String,
-)
