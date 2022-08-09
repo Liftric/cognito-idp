@@ -14,8 +14,3 @@ data class HeaderKeyValuePair(
     val key: String,
     val `value`: String,
 )
-
-data class MfaSettingJS(
-    val Enabled: Boolean,
-    val PreferredMfa: Boolean
-)

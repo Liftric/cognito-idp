@@ -136,13 +136,13 @@ class IdentityProviderClientJS(region: String, clientId: String) {
 
     fun setUserMFAPreference(
         accessToken: String,
-        smsMfaSettings: MfaSettingJS?,
-        softwareTokenMfaSettings: MfaSettingJS?
+        smsMfaSettings: MfaSettings?,
+        softwareTokenMfaSettings: MfaSettings?
     ): Promise<Unit> = MainScope().promise {
         provider.setUserMFAPreference(
             accessToken,
-            smsMfaSettings?.toCommon(),
-            softwareTokenMfaSettings?.toCommon()
+            smsMfaSettings,
+            softwareTokenMfaSettings
         ).getOrThrow()
     }
 
@@ -166,10 +166,8 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun associateSoftwareToken(
         accessToken: String?,
         session: String?
-    ): Promise<AssociateSoftwareTokenResponseJS> = MainScope().promise {
-        provider.associateSoftwareToken(accessToken, session).getOrThrow().let {
-            AssociateSoftwareTokenResponseJS(it.SecretCode, it.Session)
-        }
+    ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
+        provider.associateSoftwareToken(accessToken, session).getOrThrow()
     }
 
     fun verifySoftwareToken(
@@ -177,15 +175,13 @@ class IdentityProviderClientJS(region: String, clientId: String) {
         friendlyDeviceName: String?,
         session: String?,
         userCode: String
-    ): Promise<VerifySoftwareTokenResponseJS> = MainScope().promise {
+    ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
         provider.verifySoftwareToken(
             accessToken,
             friendlyDeviceName,
             session,
             userCode
-        ).getOrThrow().let {
-            VerifySoftwareTokenResponseJS(it.Session, it.Status)
-        }
+        ).getOrThrow()
     }
 }
 
@@ -200,6 +196,3 @@ private fun AuthenticationResult.toJs(): AuthenticationResultJS =
 
 private fun CodeDeliveryDetails.toJs(): CodeDeliveryDetailsJS =
     CodeDeliveryDetailsJS(AttributeName = AttributeName, DeliveryMedium = DeliveryMedium, Destination = Destination)
-
-private fun MfaSettingJS.toCommon(): MfaSettings =
-    MfaSettings(Enabled = Enabled, PreferredMfa = PreferredMfa)

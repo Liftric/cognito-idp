@@ -110,11 +110,3 @@ data class MFAOptionsJS(
 data class ResendConfirmationCodeResponseJS(
     val CodeDeliveryDetails: CodeDeliveryDetailsJS
 )
-data class AssociateSoftwareTokenResponseJS(
-    val SecretCode: String,
-    val Session: String? = null
-)
-data class VerifySoftwareTokenResponseJS(
-    val Session: String? = null,
-    val Status: String
-)

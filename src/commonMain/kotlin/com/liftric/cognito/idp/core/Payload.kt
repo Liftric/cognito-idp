@@ -4,6 +4,7 @@
 package com.liftric.cognito.idp.core
 
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
 internal data class SignIn(
@@ -130,6 +131,7 @@ internal data class SetUserMFAPreference(
     val SoftwareTokenMfaSettings: MfaSettings?
 )
 
+@JsExport
 @Serializable
 data class MfaSettings(
     val Enabled: Boolean,
