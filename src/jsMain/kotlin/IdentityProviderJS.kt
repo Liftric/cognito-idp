@@ -148,12 +148,12 @@ class IdentityProviderClientJS(region: String, clientId: String) {
 
     fun respondToAuthChallenge(
         challengeName: String,
-        challengeResponses: Map<String, String>,
+        challengeResponses: Array<MapEntry>,
         session: String
     ): Promise<SignInResponseJS> = MainScope().promise {
         provider.respondToAuthChallenge(
             challengeName,
-            challengeResponses,
+            challengeResponses.associate { it.key to it.value },
             session
         ).getOrThrow().let {
             SignInResponseJS(
@@ -196,4 +196,3 @@ private fun AuthenticationResult.toJs(): AuthenticationResultJS =
 
 private fun CodeDeliveryDetails.toJs(): CodeDeliveryDetailsJS =
     CodeDeliveryDetailsJS(AttributeName = AttributeName, DeliveryMedium = DeliveryMedium, Destination = Destination)
-

@@ -5,6 +5,8 @@ package com.liftric.cognito.idp.core
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
+
 @Serializable
 data class RequestError(
     @SerialName("__type")
@@ -85,12 +87,14 @@ data class ForgotPasswordResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails
 )
 
+@JsExport
 @Serializable
 data class AssociateSoftwareTokenResponse(
     val SecretCode: String,
     val Session: String? = null
 )
 
+@JsExport
 @Serializable
 data class VerifySoftwareTokenResponse(
     val Session: String? = null,
