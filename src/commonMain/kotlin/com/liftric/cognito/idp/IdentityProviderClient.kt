@@ -22,6 +22,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     private val json = Json {
         allowStructuredMapKeys = true
         ignoreUnknownKeys = true
+        explicitNulls = false
     }
     private val configuration = Configuration(region, clientId)
     private val client = HttpClient {

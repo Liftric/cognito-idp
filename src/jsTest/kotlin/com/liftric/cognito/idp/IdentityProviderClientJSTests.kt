@@ -1,7 +1,6 @@
 package com.liftric.cognito.idp
 
 import IdentityProviderClientJS
-import UserAttributeJS
 import com.liftric.cognito.idp.core.UserAttribute
 import env
 import kotlinx.coroutines.await
@@ -40,7 +39,7 @@ class IdentityProviderClientJSTests {
             println("signInResponse=$it")
             assertNotNull(it)
 
-            provider.deleteUser(it.AuthenticationResult!!.AccessToken).await().also {
+            provider.deleteUser(it.AuthenticationResult!!.AccessToken!!).await().also {
                 println("deleteUser=$it")
                 assertNotNull(it)
             }

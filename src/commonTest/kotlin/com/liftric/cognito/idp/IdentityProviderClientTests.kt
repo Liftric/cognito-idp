@@ -478,7 +478,7 @@ abstract class AbstractIdentityProviderClientTests {
                     "USERNAME" to credentials.username,
                     "SOFTWARE_TOKEN_MFA_CODE" to newCode
                 ),
-                signInResponse.Session
+                signInResponse.Session!!
             )
 
             assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")

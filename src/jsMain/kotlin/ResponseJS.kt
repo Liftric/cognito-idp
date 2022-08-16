@@ -9,7 +9,7 @@ data class SignInResponseJS(
     val AuthenticationResult: AuthenticationResult?,
     val ChallengeParameters: Array<MapEntry>,
     val ChallengeName: String?,
-    val Session: String
+    val Session: String?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

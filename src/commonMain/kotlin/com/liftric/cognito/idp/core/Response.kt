@@ -19,7 +19,7 @@ data class SignInResponse(
     val AuthenticationResult: AuthenticationResult?,
     val ChallengeParameters: Map<String, String> = mapOf(),
     val ChallengeName: String?,
-    val Session: String
+    val Session: String?
 )
 
 @JsExport
@@ -65,7 +65,7 @@ data class CodeDeliveryDetails(
 @Serializable
 data class GetUserResponse(
     val MFAOptions: MFAOptions?,
-    val PreferredMfaSetting: String,
+    val PreferredMfaSetting: String?,
     val UserAttributes: List<UserAttribute> = listOf(),
     val UserMFASettingList: List<String> = listOf(),
     val Username: String
@@ -105,6 +105,6 @@ data class AssociateSoftwareTokenResponse(
 @JsExport
 @Serializable
 data class VerifySoftwareTokenResponse(
-    val Session: String,
+    val Session: String?,
     val Status: String
 )
