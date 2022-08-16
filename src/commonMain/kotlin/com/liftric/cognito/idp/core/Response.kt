@@ -17,7 +17,7 @@ data class RequestError(
 @Serializable
 data class SignInResponse(
     val AuthenticationResult: AuthenticationResult?,
-    val ChallengeParameters: Map<String, String>,
+    val ChallengeParameters: Map<String, String> = mapOf(),
     val ChallengeName: String?,
     val Session: String
 )
@@ -25,11 +25,11 @@ data class SignInResponse(
 @JsExport
 @Serializable
 data class AuthenticationResult(
-    val AccessToken: String,
-    val ExpiresIn: Int,
-    val IdToken: String,
+    val AccessToken: String?,
+    val ExpiresIn: Int?,
+    val IdToken: String?,
     val RefreshToken: String?,
-    val TokenType: String,
+    val TokenType: String?,
     val NewDeviceMetadata: NewDeviceMetadata?,
 )
 
@@ -57,30 +57,30 @@ data class ResendConfirmationCodeResponse(
 @JsExport
 @Serializable
 data class CodeDeliveryDetails(
-    val AttributeName: String,
-    val DeliveryMedium: String,
-    val Destination: String
+    val AttributeName: String?,
+    val DeliveryMedium: String?,
+    val Destination: String?
 )
 
 @Serializable
 data class GetUserResponse(
     val MFAOptions: MFAOptions?,
-    val PreferredMfaSetting: String?,
-    val UserAttributes: List<UserAttribute>,
-    val UserMFASettingList: List<String>,
+    val PreferredMfaSetting: String,
+    val UserAttributes: List<UserAttribute> = listOf(),
+    val UserMFASettingList: List<String> = listOf(),
     val Username: String
 )
 
 @JsExport
 @Serializable
 data class MFAOptions(
-    val AttributeName: String,
-    val DeliveryMedium: String
+    val AttributeName: String?,
+    val DeliveryMedium: String?
 )
 
 @Serializable
 data class UpdateUserAttributesResponse(
-    val CodeDeliveryDetailsList: List<CodeDeliveryDetails>
+    val CodeDeliveryDetailsList: List<CodeDeliveryDetails> = listOf()
 )
 
 @JsExport
@@ -105,6 +105,6 @@ data class AssociateSoftwareTokenResponse(
 @JsExport
 @Serializable
 data class VerifySoftwareTokenResponse(
-    val Session: String?,
+    val Session: String,
     val Status: String
 )

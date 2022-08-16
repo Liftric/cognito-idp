@@ -200,23 +200,39 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     }
 
     fun associateSoftwareToken(
-        accessToken: String?,
-        session: String?
+        accessToken: String
     ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
         provider.associateSoftwareToken(
-            accessToken = accessToken,
+            accessToken = accessToken
+        ).getOrThrow()
+    }
+
+    fun associateSoftwareTokenBySession(
+        session: String
+    ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
+        provider.associateSoftwareTokenBySession(
             session = session
         ).getOrThrow()
     }
 
     fun verifySoftwareToken(
-        accessToken: String?,
+        accessToken: String,
         friendlyDeviceName: String?,
-        session: String?,
         userCode: String
     ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
         provider.verifySoftwareToken(
             accessToken = accessToken,
+            friendlyDeviceName = friendlyDeviceName,
+            userCode = userCode
+        ).getOrThrow()
+    }
+
+    fun verifySoftwareTokenBySession(
+        session: String,
+        friendlyDeviceName: String?,
+        userCode: String
+    ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
+        provider.verifySoftwareTokenBySession(
             friendlyDeviceName = friendlyDeviceName,
             session = session,
             userCode = userCode
