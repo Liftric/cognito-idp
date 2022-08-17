@@ -22,6 +22,7 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     private val json = Json {
         allowStructuredMapKeys = true
         ignoreUnknownKeys = true
+        explicitNulls = false
     }
     private val configuration = Configuration(region, clientId)
     private val client = HttpClient {
@@ -209,25 +210,47 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
     )
 
     override suspend fun associateSoftwareToken(
-        accessToken: String?,
-        session: String?
+        accessToken: String
     ): Result<AssociateSoftwareTokenResponse> = request(
         Request.AssociateSoftwareToken,
         AssociateSoftwareToken(
             AccessToken = accessToken,
+            Session = null
+        )
+    )
+
+    override suspend fun associateSoftwareTokenBySession(
+        session: String
+    ): Result<AssociateSoftwareTokenResponse> = request(
+        Request.AssociateSoftwareToken,
+        AssociateSoftwareToken(
+            AccessToken = null,
             Session = session
         )
     )
 
     override suspend fun verifySoftwareToken(
-        accessToken: String?,
+        accessToken: String,
         friendlyDeviceName: String?,
-        session: String?,
         userCode: String
     ): Result<VerifySoftwareTokenResponse> = request(
         Request.VerifySoftwareToken,
         VerifySoftwareToken(
             AccessToken = accessToken,
+            FriendlyDeviceName = friendlyDeviceName,
+            Session = null,
+            UserCode = userCode
+        )
+    )
+
+    override suspend fun verifySoftwareTokenBySession(
+        session: String,
+        friendlyDeviceName: String?,
+        userCode: String
+    ): Result<VerifySoftwareTokenResponse> = request(
+        Request.VerifySoftwareToken,
+        VerifySoftwareToken(
+            AccessToken = null,
             FriendlyDeviceName = friendlyDeviceName,
             Session = session,
             UserCode = userCode

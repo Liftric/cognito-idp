@@ -4,9 +4,7 @@ import com.liftric.cognito.idp.core.*
 import com.liftric.cognito.idp.jwt.*
 import env
 import io.ktor.http.*
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.test.*
@@ -81,7 +79,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        val deleteUserResponse = provider.deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
+        val deleteUserResponse = provider.deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken!!)
         assertNull(deleteUserResponse.exceptionOrNull())
     }
 
@@ -91,11 +89,11 @@ abstract class AbstractIdentityProviderClientTests {
     fun `Should get user`() = runTest {
         val (result, _) = createUser()
 
-        val getUserAttribute = provider.getUser(result.AccessToken)
+        val getUserAttribute = provider.getUser(result.AccessToken!!)
         assertNull(getUserAttribute.exceptionOrNull())
         assertNotNull(getUserAttribute.getOrNull())
 
-        deleteUser(result.AccessToken)
+        deleteUser(result.AccessToken!!)
     }
 
     @JsName("ChangeAttributeTest")
@@ -105,13 +103,13 @@ abstract class AbstractIdentityProviderClientTests {
         val (result, _) = createUser()
 
         val updateUserAttributesResponse = provider.updateUserAttributes(
-            result.AccessToken,
+            result.AccessToken!!,
             listOf(UserAttribute(Name = "custom:target_group", Value = "ROLE_USER"))
         )
         assertNull(updateUserAttributesResponse.exceptionOrNull())
         assertNotNull(updateUserAttributesResponse.getOrNull())
 
-        val getUserResponse = provider.getUser(result.AccessToken)
+        val getUserResponse = provider.getUser(result.AccessToken!!)
         assertNull(getUserResponse.exceptionOrNull())
         assertNotNull(getUserResponse.getOrNull())
 
@@ -121,7 +119,7 @@ abstract class AbstractIdentityProviderClientTests {
             }
         }
 
-        deleteUser(result.AccessToken)
+        deleteUser(result.AccessToken!!)
     }
 
     @JsName("ChangePasswordTest")
@@ -130,10 +128,10 @@ abstract class AbstractIdentityProviderClientTests {
     fun `Should change password`() = runTest {
         val (result, credentials) = createUser()
 
-        val changePasswordResponse = provider.changePassword(result.AccessToken, credentials.password, credentials.password + "B")
+        val changePasswordResponse = provider.changePassword(result.AccessToken!!, credentials.password, credentials.password + "B")
         assertNull(changePasswordResponse.exceptionOrNull())
 
-        val signOutResponse = provider.signOut(result.AccessToken)
+        val signOutResponse = provider.signOut(result.AccessToken!!)
         assertNull(signOutResponse.exceptionOrNull())
 
         // AWS is not revoking Tokens automatically so give it some time
@@ -143,7 +141,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken!!)
     }
 
     @JsName("SignOutSignInTest")
@@ -152,7 +150,7 @@ abstract class AbstractIdentityProviderClientTests {
     fun `Sign out and sign in should succeed`() = runTest {
         val (result, credentials) = createUser()
 
-        val signOutResponse = provider.signOut(result.AccessToken)
+        val signOutResponse = provider.signOut(result.AccessToken!!)
         assertNull(signOutResponse.exceptionOrNull())
 
         // AWS is not revoking Tokens instantly so give it some time
@@ -162,7 +160,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken!!)
     }
 
     @JsName("SignOutSignInRefreshTest")
@@ -171,7 +169,7 @@ abstract class AbstractIdentityProviderClientTests {
     fun `Sign out sign in and refresh should succeed`() = runTest {
         val (result, credentials) = createUser()
 
-        val signOutResponse = provider.signOut(result.AccessToken)
+        val signOutResponse = provider.signOut(result.AccessToken!!)
         assertNull(signOutResponse.exceptionOrNull())
 
         // AWS is not revoking Tokens instantly so give it some time
@@ -187,7 +185,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(refreshResponse.exceptionOrNull())
         assertNotNull(refreshResponse.getOrNull())
 
-        deleteUser(refreshResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
+        deleteUser(refreshResponse.getOrNull()!!.AuthenticationResult!!.AccessToken!!)
     }
 
     @JsName("RevokeTokenAndValidateExpiration")
@@ -203,7 +201,7 @@ abstract class AbstractIdentityProviderClientTests {
         delay(1000)
 
         // This should fail since the token has been revoked
-        val signOutResponse = provider.signOut(result.AccessToken)
+        val signOutResponse = provider.signOut(result.AccessToken!!)
         assertTrue(signOutResponse.exceptionOrNull() is IdentityProviderException.NotAuthorized)
 
         // We delete the user after we're done with the test
@@ -211,7 +209,7 @@ abstract class AbstractIdentityProviderClientTests {
         assertNull(signInResponse.exceptionOrNull())
         assertNotNull(signInResponse.getOrNull())
 
-        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken)
+        deleteUser(signInResponse.getOrNull()!!.AuthenticationResult!!.AccessToken!!)
     }
 
     @JsName("SignUpFailPasswordTooShortTest")
@@ -440,7 +438,7 @@ abstract class AbstractIdentityProviderClientTests {
         val (result, credentials) = createUser()
 
         val associateSoftwareTokenResponse =
-            provider.associateSoftwareToken(result.AccessToken, null)
+            provider.associateSoftwareToken(result.AccessToken!!)
         assertTrue(
             associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(),
             "SecretCode is missing in Cognito response"
@@ -448,15 +446,14 @@ abstract class AbstractIdentityProviderClientTests {
 
         generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)?.let { code ->
             val verificationCodeResponse = provider.verifySoftwareToken(
-                accessToken = result.AccessToken,
-                session = null,
+                accessToken = result.AccessToken!!,
                 friendlyDeviceName = "Association test device",
                 userCode = code
             )
             assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
 
             val setupMfa = provider.setUserMFAPreference(
-                accessToken = result.AccessToken,
+                accessToken = result.AccessToken!!,
                 smsMfaSettings = null,
                 softwareTokenMfaSettings = MfaSettings(
                     Enabled = true,
@@ -465,7 +462,7 @@ abstract class AbstractIdentityProviderClientTests {
             )
             assertNull(setupMfa.exceptionOrNull(), "Enabling token mfa not possible")
 
-            provider.signOut(result.AccessToken)
+            provider.signOut(result.AccessToken!!)
 
             val signInResponse = provider.signIn(credentials.username, credentials.password).getOrThrow()
 
@@ -481,12 +478,12 @@ abstract class AbstractIdentityProviderClientTests {
                     "USERNAME" to credentials.username,
                     "SOFTWARE_TOKEN_MFA_CODE" to newCode
                 ),
-                signInResponse.Session
+                signInResponse.Session!!
             )
 
             assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")
 
-            deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken)
+            deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken!!)
 
             delay(30000) // Wait until new code gets issued before next test run
         }
