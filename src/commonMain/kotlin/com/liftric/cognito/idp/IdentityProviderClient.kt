@@ -3,6 +3,7 @@ package com.liftric.cognito.idp
 import com.liftric.cognito.idp.core.*
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -18,14 +19,14 @@ import kotlinx.serialization.json.Json
  * AWS Cognito Identity Provider client.
  * Provides common request methods.
  */
-open class IdentityProviderClient(region: String, clientId: String) : IdentityProvider {
+open class IdentityProviderClient(region: String, clientId: String, engine: HttpClientEngine? = null) : IdentityProvider {
     private val json = Json {
         allowStructuredMapKeys = true
         ignoreUnknownKeys = true
         explicitNulls = false
     }
     private val configuration = Configuration(region, clientId)
-    private val client = HttpClient {
+    private val client = HttpClient(engine ?: Engine) {
         expectSuccess = true
         /**
          * When referencing members that are in the
@@ -40,6 +41,8 @@ open class IdentityProviderClient(region: String, clientId: String) : IdentityPr
             accept(ContentType.Application.Json)
         }
     }
+
+    constructor(region: String, clientId: String) : this(region, clientId, null)
 
     override suspend fun signUp(
         username: String,

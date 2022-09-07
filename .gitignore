@@ -40,3 +40,4 @@ DerivedData/
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+kotlin-js-store/
