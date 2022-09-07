@@ -41,6 +41,8 @@ open class IdentityProviderClient(region: String, clientId: String, engine: Http
         }
     }
 
+    constructor(region: String, clientId: String) : this(region, clientId, null)
+
     override suspend fun signUp(
         username: String,
         password: String,
