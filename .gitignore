@@ -13,6 +13,7 @@ out
 .directory
 node_modules
 local.properties
+kotlin-js-store/
 
 .DS_Store
 .externalNativeBuild
