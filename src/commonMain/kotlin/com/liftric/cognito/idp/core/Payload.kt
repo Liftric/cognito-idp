@@ -84,6 +84,7 @@ internal data class ConfirmForgotPassword(
     val Password: String
 )
 
+@JsExport
 @Serializable
 data class UserAttribute(
     val Name: String,
