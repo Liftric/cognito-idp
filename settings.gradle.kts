@@ -18,11 +18,11 @@ dependencyResolutionManagement {
         create("libs") {
             version("android-tools-gradle", "7.2.0")
             version("kotlin", "1.7.10")
-            version("ktor", "2.1.1")
+            version("ktor", "2.1.3")
 
             library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef("ktor")
             library("ktor-client-android", "io.ktor", "ktor-client-android").versionRef("ktor")
-            library("ktor-client-darwin", "io.ktor", "ktor-client-darwin").versionRef("ktor")
+            library("ktor-client-darwin", "io.ktor", "ktor-client-darwin-legacy").versionRef("ktor")
             library("ktor-client-jvm", "io.ktor", "ktor-client-java").versionRef("ktor")
             library("ktor-client-js", "io.ktor", "ktor-client-js").versionRef("ktor")
             library("kotlinx-coroutines", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.1")
