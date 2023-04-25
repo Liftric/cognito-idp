@@ -13,6 +13,7 @@ out
 .directory
 node_modules
 local.properties
+kotlin-js-store/
 
 .DS_Store
 .externalNativeBuild
@@ -39,3 +40,4 @@ DerivedData/
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+kotlin-js-store/
