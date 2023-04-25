@@ -1,11 +1,13 @@
 package com.liftric.cognito.idp
 
 import IdentityProviderClientJS
+import IdentityProviderExceptionJs
 import UserAttributeJS
 import env
 import kotlinx.coroutines.await
 import kotlin.test.Test
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 class IdentityProviderClientJSTests {
@@ -57,6 +59,7 @@ class IdentityProviderClientJSTests {
         ).then {
             fail("signUp must fail")
         }.catch {
+            assertTrue("verify the exception is properly wrapped") { it is IdentityProviderExceptionJs }
             println(it.message)
         }
     }

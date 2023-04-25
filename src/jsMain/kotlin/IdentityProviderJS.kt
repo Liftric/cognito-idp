@@ -15,7 +15,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun signUp(username: String, password: String, attributes: Array<UserAttributeJS>? = null): Promise<SignUpResponseJS> =
         MainScope().promise {
             provider.signUp(username, password, attributes?.toList()?.map { UserAttribute(it.Name, it.Value) })
-                .getOrThrow().let {
+                .getOrWrapThrowable().let {
                     SignUpResponseJS(it.CodeDeliveryDetails?.toJs(), it.UserConfirmed, it.UserSub)
                 }
         }
@@ -23,19 +23,19 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun confirmSignUp(username: String, confirmationCode: String): Promise<Unit> =
         MainScope().promise {
             provider.confirmSignUp(username, confirmationCode)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun resendConfirmationCode(username: String): Promise<ResendConfirmationCodeResponseJS> =
         MainScope().promise {
             provider.resendConfirmationCode(username)
-                .getOrThrow().let { ResendConfirmationCodeResponseJS(it.CodeDeliveryDetails.toJs()) }
+                .getOrWrapThrowable().let { ResendConfirmationCodeResponseJS(it.CodeDeliveryDetails.toJs()) }
         }
 
     fun signIn(username: String, password: String): Promise<SignInResponseJS> =
         MainScope().promise {
             provider.signIn(username, password)
-                .getOrThrow().let {
+                .getOrWrapThrowable().let {
                     SignInResponseJS(
                         it.AuthenticationResult?.toJs(),
                         it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
@@ -46,7 +46,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun refresh(refreshToken: String): Promise<SignInResponseJS> =
         MainScope().promise {
             provider.refresh(refreshToken)
-                .getOrThrow().let {
+                .getOrWrapThrowable().let {
                     SignInResponseJS(
                         it.AuthenticationResult?.toJs(),
                         it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
@@ -57,7 +57,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun getUser(accessToken: String): Promise<GetUserResponseJS> =
         MainScope().promise {
             provider.getUser(accessToken)
-                .getOrThrow().let {
+                .getOrWrapThrowable().let {
                     GetUserResponseJS(
                         it.MFAOptions?.let { MFAOptionsJS(it.AttributeName, it.DeliveryMedium) },
                         it.PreferredMfaSetting,
@@ -74,7 +74,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     ): Promise<UpdateUserAttributesResponseJS> =
         MainScope().promise {
             provider.updateUserAttributes(accessToken, attributes.toList().map { UserAttribute(it.Name, it.Value) })
-                .getOrThrow().let {
+                .getOrWrapThrowable().let {
                     UpdateUserAttributesResponseJS(it.CodeDeliveryDetailsList.map { it.toJs() }.toTypedArray())
                 }
         }
@@ -82,19 +82,19 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun changePassword(accessToken: String, currentPassword: String, newPassword: String): Promise<Unit> =
         MainScope().promise {
             provider.changePassword(accessToken, currentPassword, newPassword)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun forgotPassword(username: String): Promise<ForgotPasswordResponseJS> =
         MainScope().promise {
             provider.forgotPassword(username)
-                .getOrThrow().let { ForgotPasswordResponseJS(it.CodeDeliveryDetails.toJs()) }
+                .getOrWrapThrowable().let { ForgotPasswordResponseJS(it.CodeDeliveryDetails.toJs()) }
         }
 
     fun confirmForgotPassword(confirmationCode: String, username: String, password: String): Promise<Unit> =
         MainScope().promise {
             provider.confirmForgotPassword(confirmationCode, username, password)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun getUserAttributeVerificationCode(
@@ -107,31 +107,31 @@ class IdentityProviderClientJS(region: String, clientId: String) {
                 accessToken,
                 attributeName,
                 clientMetadata?.associate { it.key to it.value })
-                .getOrThrow().let { GetAttributeVerificationCodeResponseJS(it.CodeDeliveryDetails.toJs()) }
+                .getOrWrapThrowable().let { GetAttributeVerificationCodeResponseJS(it.CodeDeliveryDetails.toJs()) }
         }
 
     fun verifyUserAttribute(accessToken: String, attributeName: String, code: String): Promise<Unit> =
         MainScope().promise {
             provider.verifyUserAttribute(accessToken, attributeName, code)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun signOut(accessToken: String): Promise<Unit> =
         MainScope().promise {
             provider.signOut(accessToken)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun revokeToken(refreshToken: String): Promise<Unit> =
         MainScope().promise {
             provider.revokeToken(refreshToken)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun deleteUser(accessToken: String): Promise<Unit> =
         MainScope().promise {
             provider.deleteUser(accessToken)
-                .getOrThrow()
+                .getOrWrapThrowable()
         }
 
     fun setUserMFAPreference(
@@ -143,7 +143,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             accessToken,
             smsMfaSettings,
             softwareTokenMfaSettings
-        ).getOrThrow()
+        ).getOrWrapThrowable()
     }
 
     fun respondToAuthChallenge(
@@ -155,7 +155,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             challengeName,
             challengeResponses,
             session
-        ).getOrThrow().let {
+        ).getOrWrapThrowable().let {
             SignInResponseJS(
                 it.AuthenticationResult?.toJs(),
                 it.ChallengeParameters.map { MapEntry(it.key, it.value) }.toTypedArray()
@@ -167,7 +167,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
         accessToken: String?,
         session: String?
     ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
-        provider.associateSoftwareToken(accessToken, session).getOrThrow()
+        provider.associateSoftwareToken(accessToken, session).getOrWrapThrowable()
     }
 
     fun verifySoftwareToken(
@@ -181,7 +181,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             friendlyDeviceName,
             session,
             userCode
-        ).getOrThrow()
+        ).getOrWrapThrowable()
     }
 }
 
@@ -197,3 +197,37 @@ private fun AuthenticationResult.toJs(): AuthenticationResultJS =
 private fun CodeDeliveryDetails.toJs(): CodeDeliveryDetailsJS =
     CodeDeliveryDetailsJS(AttributeName = AttributeName, DeliveryMedium = DeliveryMedium, Destination = Destination)
 
+private fun <T> Result<T>.getOrWrapThrowable(): T = when (value) {
+    is Result.Failure -> {
+        val wrapped: IdentityProviderExceptionJs = when(val t = value.exception) {
+            is IdentityProviderException -> {
+                when(t) {
+                    is IdentityProviderException.CodeMismatch -> IdentityProviderExceptionJs.CodeMismatch(t.status.value, t.message)
+                    is IdentityProviderException.ConcurrentModification -> IdentityProviderExceptionJs.ConcurrentModification(t.status.value, t.message)
+                    is IdentityProviderException.EnableSoftwareTokenMFA -> IdentityProviderExceptionJs.EnableSoftwareTokenMFA(t.status.value, t.message)
+                    is IdentityProviderException.ExpiredCode -> IdentityProviderExceptionJs.ExpiredCode(t.status.value, t.message)
+                    is IdentityProviderException.InternalError -> IdentityProviderExceptionJs.InternalError(t.status.value, t.message)
+                    is IdentityProviderException.InvalidLambdaResponse -> IdentityProviderExceptionJs.InvalidLambdaResponse(t.status.value, t.message)
+                    is IdentityProviderException.InvalidParameter -> IdentityProviderExceptionJs.InvalidParameter(t.status.value, t.message)
+                    is IdentityProviderException.InvalidPassword -> IdentityProviderExceptionJs.InvalidPassword(t.status.value, t.message)
+                    is IdentityProviderException.InvalidUserPoolConfiguration -> IdentityProviderExceptionJs.InvalidUserPoolConfiguration(t.status.value, t.message)
+                    is IdentityProviderException.LimitExceeded -> IdentityProviderExceptionJs.LimitExceeded(t.status.value, t.message)
+                    is IdentityProviderException.NotAuthorized -> IdentityProviderExceptionJs.NotAuthorized(t.status.value, t.message)
+                    is IdentityProviderException.PasswordResetRequired -> IdentityProviderExceptionJs.PasswordResetRequired(t.status.value, t.message)
+                    is IdentityProviderException.ResourceNotFound -> IdentityProviderExceptionJs.ResourceNotFound(t.status.value, t.message)
+                    is IdentityProviderException.SoftwareTokenMFANotFound -> IdentityProviderExceptionJs.SoftwareTokenMFANotFound(t.status.value, t.message)
+                    is IdentityProviderException.TooManyFailedAttempts -> IdentityProviderExceptionJs.TooManyFailedAttempts(t.status.value, t.message)
+                    is IdentityProviderException.TooManyRequests -> IdentityProviderExceptionJs.TooManyRequests(t.status.value, t.message)
+                    is IdentityProviderException.UnexpectedLambda -> IdentityProviderExceptionJs.UnexpectedLambda(t.status.value, t.message)
+                    is IdentityProviderException.Unknown -> IdentityProviderExceptionJs.Unknown(t.status.value, t.type, t.message)
+                    is IdentityProviderException.UserLambdaValidation -> IdentityProviderExceptionJs.UserLambdaValidation(t.status.value, t.message)
+                    is IdentityProviderException.UserNotConfirmed -> IdentityProviderExceptionJs.UserNotConfirmed(t.status.value, t.message)
+                    is IdentityProviderException.UserNotFound -> IdentityProviderExceptionJs.UserNotFound(t.status.value, t.message)
+                }
+            }
+            else -> IdentityProviderExceptionJs.NonCognitoException(t)
+        }
+        throw wrapped
+    }
+    else -> value as T
+}
