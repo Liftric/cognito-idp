@@ -16,7 +16,8 @@ internal object Header {
 
 internal enum class Authentication(val flow: String) {
     RefreshTokenAuth("REFRESH_TOKEN_AUTH"),
-    UserPasswordAuth("USER_PASSWORD_AUTH")
+    UserPasswordAuth("USER_PASSWORD_AUTH"),
+    CustomAuth("CUSTOM_AUTH"),
 }
 
 internal enum class Request(val value: String) {
