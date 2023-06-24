@@ -70,6 +70,18 @@ open class IdentityProviderClient(region: String, clientId: String, engine: Http
         )
     )
 
+    override suspend fun customAuth(
+        username: String,
+        password: String,
+    ): Result<SignInResponse> = request(
+        Request.SignIn,
+        SignIn(
+            AuthFlow = Authentication.CustomAuth.flow,
+            ClientId = configuration.clientId,
+            AuthParameters = SignIn.Parameters(username, password)
+        )
+    )
+
     override suspend fun resendConfirmationCode(
         username: String
     ): Result<ResendConfirmationCodeResponse> = request(

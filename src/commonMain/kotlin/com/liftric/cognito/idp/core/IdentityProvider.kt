@@ -19,6 +19,14 @@ interface IdentityProvider {
     suspend fun confirmSignUp(username: String, confirmationCode: String): Result<Unit>
 
     /**
+     * Signs in the user with the given parameters using custom authentication flow.
+     * @param username The username
+     * @param password The password
+     * @return Result object containing SignInResponse on success or an error on failure
+     */
+    suspend fun customAuth(username: String, password: String): Result<SignInResponse>
+
+    /**
      * Resends the confirmation (for confirmation of registration) to a specific user in the user pool.
      * @param username The username
      * @return Result object containing ResendConfirmationCodeResponse on success or an error on failure
