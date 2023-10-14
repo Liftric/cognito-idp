@@ -266,6 +266,10 @@ setUserMFAPreference("<accessToken>", smsMfaSettings, softwareTokenMfaSettings):
 
 Deletes the user from the user pool.
 
+```kotlin
+deleteUser("<accessToken>"): Result<Unit>
+```
+
 ## License
 
 Cognito-idp is available under the MIT license. See the LICENSE file for more info.
