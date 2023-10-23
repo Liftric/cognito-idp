@@ -1,8 +1,7 @@
 import com.android.build.gradle.LibraryExtension
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
+import org.jetbrains.kotlin.gradle.tasks.*
 
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin
@@ -356,10 +355,12 @@ vault {
         vaultToken.set(System.getenv("VAULT_TOKEN"))
     }
 }
-afterEvaluate {
-    tasks.getByName("compileTestKotlinJs").dependsOn("createJsEnvHack")
-    tasks.getByName("compileDebugUnitTestKotlinAndroid").dependsOn("createJsEnvHack")
-    tasks.getByName("compileTestKotlinJvm").dependsOn("createJsEnvHack")
-    tasks.getByName("compileReleaseUnitTestKotlinAndroid").dependsOn("createJsEnvHack")
-    tasks.getByName("compileTestKotlinIosSimulatorArm64").dependsOn("createJsEnvHack")
+tasks {
+    afterEvaluate {
+        all {
+            if(name.contains("compile", true) && name.contains("kotlin", true)) {
+                dependsOn("createJsEnvHack")
+            }
+        }
+    }
 }
