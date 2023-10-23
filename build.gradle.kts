@@ -1,16 +1,17 @@
+import com.android.build.gradle.LibraryExtension
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 plugins {
-    id("com.android.library") version libs.versions.android.tools.gradle
     kotlin("multiplatform") version libs.versions.kotlin
+    alias(libs.plugins.kotlin.serialization)
+    id("com.android.library") version libs.versions.android.tools.gradle
     alias(libs.plugins.definitions)
     alias(libs.plugins.npm.publishing)
     alias(libs.plugins.versioning)
     alias(libs.plugins.vault.client)
-    alias(libs.plugins.kotlin.serialization)
     id("maven-publish")
     id("signing")
 }
@@ -33,11 +34,12 @@ kotlin {
 
     iosSimulatorArm64()
 
-    android {
-        publishLibraryVariants("debug", "release")
+    androidTarget() {
+        publishAllLibraryVariants()
     }
     jvm()
     js(IR) {
+        generateTypeScriptDefinitions()
         browser {
             testTask {
                 useMocha {
@@ -51,9 +53,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.kotlinx.coroutines)
-                implementation(libs.kotlinx.serialization)
+                api(libs.ktor.client.core)
+                api(libs.kotlinx.coroutines)
+                api(libs.kotlinx.serialization)
             }
         }
         val commonTest by getting {
@@ -66,15 +68,15 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(libs.ktor.client.android)
+                api(libs.ktor.client.android)
             }
         }
         val jvmMain by getting {
             dependencies {
-                implementation(libs.ktor.client.jvm)
+                api(libs.ktor.client.jvm)
             }
         }
-        val androidTest by getting {
+        val androidUnitTest by getting {
             dependencies {
                 implementation(libs.roboelectric)
                 implementation(kotlin("test"))
@@ -92,7 +94,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                implementation(libs.ktor.client.darwin)
+                api(libs.ktor.client.darwin)
             }
         }
         val iosTest by getting
@@ -104,7 +106,7 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation(libs.ktor.client.js)
+                api(libs.ktor.client.js)
             }
         }
         val jsTest by getting {
@@ -122,13 +124,12 @@ kotlin {
     }
 }
 
-android {
-    compileSdk = 30
-
-    defaultConfig {
-        minSdk = 21
-        targetSdk = 30
-        testInstrumentationRunner = "androidx.test.runner"
+configure<LibraryExtension> {
+    defaultConfig.apply {
+        compileSdk = 30
+        minSdkVersion(21)
+        targetSdkVersion(30)
+        testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
     }
 
     compileOptions {
@@ -138,9 +139,12 @@ android {
 
     testOptions {
         unitTests.apply {
+            isIncludeAndroidResources = true
             isReturnDefaultValues = true
         }
     }
+
+    namespace = "com.liftric.cognito.idp"
 }
 
 group = "com.liftric"
@@ -351,4 +355,10 @@ vault {
     } else {
         vaultToken.set(System.getenv("VAULT_TOKEN"))
     }
+}
+afterEvaluate {
+    tasks.getByName("compileTestKotlinJs").dependsOn("createJsEnvHack")
+    tasks.getByName("compileDebugUnitTestKotlinAndroid").dependsOn("createJsEnvHack")
+    tasks.getByName("compileTestKotlinJvm").dependsOn("createJsEnvHack")
+    tasks.getByName("compileReleaseUnitTestKotlinAndroid").dependsOn("createJsEnvHack")
 }
