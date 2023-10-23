@@ -361,4 +361,5 @@ afterEvaluate {
     tasks.getByName("compileDebugUnitTestKotlinAndroid").dependsOn("createJsEnvHack")
     tasks.getByName("compileTestKotlinJvm").dependsOn("createJsEnvHack")
     tasks.getByName("compileReleaseUnitTestKotlinAndroid").dependsOn("createJsEnvHack")
+    tasks.getByName("compileTestKotlinIosSimulatorArm64").dependsOn("createJsEnvHack")
 }
