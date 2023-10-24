@@ -1,4 +1,5 @@
 import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.*
@@ -144,6 +145,13 @@ configure<LibraryExtension> {
     }
 
     namespace = "com.liftric.cognito.idp"
+
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
 }
 
 group = "com.liftric"
@@ -362,5 +370,6 @@ tasks {
                 dependsOn("createJsEnvHack")
             }
         }
+        named("publishAndroidDebugPublicationToSonatypeRepository").dependsOn("signAndroidReleasePublication")
     }
 }
