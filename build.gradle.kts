@@ -326,13 +326,15 @@ npmPublish {
         named("js") {
             packageName.set(project.name)
             packageJson {
-                keywords.set(listOf(
-                    "kotlin",
-                    "cognito",
-                    "identity-provider",
-                    "liftric",
-                    "aws"
-                ))
+                keywords.set(
+                    listOf(
+                        "kotlin",
+                        "cognito",
+                        "identity-provider",
+                        "liftric",
+                        "aws"
+                    )
+                )
                 license.set("MIT")
                 description.set("Lightweight AWS Cognito Identity Provider client.")
                 homepage.set("https://github.com/liftric/cognito-idp")
@@ -365,12 +367,18 @@ vault {
 }
 tasks {
     afterEvaluate {
+        val signingTasks = filter { it.name.startsWith("sign") }
         all {
-            if(name.contains("compile", true) && name.contains("kotlin", true)) {
+            // lets bruteforce this until the plugins play along nicely again
+
+            if (name.contains("compile", true) && name.contains("kotlin", true)) {
                 dependsOn("createJsEnvHack")
             }
+            if (name.startsWith("publish")) {
+                signingTasks.forEach { signTask ->
+                    dependsOn(signTask)
+                }
+            }
         }
-        named("publishAndroidDebugPublicationToSonatypeRepository").dependsOn("signAndroidReleasePublication")
-        named("publishAndroidReleasePublicationToSonatypeRepository").dependsOn("signAndroidDebugPublication")
     }
 }
