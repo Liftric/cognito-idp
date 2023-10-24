@@ -371,5 +371,6 @@ tasks {
             }
         }
         named("publishAndroidDebugPublicationToSonatypeRepository").dependsOn("signAndroidReleasePublication")
+        named("publishAndroidReleasePublicationToSonatypeRepository").dependsOn("signAndroidDebugPublication")
     }
 }
