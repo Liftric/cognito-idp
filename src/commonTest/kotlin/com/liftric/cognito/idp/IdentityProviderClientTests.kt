@@ -439,18 +439,23 @@ abstract class AbstractIdentityProviderClientTests {
 
         val associateSoftwareTokenResponse =
             provider.associateSoftwareToken(result.AccessToken!!)
+        val softwareTokenResponse = associateSoftwareTokenResponse.getOrThrow()
+        println("[Associate software token] softwareTokenResponse=$softwareTokenResponse")
         assertTrue(
-            associateSoftwareTokenResponse.getOrThrow().SecretCode.isNotEmpty(),
+            softwareTokenResponse.SecretCode.isNotEmpty(),
             "SecretCode is missing in Cognito response"
         )
 
-        generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)?.let { code ->
+        generateTotpCode(softwareTokenResponse.SecretCode)?.let { code ->
+            println("[Associate software token] generateTotpCode code=$code")
             val verificationCodeResponse = provider.verifySoftwareToken(
                 accessToken = result.AccessToken!!,
                 friendlyDeviceName = "Association test device",
                 userCode = code
             )
-            assertEquals("SUCCESS", verificationCodeResponse.getOrThrow().Status, "Failed to verify TOTP token")
+            val verifySoftwareTokenResponse = verificationCodeResponse.getOrThrow()
+            println("[Associate software token] verifySoftwareTokenResponse=$verifySoftwareTokenResponse")
+            assertEquals("SUCCESS", verifySoftwareTokenResponse.Status, "Failed to verify TOTP token")
 
             val setupMfa = provider.setUserMFAPreference(
                 accessToken = result.AccessToken!!,
@@ -465,12 +470,17 @@ abstract class AbstractIdentityProviderClientTests {
             provider.signOut(result.AccessToken!!)
 
             val signInResponse = provider.signIn(credentials.username, credentials.password).getOrThrow()
+            println("[Associate software token] signInResponse=$signInResponse")
 
             assertNull(signInResponse.AuthenticationResult, "Should need to respond to challenge")
 
-            delay(30000) // Wait until new code gets issued
+            val delayInMillis: Long = 30000
+            println("[Associate software token] pre delay (delayInMillis=$delayInMillis")
+            delay(delayInMillis) // Wait until new code gets issued
+            println("[Associate software token] post delay")
 
-            val newCode = generateTotpCode(associateSoftwareTokenResponse.getOrThrow().SecretCode)!!
+            val newCode = generateTotpCode(softwareTokenResponse.SecretCode)!!
+            println("[Associate software token] newCode=$newCode")
 
             val challengeResponse = provider.respondToAuthChallenge(
                 "SOFTWARE_TOKEN_MFA",
@@ -480,12 +490,16 @@ abstract class AbstractIdentityProviderClientTests {
                 ),
                 signInResponse.Session!!
             )
+            val secondSignInResponse = challengeResponse.getOrThrow()
+            println("[Associate software token] secondSignInResponse=$secondSignInResponse")
 
-            assertNull(challengeResponse.getOrThrow().ChallengeName, "Should not need to respond to challenge")
+            assertNull(secondSignInResponse.ChallengeName, "Should not need to respond to challenge")
 
-            deleteUser(challengeResponse.getOrThrow().AuthenticationResult!!.AccessToken!!)
+            deleteUser(secondSignInResponse.AuthenticationResult!!.AccessToken!!)
 
-            delay(30000) // Wait until new code gets issued before next test run
+            println("[Associate software token] second pre delay (delayInMillis=$delayInMillis")
+            delay(delayInMillis) // Wait until new code gets issued before next test run
+            println("[Associate software token] second post delay")
         }
     }
 }

@@ -16,19 +16,19 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            version("android-tools-gradle", "7.2.0")
-            version("kotlin", "1.7.10")
-            version("ktor", "2.1.3")
+            version("android-tools-gradle", "8.1.0")
+            version("kotlin", "1.9.10")
+            version("ktor", "2.3.5")
 
             library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef("ktor")
             library("ktor-client-android", "io.ktor", "ktor-client-android").versionRef("ktor")
             library("ktor-client-darwin", "io.ktor", "ktor-client-darwin-legacy").versionRef("ktor")
             library("ktor-client-jvm", "io.ktor", "ktor-client-java").versionRef("ktor")
             library("ktor-client-js", "io.ktor", "ktor-client-js").versionRef("ktor")
-            library("kotlinx-coroutines", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.1")
-            library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-json").version("1.3.3")
+            library("kotlinx-coroutines", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.7.2")
+            library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-json").version("1.5.1")
             library("androidx-test-core", "androidx.test", "core").version("1.2.0")
-            library("roboelectric", "org.robolectric", "robolectric").version("4.5.1")
+            library("roboelectric", "org.robolectric", "robolectric").version("4.9")
             library("opt-java", "com.github.bastiaanjansen", "otp-java").version("1.3.2")
 
             plugin("vault-client", "com.liftric.vault-client-plugin").version("2.0.0")
