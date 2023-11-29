@@ -47,14 +47,16 @@ open class IdentityProviderClient(region: String, clientId: String, engine: Http
     override suspend fun signUp(
         username: String,
         password: String,
-        attributes: List<UserAttribute>?
+        attributes: List<UserAttribute>?,
+        clientMetadata: Map<String, String>?,
     ): Result<SignUpResponse> = request(
         Request.SignUp,
         SignUp(
             ClientId = configuration.clientId,
             Username = username,
             Password = password,
-            UserAttributes = attributes ?: listOf()
+            UserAttributes = attributes ?: listOf(),
+            ClientMetadata = clientMetadata,
         )
     )
 
@@ -157,12 +159,14 @@ open class IdentityProviderClient(region: String, clientId: String, engine: Http
     )
 
     override suspend fun forgotPassword(
-        username: String
+        username: String,
+        clientMetadata: Map<String, String>?
     ): Result<ForgotPasswordResponse> = request(
         Request.ForgotPassword,
         ForgotPassword(
             ClientId = configuration.clientId,
-            Username = username
+            Username = username,
+            ClientMetadata = clientMetadata,
         )
     )
 
@@ -183,7 +187,7 @@ open class IdentityProviderClient(region: String, clientId: String, engine: Http
     override suspend fun getUserAttributeVerificationCode(
         accessToken: String,
         attributeName: String,
-        clientMetadata: Map<String, String>?
+        clientMetadata: Map<String, String>?,
     ): Result<GetAttributeVerificationCodeResponse> = request(
         Request.GetUserAttributeVerificationCode,
         GetUserAttributeVerificationCode(

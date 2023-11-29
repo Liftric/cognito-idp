@@ -8,7 +8,7 @@ interface IdentityProvider {
      * @param attributes Optional account attributes e.g. email, phone number, ...
      * @return Result object containing SignUpResponse on success or an error on failure
      */
-    suspend fun signUp(username: String, password: String, attributes: List<UserAttribute>? = null): Result<SignUpResponse>
+    suspend fun signUp(username: String, password: String, attributes: List<UserAttribute>? = null, clientMetadata: Map<String, String>? = null): Result<SignUpResponse>
 
     /**
      * Confirms sign up of a new user
@@ -91,7 +91,7 @@ interface IdentityProvider {
      * @param username The username
      * @return Result object containing CodeDeliveryDetails on success or an error on failure
      */
-    suspend fun forgotPassword(username: String): Result<ForgotPasswordResponse>
+    suspend fun forgotPassword(username: String, clientMetadata: Map<String, String>? = null): Result<ForgotPasswordResponse>
 
     /**
      * Confirms forgot password

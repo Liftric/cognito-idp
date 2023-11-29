@@ -15,13 +15,15 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun signUp(
         username: String,
         password: String,
-        attributes: Array<UserAttribute>? = null
+        attributes: Array<UserAttribute>? = null,
+        clientMetadata: Array<MapEntry>? = null,
     ): Promise<SignUpResponse> =
         MainScope().promise {
             provider.signUp(
                 username = username,
                 password = password,
-                attributes = attributes?.toList()
+                attributes = attributes?.toList(),
+                clientMetadata = clientMetadata?.associate { it.key to it.value }
             ).getOrWrapThrowable()
         }
 
@@ -105,9 +107,9 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             ).getOrWrapThrowable()
         }
 
-    fun forgotPassword(username: String): Promise<ForgotPasswordResponse> =
+    fun forgotPassword(username: String, clientMetadata: Array<MapEntry>? = null): Promise<ForgotPasswordResponse> =
         MainScope().promise {
-            provider.forgotPassword(username)
+            provider.forgotPassword(username, clientMetadata?.associate { it.key to it.value })
                 .getOrWrapThrowable()
         }
 

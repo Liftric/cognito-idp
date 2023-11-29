@@ -5,6 +5,7 @@ import IdentityProviderExceptionJs
 import com.liftric.cognito.idp.core.UserAttribute
 import env
 import kotlinx.coroutines.await
+import toMapEntries
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -30,8 +31,34 @@ class IdentityProviderClientJSTests {
         provider.signUp(
             username, password,
             attributes = arrayOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+                UserAttribute(Name = "custom:target_group", Value = "ROLE_PATIENT")
             )
+        ).await().also {
+            println("signUpResponse=$it")
+            assertNotNull(it)
+        }
+
+        provider.signIn(username, password).await().also {
+            println("signInResponse=$it")
+            assertNotNull(it)
+
+            provider.deleteUser(it.AuthenticationResult!!.AccessToken!!).await().also {
+                println("deleteUser=$it")
+                assertNotNull(it)
+            }
+        }
+    }
+
+    @JsName("SignUpSignInDeleteUserClientMetaDataTest")
+    @Test
+    fun `Sign up, sign in, delete user with clientMetadata should succeed`() = runTest {
+        println("Sign up, sign in, delete user should succeed")
+        provider.signUp(
+            username, password,
+            attributes = arrayOf(
+                UserAttribute(Name = "custom:target_group", Value = "ROLE_PATIENT")
+            ),
+            clientMetadata = mapOf("fallback_mode" to "true").toMapEntries(),
         ).await().also {
             println("signUpResponse=$it")
             assertNotNull(it)
