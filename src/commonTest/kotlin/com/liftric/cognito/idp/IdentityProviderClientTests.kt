@@ -68,7 +68,7 @@ abstract class AbstractIdentityProviderClientTests {
         val signUpResponse = provider.signUp(
             credentials.username, credentials.password,
             attributes = listOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+                UserAttribute(Name = "custom:target_group", Value = "ROLE_PATIENT")
             )
         )
 

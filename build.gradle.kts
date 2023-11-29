@@ -1,5 +1,4 @@
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.liftric.vault.GetVaultSecretTask
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.*
@@ -297,11 +296,6 @@ publishing {
                 }
             }
             developers {
-                developer {
-                    id.set("gaebel")
-                    name.set("Jan Gaebel")
-                    email.set("gaebel@liftric.com")
-                }
                 developer {
                     id.set("benjohnde")
                     name.set("Ben John")

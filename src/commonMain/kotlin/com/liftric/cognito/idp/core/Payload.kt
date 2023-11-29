@@ -54,7 +54,8 @@ internal data class SignUp(
     val ClientId: String,
     val Password: String,
     val Username: String,
-    val UserAttributes: List<UserAttribute>
+    val UserAttributes: List<UserAttribute>,
+    val ClientMetadata: Map<String, String>?,
 )
 
 @Serializable
@@ -73,7 +74,8 @@ internal data class ResendConfirmationCode(
 @Serializable
 internal data class ForgotPassword(
     val ClientId: String,
-    val Username: String
+    val Username: String,
+    val ClientMetadata: Map<String, String>?,
 )
 
 @Serializable
@@ -101,7 +103,7 @@ internal data class UpdateUserAttributes(
 internal data class GetUserAttributeVerificationCode(
     val AccessToken: String,
     val AttributeName: String,
-    val ClientMetadata: Map<String, String>? = null
+    val ClientMetadata: Map<String, String>?
 )
 
 @Serializable
