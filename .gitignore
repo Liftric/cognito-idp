@@ -41,3 +41,4 @@ DerivedData/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 kotlin-js-store/
+/.kotlin/
