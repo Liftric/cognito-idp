@@ -7,11 +7,9 @@ import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTes
 import org.jetbrains.kotlin.gradle.tasks.*
 
 plugins {
-    kotlin("multiplatform") version libs.versions.kotlin
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    id("com.android.library") version libs.versions.android.tools.gradle
-    alias(libs.plugins.definitions)
-    alias(libs.plugins.npm.publishing)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.versioning)
     alias(libs.plugins.vault.client)
     id("maven-publish")
@@ -19,14 +17,14 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
     google()
+    mavenCentral()
     gradlePluginPortal()
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 kotlin {
@@ -38,7 +36,7 @@ kotlin {
         it.binaries.framework()
     }
 
-    androidTarget() {
+    androidTarget {
         publishAllLibraryVariants()
     }
     jvm()
@@ -59,8 +57,13 @@ kotlin {
         }
     }
     wasmJs {
-        browser()
+        browser ()
         binaries.library()
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions.freeCompilerArgs.add("-Xir-minimized-member-names=false")
+            }
+        }
     }
 
     sourceSets {
@@ -136,7 +139,7 @@ kotlin {
 
 configure<LibraryExtension> {
     defaultConfig.apply {
-        compileSdk = 30
+        compileSdk = 35
         minSdkVersion(21)
         targetSdkVersion(30)
         testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
@@ -316,41 +319,6 @@ publishing {
             scm {
                 url.set("https://github.com/liftric/cognito-idp")
             }
-        }
-    }
-}
-
-val npmAccessKey: String? by project
-
-npmPublish {
-    organization.set("liftric")
-    access.set(PUBLIC)
-    readme.set(rootProject.file("README.md"))
-
-    packages {
-        named("js") {
-            packageName.set(project.name)
-            packageJson {
-                keywords.set(
-                    listOf(
-                        "kotlin",
-                        "cognito",
-                        "identity-provider",
-                        "liftric",
-                        "aws"
-                    )
-                )
-                license.set("MIT")
-                description.set("Lightweight AWS Cognito Identity Provider client.")
-                homepage.set("https://github.com/liftric/cognito-idp")
-            }
-        }
-    }
-
-    registries {
-        npmjs {
-            uri.set(uri("https://registry.npmjs.org"))
-            authToken.set(npmAccessKey)
         }
     }
 }
