@@ -179,6 +179,14 @@ afterEvaluate {
 }
 
 tasks {
+    withType(Test::class) {
+        testLogging {
+            showStandardStreams = true
+            events("passed", "skipped", "failed", "standardOut", "standardError")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
+    }
+
     withType(KotlinNativeSimulatorTest::class) {
         filter.excludeTestsMatching("com.liftric.cognito.idp.IdentityProviderClientTests")
     }
