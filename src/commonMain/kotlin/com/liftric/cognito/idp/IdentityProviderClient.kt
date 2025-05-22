@@ -5,6 +5,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -27,6 +28,12 @@ open class IdentityProviderClient(region: String, clientId: String, engine: Http
     }
     private val configuration = Configuration(region, clientId)
     private val client = HttpClient(engine ?: Engine) {
+        install(Logging) {
+            level = LogLevel.ALL
+            logger = Logger.SIMPLE
+            sanitizeHeader { header -> header == HttpHeaders.Authorization }
+        }
+
         expectSuccess = true
         /**
          * When referencing members that are in the

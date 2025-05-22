@@ -2,6 +2,7 @@
 
 import com.android.build.gradle.LibraryExtension
 import com.liftric.vault.GetVaultSecretTask
+import org.gradle.internal.classpath.Instrumented.systemProperty
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.*
@@ -70,6 +71,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(libs.ktor.client.core)
+                api(libs.ktor.client.logging)
                 api(libs.kotlinx.coroutines)
                 api(libs.kotlinx.serialization)
             }
@@ -177,11 +179,52 @@ afterEvaluate {
         it.groupId = group.toString()
     }
 }
+plugins.withId(libs.plugins.kotlin.multiplatform.get().pluginId) {
+    afterEvaluate {
+        tasks.matching {
+            it.name.contains("test", ignoreCase = true) &&
+                    it is org.gradle.api.tasks.testing.AbstractTestTask
+        }.configureEach {
 
+            this as org.gradle.api.tasks.testing.AbstractTestTask
+            testLogging {
+                showStandardStreams = true
+                showExceptions = true
+                showCauses = true
+                showStackTraces = true
+                events("passed", "skipped", "failed", "standardOut", "standardError")
+                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            }
+            addTestListener(object : org.gradle.api.tasks.testing.TestListener {
+                override fun beforeSuite(suite: org.gradle.api.tasks.testing.TestDescriptor) {}
+                override fun afterSuite(suite: org.gradle.api.tasks.testing.TestDescriptor, result: org.gradle.api.tasks.testing.TestResult) {
+                    if (suite.parent == null) {
+                        println("Test results for ${suite.name}: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)")
+                    }
+                }
+                override fun beforeTest(testDescriptor: org.gradle.api.tasks.testing.TestDescriptor) {
+                    println("Starting test: ${testDescriptor.className}.${testDescriptor.name}")
+                }
+                override fun afterTest(testDescriptor: org.gradle.api.tasks.testing.TestDescriptor, result: org.gradle.api.tasks.testing.TestResult) {
+                    println("Test ${testDescriptor.className}.${testDescriptor.name} completed: ${result.resultType}")
+                }
+            })
+
+            if (name.contains("js", ignoreCase = true) || name.contains("wasm", ignoreCase = true)) {
+                systemProperty("kotlin.js.browser.karma.capture.console", "true")
+                systemProperty("kotlin.wasm.test.capture.stdout", "true")
+                systemProperty("kotlin.wasm.test.capture.stderr", "true")
+            }
+        }
+    }
+}
 tasks {
     withType(Test::class) {
         testLogging {
             showStandardStreams = true
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
             events("passed", "skipped", "failed", "standardOut", "standardError")
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
