@@ -54,9 +54,7 @@ kotlin {
         }
     }
     js(IR) {
-        compilerOptions {
-            target.set("es2015")
-        }
+        binaries.library()
         generateTypeScriptDefinitions()
         browser {
             testTask {
@@ -65,7 +63,6 @@ kotlin {
                 }
             }
         }
-        binaries.library()
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions.freeCompilerArgs.add("-Xir-minimized-member-names=false")
