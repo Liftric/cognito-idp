@@ -9,7 +9,6 @@ plugins {
     kotlin("multiplatform") version libs.versions.kotlin
     alias(libs.plugins.kotlin.serialization)
     id("com.android.library") version libs.versions.android.tools.gradle
-    alias(libs.plugins.definitions)
     alias(libs.plugins.npm.publishing)
     alias(libs.plugins.versioning)
     alias(libs.plugins.vault.client)
@@ -55,6 +54,9 @@ kotlin {
         }
     }
     js(IR) {
+        compilerOptions {
+            target.set("es2015")
+        }
         generateTypeScriptDefinitions()
         browser {
             testTask {

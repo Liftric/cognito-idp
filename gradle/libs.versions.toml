@@ -1,6 +1,5 @@
 [versions]
 # plugins
-"definitions" = "5.124.0"
 "npm-publishing" = "4.1.3"
 "vault-client" = "3.0.0"
 "versioning" = "3.1.0"
@@ -27,7 +26,6 @@
 "robolectric" = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 [plugins]
-"definitions" = { id = "io.github.turansky.kfc.definitions", version.ref = "definitions" }
 "kotlin-serialization" = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 "npm-publishing" = { id = "org.danilopianini.npm.publish", version.ref = "npm-publishing" }
 "vault-client" = { id = "com.liftric.vault-client-plugin", version.ref = "vault-client" }
