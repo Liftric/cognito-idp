@@ -1,7 +1,7 @@
 package com.liftric.cognito.idp
 
 import com.liftric.cognito.idp.core.*
-import io.ktor.utils.io.errors.*
+import kotlinx.io.IOException
 import kotlin.test.*
 
 class ResultTests {

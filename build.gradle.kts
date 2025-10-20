@@ -1,5 +1,7 @@
 import com.android.build.gradle.LibraryExtension
 import com.liftric.vault.GetVaultSecretTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.*
 
@@ -7,7 +9,6 @@ plugins {
     kotlin("multiplatform") version libs.versions.kotlin
     alias(libs.plugins.kotlin.serialization)
     id("com.android.library") version libs.versions.android.tools.gradle
-    alias(libs.plugins.definitions)
     alias(libs.plugins.npm.publishing)
     alias(libs.plugins.versioning)
     alias(libs.plugins.vault.client)
@@ -22,22 +23,38 @@ repositories {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
-    ios {
+    compilerOptions {
+        languageVersion.set(KotlinVersion.KOTLIN_2_2)
+        freeCompilerArgs.addAll(
+            listOf("-Xinline-classes")
+        )
+    }
+
+    iosX64 {
+        binaries.framework()
+    }
+    iosSimulatorArm64 {
+        binaries.framework()
+    }
+    iosArm64 {
         binaries.framework()
     }
 
-    iosSimulatorArm64()
-
-    androidTarget() {
-        publishAllLibraryVariants()
+    androidTarget {
+        publishLibraryVariants("debug", "release")
     }
-    jvm()
+    jvm {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
     js(IR) {
+        binaries.library()
         generateTypeScriptDefinitions()
         browser {
             testTask {
@@ -46,7 +63,6 @@ kotlin {
                 }
             }
         }
-        binaries.library()
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions.freeCompilerArgs.add("-Xir-minimized-member-names=false")
@@ -63,7 +79,7 @@ kotlin {
             }
         }
         val commonTest by getting {
-            kotlin.srcDir("${buildDir}/gen")
+            kotlin.srcDir(layout.buildDirectory.dir("gen"))
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-common"))
@@ -82,31 +98,22 @@ kotlin {
         }
         val androidUnitTest by getting {
             dependencies {
-                implementation(libs.roboelectric)
+                implementation(libs.robolectric)
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(libs.androidx.test.core)
-                implementation(libs.opt.java)
+                implementation(libs.otp.java)
             }
         }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation(libs.opt.java)
+                implementation(libs.otp.java)
             }
         }
-        val iosMain by getting {
-            dependencies {
-                api(libs.ktor.client.darwin)
-            }
-        }
-        val iosTest by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
-        val iosSimulatorArm64Test by getting {
-            dependsOn(iosTest)
+        iosMain.dependencies {
+            api(libs.ktor.client.darwin)
         }
         val jsMain by getting {
             dependencies {
@@ -130,15 +137,15 @@ kotlin {
 
 configure<LibraryExtension> {
     defaultConfig.apply {
-        compileSdk = 30
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        compileSdk = 36
+        minSdkVersion(31)
+        targetSdkVersion(36)
         testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     testOptions {
@@ -174,12 +181,12 @@ tasks {
         filter.excludeTestsMatching("com.liftric.cognito.idp.IdentityProviderClientTests")
     }
 
-    val testSecrets by creating(GetVaultSecretTask::class) {
+    val testSecrets by registering(GetVaultSecretTask::class) {
         secretPath.set("secret/apps/smartest/shared/cognito")
     }
 
-    val createJsEnvHack by creating {
-        outputs.dir("$buildDir/gen")
+    val createJsEnvHack by registering {
+        outputs.dir(layout.buildDirectory.dir("gen").get().asFile.absolutePath)
 
         if (System.getenv("region") == null || System.getenv("clientId") == null) {
             // github ci provides region and clientId envs, locally we'll use vault directly
@@ -187,13 +194,14 @@ tasks {
         }
 
         doFirst {
-            val (clientId, region) = with(testSecrets.secret.get()) {
+            val (clientId, region) = with(testSecrets.get().secret.get()) {
                 ((System.getenv("clientId") ?: this["client_id_dev"].toString()) to
                         (System.getenv("region") ?: this["client_region_dev"].toString()))
             }
 
-            mkdir("$buildDir/gen")
-            with(File("$buildDir/gen/env.kt")) {
+            val envFile = layout.buildDirectory.dir("gen/env.kt").get().asFile
+            envFile.apply {
+                parentFile.mkdirs()
                 createNewFile()
                 writeText(
                     """
@@ -211,16 +219,6 @@ tasks {
         dependsOn(createJsEnvHack)
     }
 
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            languageVersion = "1.5"
-            freeCompilerArgs = listOf(
-                "-Xinline-classes"
-            )
-        }
-    }
-
     /**
      * Ugly atomicfu export hack: Coroutines core needs atomicfu-js, which generates broken d.ts entries. Excluding
      * atomicfu-js breaks the ktor client and filtering d.ts types in the IR compile is currently not possible... so let's
@@ -228,7 +226,7 @@ tasks {
      *
      * The build/js/packages/cognito-idp/kotlin/cognito-idp.d.ts file should now be without errors and usable from typescript
      */
-    val cleanTypescriptTypes by creating {
+    val cleanTypescriptTypes by registering {
         fun MutableList<String>.removeFromTill(from: String, till: String) {
             val fromIndex = indexOfFirst { it == from }
             val tillIndex = indexOfFirst { it == till }
@@ -243,7 +241,7 @@ tasks {
             }
         }
 
-        val dTsFile = file("$buildDir/js/packages/cognito-idp/kotlin/cognito-idp.d.ts")
+        val dTsFile = layout.buildDirectory.dir("js/packages/cognito-idp/kotlin/cognito-idp.d.ts").get().asFile
         inputs.file(dTsFile)
         outputs.file(dTsFile)
 

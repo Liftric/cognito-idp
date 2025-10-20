@@ -6,11 +6,8 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /** Don't forget [IdentityProviderClientJS] when doing changes here :) */
