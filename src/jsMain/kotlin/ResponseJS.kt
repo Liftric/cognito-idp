@@ -4,7 +4,6 @@ import com.liftric.cognito.idp.core.*
  * Adapted [Response.kt] classes for Typescript usage (Map and List aren't compatible for [kotlin.js.JsExport])
  */
 
-@JsExport
 data class SignInResponseJS(
     val AuthenticationResult: AuthenticationResult?,
     val ChallengeParameters: Array<MapEntry>,
@@ -30,7 +29,6 @@ data class SignInResponseJS(
     }
 }
 
-@JsExport
 data class GetUserResponseJS(
     val MFAOptions: MFAOptions?,
     val PreferredMfaSetting: String?,
@@ -63,7 +61,6 @@ data class GetUserResponseJS(
     }
 }
 
-@JsExport
 data class UpdateUserAttributesResponseJS(
     val CodeDeliveryDetailsList: Array<CodeDeliveryDetails> = arrayOf()
 ) {
@@ -83,7 +80,6 @@ data class UpdateUserAttributesResponseJS(
     }
 }
 
-@JsExport
 data class MapEntry(val key: String, val value: String)
 
 internal fun Map<String, String>.toMapEntries(): Array<MapEntry> = entries.map {
