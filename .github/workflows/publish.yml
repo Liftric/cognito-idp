@@ -25,4 +25,8 @@ jobs:
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
           ORG_GRADLE_PROJECT_npmAccessKey: ${{ secrets.NPMJS_ACCESS_KEY }}
-        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishAllPublicationsToSonatypeRepository publishJsPackageToNpmjsRegistry
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishToMavenCentral publishJsPackageToNpmjsRegistry
