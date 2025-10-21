@@ -271,7 +271,7 @@ publishing {
     repositories {
         maven {
             name = "sonatype"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            setUrl("https://central.sonatype.com")
             credentials {
                 username = ossrhUsername
                 password = ossrhPassword
