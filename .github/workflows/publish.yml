@@ -9,10 +9,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 17
           distribution: 'temurin'
       - name: Grant Permission to Execute
         run: chmod +x gradlew
@@ -20,9 +20,9 @@ jobs:
         run: ./gradlew versionDisplay
       - name: Publish Library
         env:
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
-          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
-          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
           ORG_GRADLE_PROJECT_npmAccessKey: ${{ secrets.NPMJS_ACCESS_KEY }}
-        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishAllPublicationsToSonatypeRepository publishJsPackageToNpmjsRegistry
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishToMavenCentral publishJsPackageToNpmjsRegistry

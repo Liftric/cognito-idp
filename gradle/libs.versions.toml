@@ -3,6 +3,7 @@
 "npm-publishing" = "4.1.3"
 "vault-client" = "3.0.0"
 "versioning" = "3.1.0"
+"publish" = "0.34.0"
 # dependencies
 "android-tools-gradle" = "8.13.0"
 "kotlin" = "2.2.20"
@@ -30,3 +31,4 @@
 "npm-publishing" = { id = "org.danilopianini.npm.publish", version.ref = "npm-publishing" }
 "vault-client" = { id = "com.liftric.vault-client-plugin", version.ref = "vault-client" }
 "versioning" = { id = "net.nemerosa.versioning", version.ref = "versioning" }
+"publish" = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
