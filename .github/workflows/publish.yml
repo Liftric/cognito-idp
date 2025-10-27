@@ -25,5 +25,4 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
-        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishToMavenCentral
-#        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishToMavenCentral publishJsPackageToNpmjsRegistry
+        run: region=${{ secrets.region }} clientId=${{ secrets.clientid }} ./gradlew publishToMavenCentral publishJsPackageToNpmjsRegistry
