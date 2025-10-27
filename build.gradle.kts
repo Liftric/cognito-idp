@@ -138,7 +138,7 @@ kotlin {
 configure<LibraryExtension> {
     defaultConfig.apply {
         compileSdk = 36
-        minSdkVersion(31)
+        minSdkVersion(21)
         targetSdkVersion(36)
         testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
     }
