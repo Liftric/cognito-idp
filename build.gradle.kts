@@ -2,6 +2,7 @@
 
 import com.android.build.gradle.LibraryExtension
 import com.liftric.vault.GetVaultSecretTask
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -15,8 +16,46 @@ plugins {
     alias(libs.plugins.npm.publishing)
     alias(libs.plugins.versioning)
     alias(libs.plugins.vault.client)
-    id("maven-publish")
-    id("signing")
+    alias(libs.plugins.publish)
+}
+
+val actualVersion = with(versioning.info) {
+    if (branch == "HEAD" && dirty.not()) tag else full
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+    configure(
+        KotlinMultiplatform(
+            sourcesJar = true,
+            androidVariantsToPublish = listOf("debug", "release"),
+        )
+    )
+
+    coordinates("com.liftric", "cognito-idp", actualVersion)
+    pom {
+        name.set(project.name)
+        description.set("Lightweight AWS Cognito Identity Provider client for Kotlin Multiplatform projects.")
+        url.set("https://github.com/liftric/cognito-idp")
+
+        licenses {
+            license {
+                name.set("MIT")
+                url.set("https://github.com/liftric/cognito-idp/blob/master/LICENSE")
+            }
+        }
+        developers {
+            developer {
+                id.set("liftric")
+                name.set("Liftric GmbH")
+                email.set("team@liftric.com")
+            }
+        }
+        scm {
+            url.set("https://github.com/liftric/cognito-idp")
+        }
+    }
 }
 
 repositories {
@@ -149,7 +188,7 @@ kotlin {
 configure<LibraryExtension> {
     defaultConfig.apply {
         compileSdk = 36
-        minSdkVersion(31)
+        minSdkVersion(21)
         targetSdkVersion(36)
         testInstrumentationRunner = "org.robolectric.RobolectricTestRunner"
     }
@@ -167,25 +206,10 @@ configure<LibraryExtension> {
     }
 
     namespace = "com.liftric.cognito.idp"
-
-    publishing {
-        multipleVariants {
-            allVariants()
-            withJavadocJar()
-        }
-    }
 }
 
 group = "com.liftric"
-version = with(versioning.info) {
-    if (branch == "HEAD" && dirty.not()) tag else full
-}
-
-afterEvaluate {
-    project.publishing.publications.withType(MavenPublication::class.java).forEach {
-        it.groupId = group.toString()
-    }
-}
+version = actualVersion
 
 tasks {
     withType(KotlinNativeSimulatorTest::class) {
@@ -271,56 +295,8 @@ tasks {
     }
 }
 
-val ossrhUsername: String? by project
-val ossrhPassword: String? by project
-
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "sonatype"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
-            }
-        }
-    }
-
-    publications.withType<MavenPublication> {
-        artifact(javadocJar.get())
-
-        pom {
-            name.set(project.name)
-            description.set("Lightweight AWS Cognito Identity Provider client for Kotlin Multiplatform projects.")
-            url.set("https://github.com/liftric/cognito-idp")
-
-            licenses {
-                license {
-                    name.set("MIT")
-                    url.set("https://github.com/liftric/cognito-idp/blob/master/LICENSE")
-                }
-            }
-            developers {
-                developer {
-                    id.set("benjohnde")
-                    name.set("Ben John")
-                    email.set("john@liftric.com")
-                }
-                developer {
-                    id.set("ingwersaft")
-                    name.set("Marcel Kesselring")
-                    email.set("kesselring@liftric.com")
-                }
-            }
-            scm {
-                url.set("https://github.com/liftric/cognito-idp")
-            }
-        }
-    }
 }
 
 val npmAccessKey: String? by project
@@ -358,13 +334,6 @@ npmPublish {
     }
 }
 
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
-}
-
 vault {
     vaultAddress.set("https://dark-lord.liftric.io")
     if (System.getenv("CI") == null) {
@@ -375,17 +344,11 @@ vault {
 }
 tasks {
     afterEvaluate {
-        val signingTasks = filter { it.name.startsWith("sign") }
         all {
             // lets bruteforce this until the plugins play along nicely again
 
             if (name.contains("compile", true) && name.contains("kotlin", true)) {
                 dependsOn("createJsEnvHack")
-            }
-            if (name.startsWith("publish")) {
-                signingTasks.forEach { signTask ->
-                    dependsOn(signTask)
-                }
             }
         }
     }
