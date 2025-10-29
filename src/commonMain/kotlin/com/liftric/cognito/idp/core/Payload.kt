@@ -86,6 +86,7 @@ internal data class ConfirmForgotPassword(
     val Password: String
 )
 
+@JsExport
 @Serializable
 data class UserAttribute(
     val Name: String,
@@ -133,6 +134,7 @@ internal data class SetUserMFAPreference(
     val SoftwareTokenMfaSettings: MfaSettings?
 )
 
+@JsExport
 @Serializable
 data class MfaSettings(
     val Enabled: Boolean,
