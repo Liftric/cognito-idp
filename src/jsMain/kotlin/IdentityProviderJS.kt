@@ -15,16 +15,16 @@ class IdentityProviderClientJS(region: String, clientId: String) {
     fun signUp(
         username: String,
         password: String,
-        attributes: Array<UserAttribute>? = null,
+        attributes: Array<UserAttributeJS>? = null,
         clientMetadata: Array<MapEntry>? = null,
-    ): Promise<SignUpResponse> =
+    ): Promise<SignUpResponseJS> =
         MainScope().promise {
             provider.signUp(
                 username = username,
                 password = password,
-                attributes = attributes?.toList(),
+                attributes = attributes?.map(UserAttributeJS::toUserAttribute)?.toList(),
                 clientMetadata = clientMetadata?.associate { it.key to it.value }
-            ).getOrWrapThrowable()
+            ).getOrWrapThrowable().toSignUpResponseJS()
         }
 
     fun confirmSignUp(username: String, confirmationCode: String): Promise<Unit> =
@@ -35,10 +35,10 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             ).getOrWrapThrowable()
         }
 
-    fun resendConfirmationCode(username: String): Promise<ResendConfirmationCodeResponse> =
+    fun resendConfirmationCode(username: String): Promise<ResendConfirmationCodeResponseJS> =
         MainScope().promise {
             provider.resendConfirmationCode(username)
-                .getOrWrapThrowable()
+                .getOrWrapThrowable().toResendConfirmationCodeResponseJS()
         }
 
     fun signIn(username: String, password: String): Promise<SignInResponseJS> =
@@ -46,7 +46,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             provider.signIn(username, password)
                 .getOrWrapThrowable().let {
                     SignInResponseJS(
-                        AuthenticationResult = it.AuthenticationResult,
+                        AuthenticationResult = it.AuthenticationResult?.toAuthenticationResultJS(),
                         ChallengeParameters = it.ChallengeParameters.toMapEntries(),
                         ChallengeName = it.ChallengeName,
                         Session = it.Session,
@@ -59,7 +59,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             provider.refresh(refreshToken)
                 .getOrWrapThrowable().let {
                     SignInResponseJS(
-                        AuthenticationResult = it.AuthenticationResult,
+                        AuthenticationResult = it.AuthenticationResult?.toAuthenticationResultJS(),
                         ChallengeParameters = it.ChallengeParameters.toMapEntries(),
                         ChallengeName = it.ChallengeName,
                         Session = it.Session
@@ -72,9 +72,9 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             provider.getUser(accessToken)
                 .getOrWrapThrowable().let {
                     GetUserResponseJS(
-                        MFAOptions = it.MFAOptions,
+                        MFAOptions = it.MFAOptions?.toMFAOptionsJS(),
                         PreferredMfaSetting = it.PreferredMfaSetting,
-                        UserAttributes = it.UserAttributes.toTypedArray(),
+                        UserAttributes = it.UserAttributes.map(UserAttribute::toUserAttributeJS).toTypedArray(),
                         UserMFASettingList = it.UserMFASettingList.toTypedArray(),
                         Username = it.Username
                     )
@@ -83,14 +83,14 @@ class IdentityProviderClientJS(region: String, clientId: String) {
 
     fun updateUserAttributes(
         accessToken: String,
-        attributes: Array<UserAttribute>
+        attributes: Array<UserAttributeJS>
     ): Promise<UpdateUserAttributesResponseJS> =
         MainScope().promise {
             provider.updateUserAttributes(
                 accessToken = accessToken,
-                attributes = attributes.toList()
+                attributes = attributes.map(UserAttributeJS::toUserAttribute).toList()
             ).getOrWrapThrowable().let {
-                UpdateUserAttributesResponseJS(it.CodeDeliveryDetailsList.toTypedArray())
+                UpdateUserAttributesResponseJS(it.CodeDeliveryDetailsList.map(CodeDeliveryDetails::toCodeDeliveryDetailsJS).toTypedArray())
             }
         }
 
@@ -107,10 +107,10 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             ).getOrWrapThrowable()
         }
 
-    fun forgotPassword(username: String, clientMetadata: Array<MapEntry>? = null): Promise<ForgotPasswordResponse> =
+    fun forgotPassword(username: String, clientMetadata: Array<MapEntry>? = null): Promise<ForgotPasswordResponseJS> =
         MainScope().promise {
             provider.forgotPassword(username, clientMetadata?.associate { it.key to it.value })
-                .getOrWrapThrowable()
+                .getOrWrapThrowable().toForgotPasswordResponseJS()
         }
 
     fun confirmForgotPassword(
@@ -130,13 +130,13 @@ class IdentityProviderClientJS(region: String, clientId: String) {
         accessToken: String,
         attributeName: String,
         clientMetadata: Array<MapEntry>? = null
-    ): Promise<GetAttributeVerificationCodeResponse> =
+    ): Promise<GetAttributeVerificationCodeResponseJS> =
         MainScope().promise {
             provider.getUserAttributeVerificationCode(
                 accessToken = accessToken,
                 attributeName = attributeName,
                 clientMetadata = clientMetadata?.associate { it.key to it.value }
-            ).getOrWrapThrowable()
+            ).getOrWrapThrowable().toGetAttributeVerificationCodeResponseJS()
         }
 
     fun verifyUserAttribute(
@@ -172,13 +172,13 @@ class IdentityProviderClientJS(region: String, clientId: String) {
 
     fun setUserMFAPreference(
         accessToken: String,
-        smsMfaSettings: MfaSettings?,
-        softwareTokenMfaSettings: MfaSettings?
+        smsMfaSettings: MfaSettingsJS?,
+        softwareTokenMfaSettings: MfaSettingsJS?
     ): Promise<Unit> = MainScope().promise {
         provider.setUserMFAPreference(
             accessToken = accessToken,
-            smsMfaSettings = smsMfaSettings,
-            softwareTokenMfaSettings = softwareTokenMfaSettings
+            smsMfaSettings = smsMfaSettings?.toMfaSettings(),
+            softwareTokenMfaSettings = softwareTokenMfaSettings?.toMfaSettings()
         ).getOrWrapThrowable()
     }
 
@@ -193,7 +193,7 @@ class IdentityProviderClientJS(region: String, clientId: String) {
             session
         ).getOrWrapThrowable().let {
             SignInResponseJS(
-                AuthenticationResult = it.AuthenticationResult,
+                AuthenticationResult = it.AuthenticationResult?.toAuthenticationResultJS(),
                 ChallengeParameters = it.ChallengeParameters.toMapEntries(),
                 ChallengeName = it.ChallengeName,
                 Session = it.Session
@@ -203,42 +203,42 @@ class IdentityProviderClientJS(region: String, clientId: String) {
 
     fun associateSoftwareToken(
         accessToken: String
-    ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
+    ): Promise<AssociateSoftwareTokenResponseJS> = MainScope().promise {
         provider.associateSoftwareToken(
             accessToken = accessToken
-        ).getOrWrapThrowable()
+        ).getOrWrapThrowable().toAssociateSoftwareTokenResponseJS()
     }
 
     fun associateSoftwareTokenBySession(
         session: String
-    ): Promise<AssociateSoftwareTokenResponse> = MainScope().promise {
+    ): Promise<AssociateSoftwareTokenResponseJS> = MainScope().promise {
         provider.associateSoftwareTokenBySession(
             session = session
-        ).getOrWrapThrowable()
+        ).getOrWrapThrowable().toAssociateSoftwareTokenResponseJS()
     }
 
     fun verifySoftwareToken(
         accessToken: String,
         friendlyDeviceName: String?,
         userCode: String
-    ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
+    ): Promise<VerifySoftwareTokenResponseJS> = MainScope().promise {
         provider.verifySoftwareToken(
             accessToken = accessToken,
             friendlyDeviceName = friendlyDeviceName,
             userCode = userCode
-        ).getOrWrapThrowable()
+        ).getOrWrapThrowable().toVerifySoftwareTokenResponseJS()
     }
 
     fun verifySoftwareTokenBySession(
         session: String,
         friendlyDeviceName: String?,
         userCode: String
-    ): Promise<VerifySoftwareTokenResponse> = MainScope().promise {
+    ): Promise<VerifySoftwareTokenResponseJS> = MainScope().promise {
         provider.verifySoftwareTokenBySession(
             friendlyDeviceName = friendlyDeviceName,
             session = session,
             userCode = userCode
-        ).getOrWrapThrowable()
+        ).getOrWrapThrowable().toVerifySoftwareTokenResponseJS()
     }
 
     private fun <T> Result<T>.getOrWrapThrowable(): T = when (value) {
