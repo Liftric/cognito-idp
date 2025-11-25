@@ -1,9 +1,12 @@
 package com.liftric.cognito.idp
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.promise
 
-actual class IdentityProviderClientTests: AbstractIdentityProviderClientTests()
+actual class IdentityProviderClientTests : AbstractIdentityProviderClientTests()
 
-actual fun runTest(block: suspend () -> Unit) = runBlocking {
-    block.invoke()
+actual fun runTest(block: suspend () -> Unit) {
+	MainScope().promise {
+		block.invoke()
+	}
 }
