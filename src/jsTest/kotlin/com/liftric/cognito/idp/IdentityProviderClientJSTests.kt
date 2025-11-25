@@ -2,6 +2,7 @@ package com.liftric.cognito.idp
 
 import IdentityProviderClientJS
 import IdentityProviderExceptionJs
+import UserAttributeJS
 import com.liftric.cognito.idp.core.UserAttribute
 import env
 import kotlinx.coroutines.await
@@ -31,7 +32,7 @@ class IdentityProviderClientJSTests {
         provider.signUp(
             username, password,
             attributes = arrayOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_PATIENT")
+                UserAttributeJS(Name = "custom:target_group", Value = "ROLE_PATIENT")
             )
         ).await().also {
             println("signUpResponse=$it")
@@ -56,7 +57,7 @@ class IdentityProviderClientJSTests {
         provider.signUp(
             username, password,
             attributes = arrayOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_PATIENT")
+                UserAttributeJS(Name = "custom:target_group", Value = "ROLE_PATIENT")
             ),
             clientMetadata = mapOf("fallback_mode" to "true").toMapEntries(),
         ).await().also {
@@ -81,7 +82,7 @@ class IdentityProviderClientJSTests {
         provider.signUp(
             "Username", buildString { (1..260).forEach { _ -> append("A") } },
             attributes = arrayOf(
-                UserAttribute(Name = "custom:target_group", Value = "ROLE_USER")
+                UserAttributeJS(Name = "custom:target_group", Value = "ROLE_USER")
             )
         ).then {
             fail("signUp must fail")

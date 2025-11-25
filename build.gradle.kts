@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import com.android.build.gradle.LibraryExtension
 import com.liftric.vault.GetVaultSecretTask
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
@@ -108,6 +111,10 @@ kotlin {
             }
         }
     }
+    wasmJs {
+        browser()
+        binaries.library()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -163,6 +170,10 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-js"))
             }
+        }
+        wasmJsMain.dependencies {
+            api(libs.ktor.client.js)
+            api(libs.kotlinx.browser)
         }
         all {
             languageSettings {

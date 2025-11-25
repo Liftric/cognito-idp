@@ -22,7 +22,6 @@ data class SignInResponse(
     val Session: String?
 )
 
-@JsExport
 @Serializable
 data class AuthenticationResult(
     val AccessToken: String?,
@@ -33,14 +32,12 @@ data class AuthenticationResult(
     val NewDeviceMetadata: NewDeviceMetadata?,
 )
 
-@JsExport
 @Serializable
 data class NewDeviceMetadata(
     val DeviceGroupKey: String?,
     val DeviceKey: String?,
 )
 
-@JsExport
 @Serializable
 data class SignUpResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails?,
@@ -48,13 +45,11 @@ data class SignUpResponse(
     val UserSub: String
 )
 
-@JsExport
 @Serializable
 data class ResendConfirmationCodeResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails
 )
 
-@JsExport
 @Serializable
 data class CodeDeliveryDetails(
     val AttributeName: String?,
@@ -71,7 +66,6 @@ data class GetUserResponse(
     val Username: String
 )
 
-@JsExport
 @Serializable
 data class MFAOptions(
     val AttributeName: String?,
@@ -83,26 +77,22 @@ data class UpdateUserAttributesResponse(
     val CodeDeliveryDetailsList: List<CodeDeliveryDetails> = listOf()
 )
 
-@JsExport
 @Serializable
 data class GetAttributeVerificationCodeResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails
 )
 
-@JsExport
 @Serializable
 data class ForgotPasswordResponse(
     val CodeDeliveryDetails: CodeDeliveryDetails
 )
 
-@JsExport
 @Serializable
 data class AssociateSoftwareTokenResponse(
     val SecretCode: String,
     val Session: String?
 )
 
-@JsExport
 @Serializable
 data class VerifySoftwareTokenResponse(
     val Session: String?,
