@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.*
 
+@Suppress("DSL_SCOPE_VIOLATION") // IntelliJ incorrectly marks libs as not callable
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin
     alias(libs.plugins.kotlin.serialization)
