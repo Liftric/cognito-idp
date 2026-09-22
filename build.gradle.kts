@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.*
 
+@Suppress("DSL_SCOPE_VIOLATION") // IntelliJ incorrectly marks libs as not callable
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin
     alias(libs.plugins.kotlin.serialization)
@@ -191,6 +192,21 @@ configure<LibraryExtension> {
         unitTests.apply {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
+
+            // https://robolectric.org/getting-started/#running-with-java-17-and-higher-kotlin
+            all { test ->
+                test.jvmArgs(
+                    "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                    "--add-opens=java.base/java.util=ALL-UNNAMED",
+                    "--add-opens=java.base/java.io=ALL-UNNAMED",
+                    "--add-opens=java.base/java.net=ALL-UNNAMED",
+                    "--add-opens=java.base/java.security=ALL-UNNAMED",
+                    "--add-opens=java.base/java.text=ALL-UNNAMED",
+                    "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                    "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                    "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+                )
+            }
         }
     }
 
@@ -206,7 +222,7 @@ tasks {
     }
 
     val testSecrets by registering(GetVaultSecretTask::class) {
-        secretPath.set("secret/apps/smartest/shared/cognito")
+        secretPath.set("secret/apps/cognito-idp/test-userpool")
     }
 
     val createJsEnvHack by registering {
